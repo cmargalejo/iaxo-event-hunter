@@ -176,14 +176,12 @@ function revealPosition(){
  show("position");$("phase").textContent="Posición";setPipeline("position");
  positionKeep=Array(NTEST).fill(false);positionScore=0;
  let d=$("detector");d.querySelectorAll(".dot").forEach(x=>x.remove());
- let trueX=0;
  testEvents.forEach((e,i)=>{
    let dot=document.createElement("div");
    dot.style.left=((e.x+30)/60*100)+"%";dot.style.top=((e.y+30)/60*100)+"%";
    if(e.signal){
-     trueX++;
      dot.className="dot selected clickable";
-     dot.onclick=()=>{positionKeep[i]=!positionKeep[i];dot.classList.toggle("keep",positionKeep[i]);dot.classList.toggle("selected",!positionKeep[i]);updatePositionCount()};
+     dot.onclick=()=>{positionKeep[i]=!positionKeep[i];dot.classList.toggle("keep",positionKeep[i]);dot.classList.toggle("selected",!positionKeep[i])};
      dot.title="Compatible con un rayo X";
    }else{
      dot.className="dot muted";
@@ -191,8 +189,7 @@ function revealPosition(){
    }
    d.appendChild(dot)
  });
- $("morphCount").textContent=trueX;updatePositionCount();
-}function updatePositionCount(){$("posCount").textContent=positionKeep.filter(Boolean).length}
+}
 function confirmPosition(){
  let dots=[...$("detector").querySelectorAll(".dot")],correctCount=0,totalX=0;
  testEvents.forEach((e,i)=>{
