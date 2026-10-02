@@ -1,0 +1,14 @@
+{
+  "name": "iaxo-event-hunter",
+  "private": true,
+  "scripts": {
+    "check": "node tests/check.cjs",
+    "test": "node tests/game.cjs",
+    "format": "prettier --write index.html tests/*.cjs package.json REVISION_TECNICA.md"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0",
+    "eslint": "10.11.0",
+    "prettier": "3.9.9"
+  }
+}
