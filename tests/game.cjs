@@ -91,6 +91,10 @@ async function playRound(
     "Optics explanation must fit on mobile",
   );
   await page.getByRole("button", { name: "ENTRENAR", exact: true }).click();
+  assert.match(
+    await page.locator("#training").innerText(),
+    /red neuronal aprende a reconocer patrones con ejemplos/i,
+  );
   for (let i = 0; i < 6; i++) {
     assert.equal(
       await page.locator("#trainCount").textContent(),
