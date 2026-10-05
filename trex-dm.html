@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="Un juego educativo para descubrir cómo TREX-DM busca WIMPs en el Laboratorio Subterráneo de Canfranc."
+    />
+    <title>TREX-DM · Cazadores de WIMPs</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --text: #f5f8ff;
+        --muted: #b9c7da;
+        --accent: #72e0c0;
+        --good: #62d394;
+        --bad: #ff9292;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--text);
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          sans-serif;
+        background: radial-gradient(circle at 50% -10%, #214c5c, #07111f 60%);
+      }
+      .wrap {
+        width: min(1080px, 100%);
+        margin: auto;
+        padding: 24px;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+      }
+      .brand {
+        font-weight: 850;
+        letter-spacing: 0.08em;
+      }
+      .pill {
+        color: var(--muted);
+        border: 1px solid #ffffff25;
+        background: #ffffff0c;
+        border-radius: 999px;
+        padding: 8px 13px;
+      }
+      .card {
+        margin-top: 22px;
+        padding: clamp(22px, 5vw, 42px);
+        border: 1px solid #ffffff20;
+        border-radius: 24px;
+        background: #0e2035e8;
+        box-shadow: 0 20px 60px #0005;
+      }
+      .center {
+        text-align: center;
+      }
+      .small {
+        color: var(--muted);
+        font-size: 14px;
+        letter-spacing: 0.04em;
+      }
+      h1 {
+        margin: 18px 0;
+        font-size: clamp(42px, 8vw, 78px);
+        line-height: 0.98;
+      }
+      h2 {
+        margin: 8px 0 14px;
+        font-size: clamp(28px, 5vw, 46px);
+      }
+      h3 {
+        margin: 0 0 8px;
+      }
+      p {
+        color: var(--muted);
+        font-size: 19px;
+        line-height: 1.5;
+      }
+      button {
+        border: 0;
+        border-radius: 14px;
+        padding: 14px 20px;
+        font: inherit;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      button:focus-visible,
+      a:focus-visible {
+        outline: 3px solid white;
+        outline-offset: 3px;
+      }
+      .primary {
+        background: var(--accent);
+        color: #06251e;
+      }
+      .yes {
+        background: var(--good);
+        color: #082417;
+      }
+      .no {
+        background: var(--bad);
+        color: #321010;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .lesson {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        align-items: center;
+        text-align: left;
+        margin: 30px 0;
+        padding: 22px;
+        border-radius: 18px;
+        background: #ffffff08;
+      }
+      .detector {
+        min-height: 190px;
+        display: grid;
+        place-items: center;
+        position: relative;
+        overflow: hidden;
+        border: 2px solid #a9c6d760;
+        border-radius: 16px;
+        background: radial-gradient(ellipse, #13283a, #07111b);
+      }
+      .detector::before,
+      .detector::after {
+        content: "";
+        position: absolute;
+        background: #9ab5c720;
+      }
+      .detector::before {
+        width: 100%;
+        height: 1px;
+      }
+      .detector::after {
+        height: 100%;
+        width: 1px;
+      }
+      .gas {
+        z-index: 1;
+        border: 1px dashed #72e0c088;
+        padding: 14px 18px;
+        border-radius: 12px;
+        color: #b3f5e4;
+        text-align: center;
+      }
+      .eventbox {
+        display: grid;
+        grid-template-columns: minmax(240px, 440px) 1fr;
+        gap: 28px;
+        align-items: center;
+      }
+      .canvasWrap {
+        padding: 14px;
+        background: #050b13;
+        border: 1px solid #ffffff20;
+        border-radius: 18px;
+      }
+      canvas {
+        display: block;
+        width: 100%;
+        aspect-ratio: 1;
+        border-radius: 12px;
+        background: #02070d;
+      }
+      .progress {
+        height: 9px;
+        margin: 16px 0;
+        overflow: hidden;
+        border-radius: 10px;
+        background: #ffffff18;
+      }
+      .progress div {
+        height: 100%;
+        width: 0;
+        background: var(--accent);
+        transition: width 0.2s;
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .feedback {
+        min-height: 66px;
+        padding: 12px;
+        border-radius: 12px;
+        font-weight: 750;
+      }
+      .feedback.good {
+        color: #8ff0b6;
+        background: #62d39418;
+      }
+      .feedback.bad {
+        color: #ffaaaa;
+        background: #ff7b7b18;
+      }
+      .notice {
+        padding: 14px;
+        border-left: 3px solid var(--accent);
+        background: #ffffff08;
+        text-align: left;
+      }
+      a {
+        color: var(--accent);
+      }
+      footer {
+        padding: 22px 4px;
+        color: var(--muted);
+        font-size: 14px;
+        text-align: center;
+      }
+      @media (max-width: 720px) {
+        .lesson,
+        .eventbox {
+          grid-template-columns: 1fr;
+        }
+        .wrap {
+          padding: 14px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <header>
+        <div class="brand">TREX-DM</div>
+        <div class="pill">MISIÓN · CANFRANC</div>
+      </header>
+
+      <section id="intro" class="card center">
+        <div class="small">CAZADORES DE MATERIA OSCURA</div>
+        <h1>¿Encontrarías<br />un WIMP?</h1>
+        <p>
+          Entrena tu ojo para buscar señales diminutas en una cámara escondida
+          bajo una montaña.
+        </p>
+        <button class="primary" id="start" type="button">EMPEZAR</button>
+      </section>
+
+      <section id="lesson" class="card hidden">
+        <div class="small">ANTES DE EMPEZAR</div>
+        <h2>¿Cómo busca TREX-DM?</h2>
+        <div class="lesson">
+          <div>
+            <h3>Un detector lleno de gas</h3>
+            <p>
+              Los WIMPs son partículas hipotéticas que podrían formar parte de
+              la materia oscura. TREX-DM tiene una cámara con gas de neón o
+              argón: si uno de los WIMPs chocara con el núcleo de un átomo del
+              gas, podría dejar una señal muy pequeña. El detector la amplifica,
+              como cuando subimos el volumen de un sonido bajito.
+            </p>
+            <p>
+              El detector intenta medir esa señal y separarla de otras cosas que
+              también pueden dejar huellas. Está bajo tierra para que lleguen
+              menos partículas del exterior.
+            </p>
+          </div>
+          <div
+            class="detector"
+            role="img"
+            aria-label="Esquema de una cámara con gas donde podría producirse una señal diminuta"
+          >
+            <div class="gas">
+              GAS<br /><span class="small">neón o argón</span><br /><span
+                aria-hidden="true"
+                >✦</span
+              >
+            </div>
+          </div>
+        </div>
+        <p class="notice">
+          <b>Una pista:</b> todavía no se ha confirmado que existan WIMPs. Aquí
+          practicarás con huellas inventadas para aprender a buscar candidatos;
+          ninguna huella por sí sola demuestra que haya aparecido uno.
+        </p>
+        <p class="center">
+          <button class="primary" id="trainStart" type="button">
+            APRENDER A MIRAR
+          </button>
+        </p>
+        <p class="small center">
+          <a
+            href="https://lsc-canfranc.es/trex-dm-exp-10-2017/"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Conoce TREX-DM en la web del Laboratorio de Canfranc</a
+          >
+        </p>
+      </section>
+
+      <section id="training" class="card hidden">
+        <div class="eventbox">
+          <div class="canvasWrap">
+            <canvas
+              id="trainingCanvas"
+              width="500"
+              height="500"
+              aria-label="Ejemplo didáctico de una huella compacta"
+            ></canvas>
+          </div>
+          <div>
+            <div class="small">ENTRENAMIENTO · HUELLAS SIMULADAS</div>
+            <h2>Busca una señal pequeña</h2>
+            <p>
+              Una red neuronal aprende con ejemplos. Tú también: fíjate en estas
+              huellas pequeñas y compactas, que podrían parecerse a una señal
+              muy débil.
+            </p>
+            <div class="progress"><div id="trainProgress"></div></div>
+            <p id="trainCount" aria-live="polite"></p>
+            <button class="primary" id="nextExample" type="button">
+              SIGUIENTE EJEMPLO
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="game" class="card hidden">
+        <div class="eventbox">
+          <div class="canvasWrap">
+            <canvas
+              id="eventCanvas"
+              width="500"
+              height="500"
+              aria-label="Huella simulada del detector"
+            ></canvas>
+          </div>
+          <div>
+            <div class="small">
+              MISIÓN · EVENTO <span id="eventNumber">1</span>/10
+            </div>
+            <h2>¿Es un candidato?</h2>
+            <p>
+              ¿La huella es pequeña y compacta? Decide si podría ser una señal
+              interesante o si parece más bien fondo.
+            </p>
+            <div class="row">
+              <button class="yes" id="candidate" type="button">
+                PODRÍA SER SEÑAL
+              </button>
+              <button class="no" id="background" type="button">
+                PARECE FONDO
+              </button>
+            </div>
+            <div
+              id="feedback"
+              class="feedback"
+              role="status"
+              aria-live="polite"
+            ></div>
+            <div class="progress"><div id="gameProgress"></div></div>
+            <button class="primary hidden" id="continue" type="button">
+              SIGUIENTE EVENTO
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="result" class="card center hidden">
+        <div class="small">MISIÓN COMPLETADA</div>
+        <h2 id="resultTitle">¡Buen trabajo, cazador!</h2>
+        <p id="resultText"></p>
+        <p class="notice">
+          En un experimento real, los investigadores estudian muchos eventos y
+          sus posibles explicaciones. Un candidato no es un descubrimiento: hay
+          que comprobar que el fondo no pueda explicarlo.
+        </p>
+        <button class="primary" id="again" type="button">JUGAR OTRA VEZ</button>
+        <p class="small"><a href="./">Ir a IAXO Event Hunter</a></p>
+      </section>
+      <footer>
+        Actividad educativa · Las huellas del juego son simuladas, no datos
+        reales de TREX-DM.
+      </footer>
+    </main>
+    <script>
+      "use strict";
+      const sections = ["intro", "lesson", "training", "game", "result"];
+      const show = (id) =>
+        sections.forEach((section) =>
+          document
+            .getElementById(section)
+            .classList.toggle("hidden", section !== id),
+        );
+      const trainEvents = [true, false, true, true, false];
+      const events = [
+        true,
+        false,
+        false,
+        true,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+      ];
+      let trainIndex = 0;
+      let eventIndex = 0;
+      let score = 0;
+      let answered = false;
+      const drawEvent = (canvas, compact, seed) => {
+        const ctx = canvas.getContext("2d");
+        const size = canvas.width;
+        ctx.clearRect(0, 0, size, size);
+        ctx.strokeStyle = "#173147";
+        ctx.lineWidth = 1;
+        for (let i = 50; i < size; i += 50) {
+          ctx.beginPath();
+          ctx.moveTo(i, 0);
+          ctx.lineTo(i, size);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(0, i);
+          ctx.lineTo(size, i);
+          ctx.stroke();
+        }
+        let state = seed >>> 0;
+        const random = () => {
+          state = (1664525 * state + 1013904223) >>> 0;
+          return state / 4294967296;
+        };
+        const cx = 250 + (random() - 0.5) * 140;
+        const cy = 250 + (random() - 0.5) * 140;
+        const count = compact ? 14 : 55;
+        ctx.fillStyle = compact ? "#75f0c5" : "#ffd166";
+        for (let i = 0; i < count; i++) {
+          const spread = compact ? 21 : 90;
+          const x = cx + (random() - 0.5) * spread;
+          const y = cy + (random() - 0.5) * (compact ? spread : 18);
+          ctx.globalAlpha = 0.55 + random() * 0.45;
+          ctx.beginPath();
+          ctx.arc(
+            x,
+            y,
+            compact ? 3 + random() * 3 : 2 + random() * 2,
+            0,
+            Math.PI * 2,
+          );
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = "#b9c7da";
+        ctx.font = "16px system-ui";
+        ctx.fillText("LECTURA DEL DETECTOR", 18, 28);
+      };
+      const showTrainingEvent = () => {
+        drawEvent(
+          document.getElementById("trainingCanvas"),
+          trainEvents[trainIndex],
+          42 + trainIndex * 91,
+        );
+        document.getElementById("trainProgress").style.width =
+          `${((trainIndex + 1) / trainEvents.length) * 100}%`;
+        document.getElementById("trainCount").textContent =
+          `Ejemplo ${trainIndex + 1} de ${trainEvents.length}`;
+      };
+      const showGameEvent = () => {
+        answered = false;
+        drawEvent(
+          document.getElementById("eventCanvas"),
+          events[eventIndex],
+          700 + eventIndex * 117,
+        );
+        document.getElementById("eventNumber").textContent = String(
+          eventIndex + 1,
+        );
+        document.getElementById("gameProgress").style.width =
+          `${(eventIndex / events.length) * 100}%`;
+        document.getElementById("feedback").textContent = "";
+        document.getElementById("feedback").className = "feedback";
+        document.getElementById("continue").classList.add("hidden");
+        document.getElementById("candidate").disabled = false;
+        document.getElementById("background").disabled = false;
+      };
+      document
+        .getElementById("start")
+        .addEventListener("click", () => show("lesson"));
+      document.getElementById("trainStart").addEventListener("click", () => {
+        trainIndex = 0;
+        show("training");
+        showTrainingEvent();
+      });
+      document.getElementById("nextExample").addEventListener("click", () => {
+        trainIndex++;
+        if (trainIndex >= trainEvents.length) {
+          eventIndex = 0;
+          score = 0;
+          show("game");
+          showGameEvent();
+        } else showTrainingEvent();
+      });
+      const answer = (isCandidate) => {
+        if (answered) return;
+        answered = true;
+        const correct = isCandidate === events[eventIndex];
+        if (correct) score++;
+        const feedback = document.getElementById("feedback");
+        feedback.textContent = correct
+          ? events[eventIndex]
+            ? "¡Bien visto! Es una huella candidata."
+            : "¡Bien visto! Esta huella parece fondo."
+          : events[eventIndex]
+            ? "Esta huella compacta podría ser una candidata."
+            : "Esta huella extendida parece más bien fondo.";
+        feedback.classList.add(correct ? "good" : "bad");
+        document.getElementById("candidate").disabled = true;
+        document.getElementById("background").disabled = true;
+        document.getElementById("gameProgress").style.width =
+          `${((eventIndex + 1) / events.length) * 100}%`;
+        document.getElementById("continue").classList.remove("hidden");
+      };
+      document
+        .getElementById("candidate")
+        .addEventListener("click", () => answer(true));
+      document
+        .getElementById("background")
+        .addEventListener("click", () => answer(false));
+      document.getElementById("continue").addEventListener("click", () => {
+        eventIndex++;
+        if (eventIndex >= events.length) {
+          document.getElementById("resultTitle").textContent =
+            `${score} de ${events.length} aciertos`;
+          document.getElementById("resultText").textContent =
+            score >= 7
+              ? "Has aprendido a reconocer huellas candidatas. En la vida real, todavía habría que estudiar muchas más señales y descartar el fondo."
+              : "¡Misión cumplida! Distinguir señales diminutas del fondo es difícil: por eso hacen falta detectores cuidadosos y muchas comprobaciones.";
+          show("result");
+        } else showGameEvent();
+      });
+      document
+        .getElementById("again")
+        .addEventListener("click", () => show("intro"));
+      drawEvent(document.getElementById("trainingCanvas"), true, 42);
+      drawEvent(document.getElementById("eventCanvas"), true, 700);
+    </script>
+  </body>
+</html>
