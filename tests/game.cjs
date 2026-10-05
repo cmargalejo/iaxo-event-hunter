@@ -70,14 +70,14 @@ async function playRound(
   await page.locator("#intro").waitFor({ state: "visible" });
   await page.getByRole("button", { name: "EMPEZAR", exact: true }).click();
   await page.locator("#backgroundIntro").waitFor({ state: "visible" });
-  await page.getByRole("heading", { name: "¿Qué es el spot?" }).waitFor();
+  await page.getByRole("heading", { name: "¿Qué es el foco?" }).waitFor();
   assert.match(
     await page.locator(".opticsLesson").innerText(),
-    /relación señal\/ruido/,
+    /punto pequeño/,
   );
   assert.match(
     await page.locator(".opticsLesson").innerText(),
-    /no confirma axiones/,
+    /por casualidad/,
   );
   assert.equal(
     await page.locator(".opticsDiagram svg").getAttribute("role"),

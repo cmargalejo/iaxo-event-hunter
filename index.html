@@ -197,7 +197,7 @@
         border-radius: 8px;
         aspect-ratio: 1;
       }
-      .spot {
+      .focusArea {
         position: absolute;
         width: 33.333%;
         height: 33.333%;
@@ -351,7 +351,7 @@
         stroke-width: 6;
         stroke-linecap: round;
       }
-      .opticsSpot {
+      .opticsFocus {
         fill: #ffd16633;
         stroke: var(--gold);
         stroke-width: 2;
@@ -496,21 +496,18 @@
           <section class="opticsLesson" aria-labelledby="opticsTitle">
             <div>
               <div class="small">UNA PISTA MÁS: LA ÓPTICA</div>
-              <h3 id="opticsTitle">¿Qué es el spot?</h3>
+              <h3 id="opticsTitle">¿Qué es el foco?</h3>
               <p>
-                Si un axión del Sol se convierte en rayo X dentro del imán, el
-                fotón sigue llegando desde la dirección del Sol. Los espejos de
-                óptica usa espejos a incidencia rasante (con un ángulo muy
-                pequeño) para reflejar esos rayos X y concentrar la mayor parte
-                de la señal en una pequeña mancha del detector: el foco o
-                <b>spot</b>.
+                El telescopio recoge los rayos X que podrían ser la señal y
+                junta la mayor parte en un punto pequeño del detector. Ese punto
+                se llama <b>foco</b>.
               </p>
               <p>
-                Al buscar en menos superficie esperamos menos fondo aleatorio:
-                mejora la relación señal/ruido. Fuera del spot, una huella es
-                menos compatible con la señal focalizada. El fondo también puede
-                caer dentro, así que el spot selecciona candidatos, no confirma
-                axiones.
+                En un espacio pequeño esperamos encontrar menos eventos de
+                fondo, es decir, cosas que no son la señal que buscamos. Así es
+                más fácil encontrarla. A veces, uno de esos eventos cae en el
+                foco por casualidad; por eso miramos también su forma y su
+                energía.
               </p>
               <a
                 href="https://arxiv.org/abs/1401.3233"
@@ -527,7 +524,7 @@
                 aria-labelledby="diagramTitle diagramDescription"
               >
                 <title id="diagramTitle">
-                  La óptica concentra los rayos X en el spot
+                  El telescopio junta la señal en el foco
                 </title>
                 <desc id="diagramDescription">
                   Tres rayos X paralelos llegan desde el Sol, se reflejan en
@@ -544,7 +541,7 @@
                   d="M278 31 Q301 44 278 59 M278 99 Q301 114 278 128"
                 />
                 <rect
-                  class="opticsSpot"
+                  class="opticsFocus"
                   x="440"
                   y="61"
                   width="28"
@@ -557,11 +554,11 @@
                 <circle class="backgroundEvent" cx="451" cy="82" r="4" />
                 <text x="14" y="145">Sol</text>
                 <text x="237" y="151">espejos</text>
-                <text x="427" y="145">spot</text>
+                <text x="421" y="145">foco</text>
               </svg>
               <figcaption class="small">
-                Esquema: señal concentrada; el fondo puede aparecer en el spot
-                por azar.
+                Esquema: la señal se junta en el foco; el fondo también puede
+                aparecer allí.
               </figcaption>
             </figure>
           </section>
@@ -632,9 +629,9 @@
         <h2>Selecciona por posición</h2>
         <p>
           De los eventos que parecen rayos X, conserva los que están dentro del
-          <b>spot</b>.
+          <b>foco</b>.
         </p>
-        <div class="detector" id="detector"><div class="spot"></div></div>
+        <div class="detector" id="detector"><div class="focusArea"></div></div>
         <p>¿Cuántos de tus candidatos están dentro?</p>
         <button type="button" class="primary" id="resultButton">
           COMPARAR CON EL FONDO
@@ -655,7 +652,7 @@
           </div>
           <div class="stat">
             <span>Análisis correcto</span><b id="inside"></b
-            ><small>eventos en el spot</small>
+            ><small>eventos en el foco</small>
           </div>
         </div>
         <div class="funnel" style="max-width: 480px">
@@ -666,7 +663,7 @@
           <div class="arrowDown">↓ <span class="small">FORMA</span></div>
           <div class="funnelBox"><b id="funnelShape">—</b>parecen rayos X</div>
           <div class="arrowDown">↓ <span class="small">POSICIÓN</span></div>
-          <div class="funnelBox"><b id="funnelPos">—</b>están en el spot</div>
+          <div class="funnelBox"><b id="funnelPos">—</b>están en el foco</div>
           <div class="arrowDown">↓ <span class="small">ENERGÍA</span></div>
           <div class="funnelBox">
             <b id="funnelEnergy">—</b
@@ -677,7 +674,7 @@
         </div>
 
         <div class="card" style="margin-top: 18px; background: #ffffff08">
-          <div class="small">ENERGÍA DE TUS CANDIDATOS EN EL SPOT</div>
+          <div class="small">ENERGÍA DE TUS CANDIDATOS EN EL FOCO</div>
           <div class="canvasWrap" style="max-width: 760px; margin: 14px auto 0">
             <canvas
               id="finalEnergyCanvas"
@@ -728,7 +725,7 @@
               color: var(--muted);
             "
           >
-            Candidatos dentro del spot
+            Candidatos dentro del foco
           </div>
         </div>
         <p class="small" id="sessionText"></p>
@@ -746,7 +743,7 @@
         const TRAINING_COUNT = 6;
         const TEST_COUNT = 12;
         const FEEDBACK_DELAY_MS = 1200;
-        const SPOT_RADIUS = 10;
+        const FOCUS_RADIUS = 10;
 
         // Resolve all fixed DOM dependencies once, with a useful error if markup drifts.
         function requireElement(id) {
@@ -1097,18 +1094,18 @@
           });
         }
 
-        function insideSpot(event) {
-          return Math.hypot(event.x, event.y) <= SPOT_RADIUS;
+        function insideFocus(event) {
+          return Math.hypot(event.x, event.y) <= FOCUS_RADIUS;
         }
 
         function getAnalysis() {
           // Scores reflect the player's answers; the funnel shows the correct reference analysis.
           const xrays = game.events.filter((event) => event.isXray);
-          const candidates = xrays.filter(insideSpot);
+          const candidates = xrays.filter(insideFocus);
           const positionCorrect = game.events.reduce((count, event, index) => {
             if (!event.isXray) return count;
             return (
-              count + Number(game.positionKeep[index] === insideSpot(event))
+              count + Number(game.positionKeep[index] === insideFocus(event))
             );
           }, 0);
           return { xrays, candidates, positionCorrect };
@@ -1134,7 +1131,7 @@
           drawFinalEnergy(candidates);
           ui.conclusion.textContent = inside
             ? "Ahora compáralo con lo que puede producir el fondo por sí solo."
-            : "Esta vez no quedaron candidatos en el spot.";
+            : "Esta vez no quedaron candidatos en el foco.";
           renderBackgroundHist(inside);
         }
 
@@ -1213,7 +1210,7 @@
           if (!cand.length) {
             c.fillStyle = "#ffd166";
             c.font = "bold 18px system-ui";
-            c.fillText("Sin candidatos en el spot", W / 2 - 100, H / 2);
+            c.fillText("Sin candidatos en el foco", W / 2 - 100, H / 2);
           }
         }
 
