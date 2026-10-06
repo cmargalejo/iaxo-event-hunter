@@ -51,6 +51,8 @@ async function main() {
         await page.locator("#eventTotal").textContent(),
       );
       assert.ok(eventTotal >= 10 && eventTotal <= 14);
+      let candidateCount = 0;
+      let correctCount = 0;
       for (let i = 0; i < eventTotal; i++) {
         assert.equal(
           await page.locator("#eventNumber").textContent(),
@@ -60,8 +62,16 @@ async function main() {
           .locator("#eventCanvas")
           .getAttribute("aria-label");
         shapes.add(shape);
-        const answer = page.locator(i % 2 ? "#background" : "#candidate");
+        const isCandidate = i % 2 === 0;
+        if (isCandidate) candidateCount++;
+        const answer = page.locator(isCandidate ? "#candidate" : "#background");
         await answer.click();
+        if (
+          (await page.locator("#feedback").getAttribute("class")).includes(
+            "good",
+          )
+        )
+          correctCount++;
         assert.notEqual(
           (await page.locator("#feedback").innerText()).trim(),
           "",
@@ -69,6 +79,22 @@ async function main() {
         await page.getByRole("button", { name: "SIGUIENTE EVENTO" }).click();
       }
       assert.ok(shapes.size >= 5, "A round should contain varied event shapes");
+      assert.equal(
+        await page.locator("#roundEventCount").textContent(),
+        String(eventTotal),
+      );
+      assert.equal(
+        await page.locator("#roundCandidateCount").textContent(),
+        String(candidateCount),
+      );
+      assert.equal(
+        await page.locator("#roundCorrectCount").textContent(),
+        `${correctCount}/${eventTotal}`,
+      );
+      assert.match(
+        await page.locator("#roundSummary").innerText(),
+        /partida simulada/i,
+      );
       for (const [index, classification] of [
         "background",
         "hint",

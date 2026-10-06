@@ -238,6 +238,23 @@
         display: block;
         font-size: 26px;
       }
+      .roundResults {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin: 16px 0 26px;
+      }
+      .roundResults > div {
+        padding: 14px;
+        border: 1px solid #ffffff20;
+        border-radius: 14px;
+        background: #ffffff08;
+      }
+      .roundResults b {
+        display: block;
+        margin-top: 6px;
+        font-size: clamp(22px, 4vw, 30px);
+      }
       .eventExamples {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -274,6 +291,9 @@
       @media (max-width: 720px) {
         .lesson,
         .eventbox {
+          grid-template-columns: 1fr;
+        }
+        .roundResults {
           grid-template-columns: 1fr;
         }
         .wrap {
@@ -482,6 +502,34 @@
       </section>
 
       <section id="evidence" class="card hidden">
+        <div
+          id="roundSummary"
+          class="roundSummary"
+          aria-labelledby="roundSummaryTitle"
+        >
+          <div class="small">RESULTADOS DE TU PARTIDA</div>
+          <h2 id="roundSummaryTitle">Así clasificaste los eventos</h2>
+          <div class="roundResults">
+            <div>
+              <span class="small">Eventos analizados</span
+              ><b id="roundEventCount"></b>
+            </div>
+            <div>
+              <span class="small">Marcados como candidatos</span
+              ><b id="roundCandidateCount"></b>
+            </div>
+            <div>
+              <span class="small">Clasificaciones correctas</span
+              ><b id="roundCorrectCount"></b>
+            </div>
+          </div>
+          <p class="small">
+            Este resumen corresponde a tus respuestas en una partida simulada.
+            Un candidato no significa que hayas encontrado un WIMP.
+          </p>
+        </div>
+        <hr />
+        <p class="small">AHORA, PRACTICA CÓMO SE INTERPRETAN LOS RECUENTOS</p>
         <div class="small">
           CUADERNO DE INVESTIGACIÓN · CASO <span id="caseNumber">1</span>/3
         </div>
@@ -628,6 +676,7 @@
       let eventIndex = 0;
       let caseIndex = 0;
       let score = 0;
+      let candidateChoices = 0;
       let caseScore = 0;
       let discoveryDecisionCorrect = false;
       let answered = false;
@@ -827,6 +876,15 @@
           button.disabled = false;
         });
       };
+      const showRoundResults = () => {
+        document.getElementById("roundEventCount").textContent = String(
+          events.length,
+        );
+        document.getElementById("roundCandidateCount").textContent =
+          String(candidateChoices);
+        document.getElementById("roundCorrectCount").textContent =
+          `${score}/${events.length}`;
+      };
       document
         .getElementById("start")
         .addEventListener("click", () => show("lesson"));
@@ -838,6 +896,7 @@
         .addEventListener("click", () => {
           trainIndex = 0;
           discoveryDecisionCorrect = false;
+          candidateChoices = 0;
           document.getElementById("announce").disabled = false;
           document.getElementById("waitForProof").disabled = false;
           document.getElementById("decisionFeedback").textContent = "";
@@ -851,6 +910,7 @@
         if (trainIndex >= trainEvents.length) {
           eventIndex = 0;
           score = 0;
+          candidateChoices = 0;
           events = makeEvents();
           show("game");
           showGameEvent();
@@ -859,6 +919,7 @@
       const answer = (isCandidate) => {
         if (answered) return;
         answered = true;
+        if (isCandidate) candidateChoices++;
         const candidateLike = eventTypes[events[eventIndex].type].candidate;
         const correct = isCandidate === candidateLike;
         if (correct) score++;
@@ -888,6 +949,7 @@
         if (eventIndex >= events.length) {
           caseIndex = 0;
           caseScore = 0;
+          showRoundResults();
           show("evidence");
           showCase();
         } else showGameEvent();
