@@ -214,6 +214,30 @@
         background: #ffffff08;
         text-align: left;
       }
+      .choices {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin: 18px 0;
+      }
+      .choices button {
+        text-align: left;
+      }
+      .caseNumbers {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin: 18px 0;
+      }
+      .caseNumbers > div {
+        padding: 14px;
+        border-radius: 12px;
+        background: #ffffff0c;
+      }
+      .caseNumbers b {
+        display: block;
+        font-size: 26px;
+      }
       a {
         color: var(--accent);
       }
@@ -350,12 +374,15 @@
           </div>
           <div>
             <div class="small">
-              MISIÓN · EVENTO <span id="eventNumber">1</span>/10
+              MISIÓN · EVENTO <span id="eventNumber">1</span>/<span
+                id="eventTotal"
+                >12</span
+              >
             </div>
             <h2>¿Es un candidato?</h2>
             <p>
-              ¿La huella es pequeña y compacta? Decide si podría ser una señal
-              interesante o si parece más bien fondo.
+              Cada evento puede dejar una huella distinta. Decide si parece un
+              candidato interesante o si parece más bien fondo.
             </p>
             <div class="row">
               <button class="yes" id="candidate" type="button">
@@ -379,8 +406,77 @@
         </div>
       </section>
 
+      <section id="evidence" class="card hidden">
+        <div class="small">
+          CUADERNO DE INVESTIGACIÓN · CASO <span id="caseNumber">1</span>/3
+        </div>
+        <h2 id="caseTitle">¿Qué nos dicen los datos?</h2>
+        <p id="caseDescription"></p>
+        <div class="caseNumbers">
+          <div>
+            <span class="small">Fondo que esperábamos</span
+            ><b id="expectedCount"></b><span class="small">eventos</span>
+          </div>
+          <div>
+            <span class="small">Candidatos observados</span
+            ><b id="observedCount"></b><span class="small">eventos</span>
+          </div>
+        </div>
+        <p>Elige la conclusión más cuidadosa:</p>
+        <div class="choices">
+          <button class="primary" data-conclusion="background" type="button">
+            Los datos encajan con el fondo esperado
+          </button>
+          <button class="primary" data-conclusion="hint" type="button">
+            Hay una pista interesante que debemos estudiar
+          </button>
+          <button class="primary" data-conclusion="discovery" type="button">
+            Ya hemos descubierto materia oscura
+          </button>
+        </div>
+        <div
+          id="caseFeedback"
+          class="feedback"
+          role="status"
+          aria-live="polite"
+        ></div>
+        <button class="primary hidden" id="nextCase" type="button">
+          SIGUIENTE CASO
+        </button>
+        <p class="small">
+          Cifras inventadas para el juego. No son datos ni resultados de
+          TREX-DM.
+        </p>
+      </section>
+
+      <section id="decision" class="card center hidden">
+        <div class="small">EL MOMENTO DE LA VERDAD</div>
+        <h2>¿Anunciamos el descubrimiento?</h2>
+        <p>
+          Has visto desde datos normales hasta un exceso muy llamativo. ¿Basta
+          eso para asegurar que encontramos materia oscura?
+        </p>
+        <div class="row">
+          <button class="yes" id="announce" type="button">
+            SÍ, ¡LO HEMOS DESCUBIERTO!
+          </button>
+          <button class="no" id="waitForProof" type="button">
+            AÚN NO: HAY QUE COMPROBARLO
+          </button>
+        </div>
+        <div
+          id="decisionFeedback"
+          class="feedback"
+          role="status"
+          aria-live="polite"
+        ></div>
+        <button class="primary hidden" id="finishDecision" type="button">
+          VER RESULTADO
+        </button>
+      </section>
+
       <section id="result" class="card center hidden">
-        <div class="small">MISIÓN COMPLETADA</div>
+        <div class="small">INVESTIGACIÓN COMPLETADA</div>
         <h2 id="resultTitle">¡Buen trabajo, cazador!</h2>
         <p id="resultText"></p>
         <p class="notice">
@@ -398,31 +494,69 @@
     </main>
     <script>
       "use strict";
-      const sections = ["intro", "lesson", "training", "game", "result"];
+      const sections = [
+        "intro",
+        "lesson",
+        "training",
+        "game",
+        "evidence",
+        "decision",
+        "result",
+      ];
       const show = (id) =>
         sections.forEach((section) =>
           document
             .getElementById(section)
             .classList.toggle("hidden", section !== id),
         );
-      const trainEvents = [true, false, true, true, false];
-      const events = [
-        true,
-        false,
-        false,
-        true,
-        false,
-        true,
-        false,
-        false,
-        true,
-        false,
+      const eventTypes = {
+        compact: { label: "nube compacta", candidate: true },
+        recoil: { label: "huella corta", candidate: true },
+        long: { label: "trazo largo", candidate: false },
+        diffuse: { label: "señal dispersa", candidate: false },
+        multiple: { label: "varios grupos", candidate: false },
+        edge: { label: "huella junto al borde", candidate: false },
+      };
+      const trainEvents = [
+        "compact",
+        "long",
+        "recoil",
+        "diffuse",
+        "multiple",
+        "edge",
+      ];
+      const cases = [
+        {
+          expected: "8–12",
+          observed: 10,
+          correct: "background",
+          explanation:
+            "El recuento observado está dentro de lo que esperábamos del fondo. No hace falta invocar materia oscura.",
+        },
+        {
+          expected: "8–12",
+          observed: 15,
+          correct: "hint",
+          explanation:
+            "Hay un exceso pequeño que merece estudiarse. También podría deberse a una fluctuación o a una fuente de fondo que aún no conocemos.",
+        },
+        {
+          expected: "8–12",
+          observed: 31,
+          correct: "hint",
+          explanation:
+            "Es un exceso llamativo: sería una pista importante, pero todavía habría que buscar otras causas y repetir las comprobaciones.",
+        },
       ];
       let trainIndex = 0;
       let eventIndex = 0;
+      let caseIndex = 0;
       let score = 0;
+      let caseScore = 0;
+      let discoveryDecisionCorrect = false;
       let answered = false;
-      const drawEvent = (canvas, compact, seed) => {
+      let events = [];
+      const drawEvent = (canvas, type, seed) => {
         const ctx = canvas.getContext("2d");
         const size = canvas.width;
         ctx.clearRect(0, 0, size, size);
@@ -443,50 +577,117 @@
           state = (1664525 * state + 1013904223) >>> 0;
           return state / 4294967296;
         };
-        const cx = 250 + (random() - 0.5) * 140;
-        const cy = 250 + (random() - 0.5) * 140;
-        const count = compact ? 14 : 55;
-        ctx.fillStyle = compact ? "#75f0c5" : "#ffd166";
-        for (let i = 0; i < count; i++) {
-          const spread = compact ? 21 : 90;
-          const x = cx + (random() - 0.5) * spread;
-          const y = cy + (random() - 0.5) * (compact ? spread : 18);
+        const margin = type === "edge" ? 24 : 100;
+        const cx = margin + random() * (size - margin * 2);
+        const cy = margin + random() * (size - margin * 2);
+        const dot = (x, y, radius = 3) => {
           ctx.globalAlpha = 0.55 + random() * 0.45;
           ctx.beginPath();
-          ctx.arc(
-            x,
-            y,
-            compact ? 3 + random() * 3 : 2 + random() * 2,
-            0,
-            Math.PI * 2,
-          );
+          ctx.arc(x, y, radius * (0.7 + random() * 0.7), 0, Math.PI * 2);
           ctx.fill();
-        }
+        };
+        const cloud = (x, y, count, spreadX, spreadY) => {
+          for (let i = 0; i < count; i++)
+            dot(x + (random() - 0.5) * spreadX, y + (random() - 0.5) * spreadY);
+        };
+        ctx.fillStyle = "#75f0c5";
+        if (type === "compact") cloud(cx, cy, 20, 34, 30);
+        else if (type === "recoil") {
+          const angle = random() * Math.PI;
+          for (let i = 0; i < 15; i++) {
+            const distance = (i - 7) * 3.3;
+            dot(
+              cx + Math.cos(angle) * distance,
+              cy + Math.sin(angle) * distance,
+              3.2,
+            );
+          }
+          cloud(
+            cx + Math.cos(angle) * 25,
+            cy + Math.sin(angle) * 25,
+            4,
+            12,
+            12,
+          );
+        } else if (type === "long") {
+          const angle = random() * Math.PI;
+          for (let i = 0; i < 48; i++) {
+            const distance = (i - 24) * 4;
+            dot(
+              cx + Math.cos(angle) * distance,
+              cy + Math.sin(angle) * distance,
+              2.5,
+            );
+          }
+        } else if (type === "diffuse") cloud(cx, cy, 62, 160, 126);
+        else if (type === "multiple") {
+          cloud(cx - 43, cy - 28, 18, 40, 34);
+          cloud(cx + 42, cy + 28, 18, 38, 38);
+          cloud(cx + 8, cy - 48, 14, 34, 32);
+        } else cloud(cx, cy, 36, 42, 62);
         ctx.globalAlpha = 1;
         ctx.fillStyle = "#b9c7da";
         ctx.font = "16px system-ui";
         ctx.fillText("LECTURA DEL DETECTOR", 18, 28);
+        canvas.setAttribute(
+          "aria-label",
+          `Lectura simulada: ${eventTypes[type].label}`,
+        );
       };
       const showTrainingEvent = () => {
+        const type = trainEvents[trainIndex];
         drawEvent(
           document.getElementById("trainingCanvas"),
-          trainEvents[trainIndex],
+          type,
           42 + trainIndex * 91,
         );
         document.getElementById("trainProgress").style.width =
           `${((trainIndex + 1) / trainEvents.length) * 100}%`;
         document.getElementById("trainCount").textContent =
-          `Ejemplo ${trainIndex + 1} de ${trainEvents.length}`;
+          `Ejemplo ${trainIndex + 1} de ${trainEvents.length}: ${eventTypes[type].label}. ${eventTypes[type].candidate ? "Puede ser una huella candidata." : "Parece una huella de fondo."}`;
+      };
+      const makeEvents = () => {
+        const deck = [
+          "compact",
+          "recoil",
+          "long",
+          "diffuse",
+          "multiple",
+          "edge",
+        ];
+        const pool = [
+          "compact",
+          "recoil",
+          "long",
+          "diffuse",
+          "multiple",
+          "edge",
+        ];
+        const extras = 4 + Math.floor(Math.random() * 5);
+        for (let i = 0; i < extras; i++)
+          deck.push(pool[Math.floor(Math.random() * pool.length)]);
+        for (let i = deck.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [deck[i], deck[j]] = [deck[j], deck[i]];
+        }
+        return deck.map((type) => ({
+          type,
+          variant: Math.floor(Math.random() * 1e9),
+        }));
       };
       const showGameEvent = () => {
         answered = false;
+        const event = events[eventIndex];
         drawEvent(
           document.getElementById("eventCanvas"),
-          events[eventIndex],
-          700 + eventIndex * 117,
+          event.type,
+          event.variant,
         );
         document.getElementById("eventNumber").textContent = String(
           eventIndex + 1,
+        );
+        document.getElementById("eventTotal").textContent = String(
+          events.length,
         );
         document.getElementById("gameProgress").style.width =
           `${(eventIndex / events.length) * 100}%`;
@@ -496,11 +697,43 @@
         document.getElementById("candidate").disabled = false;
         document.getElementById("background").disabled = false;
       };
+      const showCase = () => {
+        const item = cases[caseIndex];
+        document.getElementById("caseNumber").textContent = String(
+          caseIndex + 1,
+        );
+        document.getElementById("caseTitle").textContent = [
+          "Una noche tranquila",
+          "Una pequeña sorpresa",
+          "¡Un exceso enorme!",
+        ][caseIndex];
+        document.getElementById("caseDescription").textContent = [
+          "Primero calculamos cuántos eventos de fondo podríamos ver y lo comparamos con los candidatos encontrados.",
+          "En otra toma aparecen algunos candidatos más de lo esperado. ¿Es una pista o sólo una casualidad?",
+          "Esta vez aparecen muchos más candidatos de lo habitual. Es emocionante, pero toca pensar como una científica o un científico.",
+        ][caseIndex];
+        document.getElementById("expectedCount").textContent = item.expected;
+        document.getElementById("observedCount").textContent = String(
+          item.observed,
+        );
+        document.getElementById("caseFeedback").textContent = "";
+        document.getElementById("caseFeedback").className = "feedback";
+        document.getElementById("nextCase").classList.add("hidden");
+        document.querySelectorAll("[data-conclusion]").forEach((button) => {
+          button.disabled = false;
+        });
+      };
       document
         .getElementById("start")
         .addEventListener("click", () => show("lesson"));
       document.getElementById("trainStart").addEventListener("click", () => {
         trainIndex = 0;
+        discoveryDecisionCorrect = false;
+        document.getElementById("announce").disabled = false;
+        document.getElementById("waitForProof").disabled = false;
+        document.getElementById("decisionFeedback").textContent = "";
+        document.getElementById("decisionFeedback").className = "feedback";
+        document.getElementById("finishDecision").classList.add("hidden");
         show("training");
         showTrainingEvent();
       });
@@ -509,6 +742,7 @@
         if (trainIndex >= trainEvents.length) {
           eventIndex = 0;
           score = 0;
+          events = makeEvents();
           show("game");
           showGameEvent();
         } else showTrainingEvent();
@@ -516,16 +750,17 @@
       const answer = (isCandidate) => {
         if (answered) return;
         answered = true;
-        const correct = isCandidate === events[eventIndex];
+        const candidateLike = eventTypes[events[eventIndex].type].candidate;
+        const correct = isCandidate === candidateLike;
         if (correct) score++;
         const feedback = document.getElementById("feedback");
         feedback.textContent = correct
-          ? events[eventIndex]
-            ? "¡Bien visto! Es una huella candidata."
-            : "¡Bien visto! Esta huella parece fondo."
-          : events[eventIndex]
-            ? "Esta huella compacta podría ser una candidata."
-            : "Esta huella extendida parece más bien fondo.";
+          ? candidateLike
+            ? "¡Bien vista! Tiene forma de candidata; eso aún no demuestra que sea un WIMP."
+            : "¡Bien vista! Parece una huella de fondo."
+          : candidateLike
+            ? "Esta huella corta o compacta también podía ser candidata."
+            : "Esta huella parece más bien fondo: puede ser dispersa, larga, múltiple o estar en el borde.";
         feedback.classList.add(correct ? "good" : "bad");
         document.getElementById("candidate").disabled = true;
         document.getElementById("background").disabled = true;
@@ -542,20 +777,64 @@
       document.getElementById("continue").addEventListener("click", () => {
         eventIndex++;
         if (eventIndex >= events.length) {
-          document.getElementById("resultTitle").textContent =
-            `${score} de ${events.length} aciertos`;
-          document.getElementById("resultText").textContent =
-            score >= 7
-              ? "Has aprendido a reconocer huellas candidatas. En la vida real, todavía habría que estudiar muchas más señales y descartar el fondo."
-              : "¡Misión cumplida! Distinguir señales diminutas del fondo es difícil: por eso hacen falta detectores cuidadosos y muchas comprobaciones.";
-          show("result");
+          caseIndex = 0;
+          caseScore = 0;
+          show("evidence");
+          showCase();
         } else showGameEvent();
       });
+      document.querySelectorAll("[data-conclusion]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const item = cases[caseIndex];
+          const correct = button.dataset.conclusion === item.correct;
+          if (correct) caseScore++;
+          const feedback = document.getElementById("caseFeedback");
+          feedback.textContent = `${correct ? "¡Bien razonado! " : "Pista: "}${item.explanation}`;
+          feedback.classList.add(correct ? "good" : "bad");
+          document.querySelectorAll("[data-conclusion]").forEach((choice) => {
+            choice.disabled = true;
+          });
+          document.getElementById("nextCase").classList.remove("hidden");
+        });
+      });
+      document.getElementById("nextCase").addEventListener("click", () => {
+        caseIndex++;
+        if (caseIndex >= cases.length) show("decision");
+        else showCase();
+      });
+      const decideDiscovery = (announce) => {
+        discoveryDecisionCorrect = !announce;
+        const feedback = document.getElementById("decisionFeedback");
+        feedback.textContent = announce
+          ? "¡Alto ahí, detective! Hasta un exceso grande podría tener otra explicación. Hay que comprobar el fondo y repetir el resultado antes de anunciar un descubrimiento."
+          : "¡Buena decisión! Incluso una pista muy llamativa necesita comprobaciones: hay que descartar el fondo y confirmar que el resultado se repite.";
+        feedback.classList.add(announce ? "bad" : "good");
+        document.getElementById("announce").disabled = true;
+        document.getElementById("waitForProof").disabled = true;
+        document.getElementById("finishDecision").classList.remove("hidden");
+      };
+      document
+        .getElementById("announce")
+        .addEventListener("click", () => decideDiscovery(true));
+      document
+        .getElementById("waitForProof")
+        .addEventListener("click", () => decideDiscovery(false));
+      document
+        .getElementById("finishDecision")
+        .addEventListener("click", () => {
+          const total = score + caseScore + Number(discoveryDecisionCorrect);
+          const maximum = events.length + cases.length + 1;
+          document.getElementById("resultTitle").textContent =
+            `${total} de ${maximum} decisiones acertadas`;
+          document.getElementById("resultText").textContent =
+            `Has clasificado ${score} de ${events.length} huellas y razonado bien ${caseScore} de ${cases.length} casos. En este juego no se ha descubierto materia oscura: has practicado cómo decidir qué datos merecen más investigación.`;
+          show("result");
+        });
       document
         .getElementById("again")
         .addEventListener("click", () => show("intro"));
-      drawEvent(document.getElementById("trainingCanvas"), true, 42);
-      drawEvent(document.getElementById("eventCanvas"), true, 700);
+      drawEvent(document.getElementById("trainingCanvas"), "compact", 42);
+      drawEvent(document.getElementById("eventCanvas"), "compact", 700);
     </script>
   </body>
 </html>
