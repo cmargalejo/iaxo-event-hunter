@@ -23,11 +23,26 @@ async function main() {
         await page.locator("#lesson").innerText(),
         /Los WIMPs son partículas hipotéticas/,
       );
-      await page.getByRole("button", { name: "APRENDER A MIRAR" }).click();
+      await page.getByRole("button", { name: "VER LOS EVENTOS" }).click();
+      assert.equal(await page.locator("#backgroundIntro").isVisible(), true);
+      assert.equal(await page.locator(".eventExample canvas").count(), 6);
+      assert.match(
+        await page.locator("#backgroundIntro").innerText(),
+        /neutrones.*parecerse/i,
+      );
+      await page.getByRole("button", { name: "ENTRENAR", exact: true }).click();
       for (let i = 0; i < 6; i++) {
+        const examples = [
+          "retroceso compacto",
+          "trazo de electrón",
+          "rastro largo de muón",
+          "trazo denso de alfa",
+          "retroceso compacto de neutrón",
+          "varios depósitos",
+        ];
         assert.equal(
           await page.locator("#trainCount").textContent(),
-          `Ejemplo ${i + 1} de 6: ${["nube compacta", "trazo largo", "huella corta", "señal dispersa", "varios grupos", "huella junto al borde"][i]}. ${i === 0 || i === 2 ? "Puede ser una huella candidata." : "Parece una huella de fondo."}`,
+          `Ejemplo ${i + 1} de 6: ${examples[i]}. ${i === 0 || i === 4 ? "Puede ser una huella candidata." : "Parece una huella de fondo."}`,
         );
         await page.getByRole("button", { name: "SIGUIENTE EJEMPLO" }).click();
       }

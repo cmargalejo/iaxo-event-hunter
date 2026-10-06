@@ -238,6 +238,30 @@
         display: block;
         font-size: 26px;
       }
+      .eventExamples {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 14px;
+        margin: 22px 0;
+      }
+      .eventExample {
+        padding: 12px;
+        border: 1px solid #ffffff1f;
+        border-radius: 16px;
+        background: #ffffff08;
+      }
+      .eventExample canvas {
+        display: block;
+        width: 100%;
+        aspect-ratio: 1;
+        margin-bottom: 10px;
+        background: #02070d;
+        border-radius: 10px;
+      }
+      .eventExample b {
+        display: block;
+        margin-bottom: 4px;
+      }
       a {
         color: var(--accent);
       }
@@ -322,7 +346,7 @@
         </p>
         <p class="center">
           <button class="primary" id="trainStart" type="button">
-            APRENDER A MIRAR
+            VER LOS EVENTOS
           </button>
         </p>
         <p class="small center">
@@ -333,6 +357,56 @@
             >Conoce TREX-DM en la web del Laboratorio de Canfranc</a
           >
         </p>
+      </section>
+
+      <section id="backgroundIntro" class="card hidden center">
+        <div class="small">ANTES DE EMPEZAR</div>
+        <h2>¿Qué huellas podemos encontrar?</h2>
+        <p>
+          El color es el mismo para todos: lo que cambia es la forma. Algunas
+          huellas de fondo son fáciles de distinguir; otras, como las de
+          neutrones, pueden parecerse a una señal.
+        </p>
+        <div class="eventExamples">
+          <div class="eventExample">
+            <canvas id="exampleWimp" width="500" height="500"></canvas
+            ><b>POSIBLE WIMP</b>
+            <div class="small">golpe pequeño al núcleo</div>
+          </div>
+          <div class="eventExample">
+            <canvas id="exampleElectron" width="500" height="500"></canvas
+            ><b>ELECTRÓN</b>
+            <div class="small">puede venir de radiactividad</div>
+          </div>
+          <div class="eventExample">
+            <canvas id="exampleMuon" width="500" height="500"></canvas
+            ><b>MUÓN</b>
+            <div class="small">deja un trazo largo</div>
+          </div>
+          <div class="eventExample">
+            <canvas id="exampleAlpha" width="500" height="500"></canvas
+            ><b>ALFA</b>
+            <div class="small">un trazo corto y denso</div>
+          </div>
+          <div class="eventExample">
+            <canvas id="exampleNeutron" width="500" height="500"></canvas
+            ><b>NEUTRÓN</b>
+            <div class="small">puede imitar una señal WIMP</div>
+          </div>
+          <div class="eventExample">
+            <canvas id="exampleMultiple" width="500" height="500"></canvas
+            ><b>VARIOS GOLPES</b>
+            <div class="small">más de un depósito en el gas</div>
+          </div>
+        </div>
+        <p class="notice">
+          Un neutrón también puede golpear un núcleo y dejar una huella
+          compacta. Por eso una huella parecida a la señal es sólo una
+          candidata: hay que estudiar muchos eventos y otras pistas.
+        </p>
+        <button class="primary" id="trainStartButton" type="button">
+          ENTRENAR
+        </button>
       </section>
 
       <section id="training" class="card hidden">
@@ -349,9 +423,10 @@
             <div class="small">ENTRENAMIENTO · HUELLAS SIMULADAS</div>
             <h2>Busca una señal pequeña</h2>
             <p>
-              Una red neuronal aprende con ejemplos. Tú también: fíjate en estas
-              huellas pequeñas y compactas, que podrían parecerse a una señal
-              muy débil.
+              Una red neuronal aprende con ejemplos. Tú también: una señal
+              posible puede dejar un golpe pequeño en el gas. Los electrones,
+              muones y alfas hacen huellas distintas, pero un neutrón puede
+              parecerse mucho a un WIMP.
             </p>
             <div class="progress"><div id="trainProgress"></div></div>
             <p id="trainCount" aria-live="polite"></p>
@@ -497,6 +572,7 @@
       const sections = [
         "intro",
         "lesson",
+        "backgroundIntro",
         "training",
         "game",
         "evidence",
@@ -510,20 +586,20 @@
             .classList.toggle("hidden", section !== id),
         );
       const eventTypes = {
-        compact: { label: "nube compacta", candidate: true },
-        recoil: { label: "huella corta", candidate: true },
-        long: { label: "trazo largo", candidate: false },
-        diffuse: { label: "señal dispersa", candidate: false },
-        multiple: { label: "varios grupos", candidate: false },
-        edge: { label: "huella junto al borde", candidate: false },
+        wimp: { label: "retroceso compacto", candidate: true },
+        electron: { label: "trazo de electrón", candidate: false },
+        muon: { label: "rastro largo de muón", candidate: false },
+        alpha: { label: "trazo denso de alfa", candidate: false },
+        neutron: { label: "retroceso compacto de neutrón", candidate: true },
+        multiple: { label: "varios depósitos", candidate: false },
       };
       const trainEvents = [
-        "compact",
-        "long",
-        "recoil",
-        "diffuse",
+        "wimp",
+        "electron",
+        "muon",
+        "alpha",
+        "neutron",
         "multiple",
-        "edge",
       ];
       const cases = [
         {
@@ -577,9 +653,13 @@
           state = (1664525 * state + 1013904223) >>> 0;
           return state / 4294967296;
         };
-        const margin = type === "edge" ? 24 : 100;
-        const cx = margin + random() * (size - margin * 2);
-        const cy = margin + random() * (size - margin * 2);
+        const gaussian = () => {
+          const u = 1 - random();
+          const v = 1 - random();
+          return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+        };
+        const cx = 250 + (random() - 0.5) * 130;
+        const cy = 250 + (random() - 0.5) * 130;
         const dot = (x, y, radius = 3) => {
           ctx.globalAlpha = 0.55 + random() * 0.45;
           ctx.beginPath();
@@ -588,43 +668,67 @@
         };
         const cloud = (x, y, count, spreadX, spreadY) => {
           for (let i = 0; i < count; i++)
-            dot(x + (random() - 0.5) * spreadX, y + (random() - 0.5) * spreadY);
+            dot(x + gaussian() * spreadX, y + gaussian() * spreadY);
         };
         ctx.fillStyle = "#75f0c5";
-        if (type === "compact") cloud(cx, cy, 20, 34, 30);
-        else if (type === "recoil") {
+        if (type === "wimp" || type === "neutron") {
           const angle = random() * Math.PI;
-          for (let i = 0; i < 15; i++) {
-            const distance = (i - 7) * 3.3;
+          cloud(cx, cy, 34, 10 + random() * 4, 10 + random() * 4);
+          if (random() < 0.22) {
+            for (let i = 0; i < 5; i++) {
+              const distance = 30 + random() * 18;
+              dot(
+                cx + Math.cos(angle) * distance + gaussian() * 4,
+                cy + Math.sin(angle) * distance + gaussian() * 4,
+                2.5,
+              );
+            }
+          }
+        } else if (type === "electron") {
+          const angle = random() * Math.PI * 2;
+          const bend = random() * 18 + 8;
+          for (let i = 0; i < 58; i++) {
+            const t = (i - 29) * 3.2;
+            const sway = Math.sin(i / 5) * bend + gaussian() * 5;
             dot(
-              cx + Math.cos(angle) * distance,
-              cy + Math.sin(angle) * distance,
-              3.2,
+              cx + Math.cos(angle) * t - Math.sin(angle) * sway,
+              cy + Math.sin(angle) * t + Math.cos(angle) * sway,
+              3,
             );
           }
           cloud(
-            cx + Math.cos(angle) * 25,
-            cy + Math.sin(angle) * 25,
-            4,
-            12,
-            12,
+            cx + Math.cos(angle) * 105,
+            cy + Math.sin(angle) * 105,
+            14,
+            8,
+            8,
           );
-        } else if (type === "long") {
+        } else if (type === "muon") {
           const angle = random() * Math.PI;
-          for (let i = 0; i < 48; i++) {
-            const distance = (i - 24) * 4;
+          for (let i = 0; i < 70; i++) {
+            const distance = (i - 35) * 4.2;
             dot(
-              cx + Math.cos(angle) * distance,
-              cy + Math.sin(angle) * distance,
-              2.5,
+              cx + Math.cos(angle) * distance + gaussian() * 3,
+              cy + Math.sin(angle) * distance + gaussian() * 3,
+              2.7,
             );
           }
-        } else if (type === "diffuse") cloud(cx, cy, 62, 160, 126);
-        else if (type === "multiple") {
-          cloud(cx - 43, cy - 28, 18, 40, 34);
-          cloud(cx + 42, cy + 28, 18, 38, 38);
-          cloud(cx + 8, cy - 48, 14, 34, 32);
-        } else cloud(cx, cy, 36, 42, 62);
+        } else if (type === "alpha") {
+          const angle = random() * Math.PI;
+          for (let i = 0; i < 36; i++) {
+            const distance = (i - 18) * 3.3;
+            dot(
+              cx + Math.cos(angle) * distance + gaussian() * 9,
+              cy + Math.sin(angle) * distance + gaussian() * 9,
+              4.3,
+            );
+          }
+          cloud(cx + Math.cos(angle) * 55, cy + Math.sin(angle) * 55, 20, 7, 7);
+        } else {
+          cloud(cx - 42, cy - 26, 22, 12, 13);
+          cloud(cx + 44, cy + 29, 22, 13, 12);
+          cloud(cx + 12, cy - 48, 18, 11, 12);
+        }
         ctx.globalAlpha = 1;
         ctx.fillStyle = "#b9c7da";
         ctx.font = "16px system-ui";
@@ -648,20 +752,20 @@
       };
       const makeEvents = () => {
         const deck = [
-          "compact",
-          "recoil",
-          "long",
-          "diffuse",
+          "wimp",
+          "electron",
+          "muon",
+          "alpha",
+          "neutron",
           "multiple",
-          "edge",
         ];
         const pool = [
-          "compact",
-          "recoil",
-          "long",
-          "diffuse",
+          "wimp",
+          "electron",
+          "muon",
+          "alpha",
+          "neutron",
           "multiple",
-          "edge",
         ];
         const extras = 4 + Math.floor(Math.random() * 5);
         for (let i = 0; i < extras; i++)
@@ -726,17 +830,22 @@
       document
         .getElementById("start")
         .addEventListener("click", () => show("lesson"));
-      document.getElementById("trainStart").addEventListener("click", () => {
-        trainIndex = 0;
-        discoveryDecisionCorrect = false;
-        document.getElementById("announce").disabled = false;
-        document.getElementById("waitForProof").disabled = false;
-        document.getElementById("decisionFeedback").textContent = "";
-        document.getElementById("decisionFeedback").className = "feedback";
-        document.getElementById("finishDecision").classList.add("hidden");
-        show("training");
-        showTrainingEvent();
-      });
+      document
+        .getElementById("trainStart")
+        .addEventListener("click", () => show("backgroundIntro"));
+      document
+        .getElementById("trainStartButton")
+        .addEventListener("click", () => {
+          trainIndex = 0;
+          discoveryDecisionCorrect = false;
+          document.getElementById("announce").disabled = false;
+          document.getElementById("waitForProof").disabled = false;
+          document.getElementById("decisionFeedback").textContent = "";
+          document.getElementById("decisionFeedback").className = "feedback";
+          document.getElementById("finishDecision").classList.add("hidden");
+          show("training");
+          showTrainingEvent();
+        });
       document.getElementById("nextExample").addEventListener("click", () => {
         trainIndex++;
         if (trainIndex >= trainEvents.length) {
@@ -759,8 +868,8 @@
             ? "¡Bien vista! Tiene forma de candidata; eso aún no demuestra que sea un WIMP."
             : "¡Bien vista! Parece una huella de fondo."
           : candidateLike
-            ? "Esta huella corta o compacta también podía ser candidata."
-            : "Esta huella parece más bien fondo: puede ser dispersa, larga, múltiple o estar en el borde.";
+            ? "Esta huella corta o compacta también podría ser candidata; un neutrón puede parecerse mucho."
+            : "Esta huella parece más bien fondo: puede ser un trazo de electrón, un muón, un alfa o varios depósitos.";
         feedback.classList.add(correct ? "good" : "bad");
         document.getElementById("candidate").disabled = true;
         document.getElementById("background").disabled = true;
@@ -833,8 +942,18 @@
       document
         .getElementById("again")
         .addEventListener("click", () => show("intro"));
-      drawEvent(document.getElementById("trainingCanvas"), "compact", 42);
-      drawEvent(document.getElementById("eventCanvas"), "compact", 700);
+      drawEvent(document.getElementById("trainingCanvas"), "wimp", 42);
+      drawEvent(document.getElementById("eventCanvas"), "wimp", 700);
+      [
+        ["exampleWimp", "wimp"],
+        ["exampleElectron", "electron"],
+        ["exampleMuon", "muon"],
+        ["exampleAlpha", "alpha"],
+        ["exampleNeutron", "neutron"],
+        ["exampleMultiple", "multiple"],
+      ].forEach(([id, type], index) => {
+        drawEvent(document.getElementById(id), type, 200 + index * 83);
+      });
     </script>
   </body>
 </html>
