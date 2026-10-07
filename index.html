@@ -341,21 +341,14 @@
       .opticsRay {
         fill: none;
         stroke: var(--accent);
-        stroke-width: 3;
+        stroke-width: 4;
         stroke-linecap: round;
         stroke-linejoin: round;
       }
-      .opticsMirror {
-        fill: none;
-        stroke: #dce9ff;
-        stroke-width: 6;
-        stroke-linecap: round;
-      }
       .opticsFocus {
-        fill: #ffd16633;
+        fill: #ffd166;
         stroke: var(--gold);
-        stroke-width: 2;
-        stroke-dasharray: 4 3;
+        stroke-width: 3;
       }
       .backgroundEvent {
         fill: #a7b5c7;
@@ -523,46 +516,68 @@
             </div>
             <figure class="opticsDiagram">
               <svg
-                viewBox="0 0 520 160"
+                viewBox="0 0 520 190"
                 role="img"
                 aria-labelledby="diagramTitle diagramDescription"
               >
                 <title id="diagramTitle">
-                  El telescopio junta la señal en el foco
+                  Un dibujo sencillo de un telescopio que junta la señal
                 </title>
                 <desc id="diagramDescription">
-                  Tres rayos X paralelos llegan desde el Sol, se reflejan en
-                  espejos y convergen en el foco del detector. Los eventos de
-                  fondo pueden aparecer en cualquier zona.
+                  Unos rayos salen del Sol y entran en un telescopio con forma
+                  de tubo. Dentro, se juntan en un punto pequeño del detector.
+                  Algunos puntitos de fondo pueden aparecer alrededor.
                 </desc>
-                <circle cx="36" cy="79" r="17" fill="#ffd166" />
+                <g
+                  fill="none"
+                  stroke="#ffd166"
+                  stroke-linecap="round"
+                  stroke-width="4"
+                >
+                  <path
+                    d="M43 35v12 M43 143v12 M-4 97h12 M78 97h12 M10 64l9 8 M67 132l9 8 M10 132l9-8 M67 72l9-8"
+                  />
+                </g>
+                <circle cx="43" cy="97" r="27" fill="#ffd166" />
+                <circle cx="35" cy="91" r="2.5" fill="#17314f" />
+                <circle cx="51" cy="91" r="2.5" fill="#17314f" />
                 <path
-                  class="opticsRay"
-                  d="M65 43 H274 L451 78 M65 79 H451 M65 115 H274 L451 80"
+                  d="M35 103q8 9 16 0"
+                  fill="none"
+                  stroke="#17314f"
+                  stroke-linecap="round"
+                  stroke-width="2.5"
                 />
                 <path
-                  class="opticsMirror"
-                  d="M278 31 Q301 44 278 59 M278 99 Q301 114 278 128"
+                  d="M87 70L173 70L361 87M87 97H361M87 124L173 124L361 107"
+                  class="opticsRay"
+                />
+                <path
+                  d="M169 48Q165 48 168 54L363 79Q375 81 375 91V103Q375 113 363 115L168 140Q165 146 169 146L389 120Q397 119 397 111V83Q397 75 389 74Z"
+                  fill="#173c57"
+                  fill-opacity=".8"
+                  stroke="#dce9ff"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="5"
                 />
                 <rect
                   class="opticsFocus"
-                  x="440"
-                  y="61"
-                  width="28"
-                  height="36"
-                  rx="14"
+                  x="358"
+                  y="83"
+                  width="10"
+                  height="38"
+                  rx="5"
                 />
-                <path d="M475 49 V109" stroke="#7f93aa" stroke-width="4" />
-                <circle class="backgroundEvent" cx="415" cy="49" r="5" />
-                <circle class="backgroundEvent" cx="491" cy="129" r="5" />
-                <circle class="backgroundEvent" cx="451" cy="82" r="4" />
-                <text x="14" y="145">Sol</text>
-                <text x="237" y="151">espejos</text>
-                <text x="421" y="145">foco</text>
+                <circle class="backgroundEvent" cx="223" cy="65" r="5" />
+                <circle class="backgroundEvent" cx="294" cy="132" r="5" />
+                <circle class="backgroundEvent" cx="424" cy="62" r="5" />
+                <text x="28" y="179">Sol</text>
+                <text x="235" y="166">telescopio</text>
+                <text x="382" y="150">punto pequeño</text>
               </svg>
               <figcaption class="small">
-                Esquema: la señal se junta en el foco; el fondo también puede
-                aparecer allí.
+                El telescopio junta la señal en un punto pequeño.
               </figcaption>
             </figure>
           </section>
