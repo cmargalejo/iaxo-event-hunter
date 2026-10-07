@@ -26,6 +26,19 @@ async function main() {
       await page.getByRole("button", { name: "VER LOS EVENTOS" }).click();
       assert.equal(await page.locator("#backgroundIntro").isVisible(), true);
       assert.equal(await page.locator(".eventExample canvas").count(), 6);
+      const galleryGrid = await page
+        .locator(".eventExamples")
+        .evaluate((grid) => {
+          const style = getComputedStyle(grid);
+          return {
+            columns: style.gridTemplateColumns.split(" ").length,
+            rows: style.gridTemplateRows.split(" ").length,
+          };
+        });
+      assert.deepEqual(
+        galleryGrid,
+        width <= 720 ? { columns: 2, rows: 3 } : { columns: 3, rows: 2 },
+      );
       assert.match(
         await page.locator("#backgroundIntro").innerText(),
         /neutrones.*parecerse/i,
