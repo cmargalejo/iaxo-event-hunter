@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Cuatro minijuegos para explorar las pistas de la materia oscura."
+      content="Tres minijuegos para explorar las pistas de la materia oscura."
     />
     <title>Misterios de la materia oscura · CAPA</title>
     <style>
@@ -173,9 +173,6 @@
       }
       .gameCard:nth-child(3) .number {
         background: var(--gold);
-      }
-      .gameCard:nth-child(4) .number {
-        background: var(--green);
       }
       .gameCard strong {
         display: block;
@@ -371,112 +368,6 @@
         color: #93a8c0;
         font-size: 13px;
       }
-      .lensLayout {
-        display: grid;
-        gap: 18px;
-      }
-      .lensMatch {
-        display: grid;
-        grid-template-columns: minmax(180px, 0.8fr) minmax(0, 2fr);
-        gap: 18px;
-        align-items: stretch;
-      }
-      .lensReference,
-      .lensChoice {
-        padding: 16px;
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        background: var(--panel);
-      }
-      .lensReference {
-        text-align: center;
-      }
-      .lensReference strong {
-        display: block;
-      }
-      .lensOptions {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 12px;
-      }
-      .lensSvg {
-        display: block;
-        width: 100%;
-        max-height: 180px;
-        margin: 5px auto 10px;
-      }
-      .lensChoice {
-        display: flex;
-        min-width: 0;
-        flex-direction: column;
-        align-items: center;
-        color: var(--ink);
-        text-align: center;
-        cursor: pointer;
-        transition:
-          border-color 0.15s,
-          background 0.15s,
-          transform 0.15s;
-      }
-      .lensChoice:hover,
-      .lensChoice:focus-visible {
-        transform: translateY(-2px);
-        border-color: var(--cyan);
-        outline: none;
-      }
-      .lensChoice[aria-pressed="true"] {
-        border-color: var(--cyan);
-      }
-      .lensChoice.correct {
-        border-color: var(--green);
-        background: #7ce0b41c;
-      }
-      .lensChoice.wrong {
-        border-color: var(--red);
-        background: #ff9c9c1a;
-      }
-      .lensLetter {
-        display: grid;
-        width: 30px;
-        height: 30px;
-        place-items: center;
-        border-radius: 50%;
-        color: #071321;
-        background: var(--cyan);
-        font-weight: 900;
-      }
-      .lensChoice span:last-child {
-        font-size: 13px;
-        color: var(--muted);
-      }
-      .lensExplanation {
-        margin-top: 8px;
-        color: var(--muted);
-        font-size: 14px;
-      }
-      .lensTargetCircle {
-        fill: none;
-        stroke: var(--cyan);
-        stroke-width: 5;
-        stroke-dasharray: 3 8;
-      }
-      .lensModelCircle {
-        fill: none;
-        stroke: #ffd166;
-        stroke-width: 4;
-      }
-      .lensCenter {
-        fill: #ffd166;
-        stroke: #fff0bf;
-        stroke-width: 2;
-      }
-      .lensStars {
-        fill: #e8dcff;
-      }
-      .lensCaption {
-        color: var(--muted);
-        font-size: 13px;
-      }
       .budget {
         display: flex;
         justify-content: space-between;
@@ -585,19 +476,6 @@
         .cards {
           grid-template-columns: 1fr;
         }
-        .lensMatch {
-          grid-template-columns: 1fr;
-        }
-        .lensOptions {
-          gap: 7px;
-        }
-        .lensChoice {
-          padding: 9px 5px;
-        }
-        .lensLetter {
-          width: 26px;
-          height: 26px;
-        }
         .gameTop {
           display: block;
         }
@@ -647,7 +525,7 @@
       </header>
 
       <section id="home" class="hero">
-        <div class="eyebrow">Cuatro maneras de investigar lo invisible</div>
+        <div class="eyebrow">Tres maneras de investigar lo invisible</div>
         <h1>Misterios de la materia oscura</h1>
         <p class="lead">
           No podemos verla directamente, pero sí buscar pistas de sus efectos.
@@ -661,15 +539,8 @@
               ><span>¿Por qué giran tan deprisa sus estrellas?</span></span
             >
           </button>
-          <button class="gameCard" data-open="lens">
-            <span class="number">2</span
-            ><span
-              ><strong>¿Dónde está la masa?</strong
-              ><span>Usa la luz deformada para encontrarla.</span></span
-            >
-          </button>
           <button class="gameCard" data-open="lab">
-            <span class="number">3</span
+            <span class="number">2</span
             ><span
               ><strong>Construye un detector</strong
               ><span
@@ -678,7 +549,7 @@
             >
           </button>
           <button class="gameCard" data-open="route">
-            <span class="number">4</span
+            <span class="number">3</span
             ><span
               ><strong>Viaje por el universo invisible</strong
               ><span>Resuelve tres pistas y completa la misión.</span></span
@@ -702,7 +573,7 @@
               mediciones.
             </p>
           </div>
-          <button class="back" type="button">← Los cuatro juegos</button>
+          <button class="back" type="button">← Los tres juegos</button>
         </div>
         <div class="stage">
           <div class="stageTitle">
@@ -827,109 +698,17 @@
         </p>
       </section>
 
-      <section id="lens" class="game hidden" aria-labelledby="lensTitle">
-        <div class="gameTop">
-          <div>
-            <div class="eyebrow">Juego 2 · Luz y gravedad</div>
-            <h2 id="lensTitle">Sigue la luz</h2>
-            <p>
-              La gravedad curva la luz. Mira los arcos que observamos y elige el
-              dibujo que más se parece. ¿Cuál necesita más masa para formarse?
-            </p>
-          </div>
-          <button class="back" type="button">← Los cuatro juegos</button>
-        </div>
-        <div class="stage lensLayout">
-          <div class="lensMatch">
-            <div class="lensReference">
-              <strong>Lo que observamos</strong>
-              <svg
-                class="lensSvg"
-                viewBox="0 0 180 140"
-                role="img"
-                aria-label="Arco amplio de luz alrededor de una galaxia"
-              >
-                <g class="lensStars">
-                  <circle cx="25" cy="22" r="2" />
-                  <circle cx="149" cy="26" r="2" />
-                  <circle cx="30" cy="115" r="2" />
-                  <circle cx="152" cy="111" r="2" />
-                </g>
-                <circle class="lensTargetCircle" cx="90" cy="68" r="47" />
-                <circle class="lensCenter" cx="90" cy="68" r="10" />
-              </svg>
-              <span class="lensCaption">Arcos de una galaxia lejana</span>
-            </div>
-            <div
-              class="lensOptions"
-              aria-label="Elige el modelo que coincide con los arcos observados"
-            >
-              <button
-                class="lensChoice"
-                type="button"
-                data-lens-choice="little"
-                aria-pressed="false"
-              >
-                <span class="lensLetter">A</span>
-                <svg class="lensSvg" viewBox="0 0 180 140" aria-hidden="true">
-                  <circle class="lensModelCircle" cx="90" cy="68" r="20" />
-                  <circle class="lensCenter" cx="90" cy="68" r="10" />
-                </svg>
-                <span>Poca curvatura</span>
-              </button>
-              <button
-                class="lensChoice"
-                type="button"
-                data-lens-choice="some"
-                aria-pressed="false"
-              >
-                <span class="lensLetter">B</span>
-                <svg class="lensSvg" viewBox="0 0 180 140" aria-hidden="true">
-                  <circle class="lensModelCircle" cx="90" cy="68" r="34" />
-                  <circle class="lensCenter" cx="90" cy="68" r="10" />
-                </svg>
-                <span>Más curvatura</span>
-              </button>
-              <button
-                class="lensChoice"
-                type="button"
-                data-lens-choice="match"
-                aria-pressed="false"
-              >
-                <span class="lensLetter">C</span>
-                <svg class="lensSvg" viewBox="0 0 180 140" aria-hidden="true">
-                  <circle class="lensModelCircle" cx="90" cy="68" r="47" />
-                  <circle class="lensCenter" cx="90" cy="68" r="10" />
-                </svg>
-                <span>Arco amplio</span>
-              </button>
-            </div>
-          </div>
-          <p class="lensExplanation">
-            Compara el tamaño de cada arco con el que observamos. Los círculos
-            dorados representan la galaxia que curva la luz.
-          </p>
-          <div id="lensResult" class="result" aria-live="polite">
-            Elige A, B o C: ¿qué dibujo se parece más a lo que observamos?
-          </div>
-          <p class="note">
-            Es un esquema para jugar: en el universo real, la forma de los arcos
-            puede ser mucho más variada.
-          </p>
-        </div>
-      </section>
-
       <section id="lab" class="game hidden" aria-labelledby="labTitle">
         <div class="gameTop">
           <div>
-            <div class="eyebrow">Juego 3 · Diseña la búsqueda</div>
+            <div class="eyebrow">Juego 2 · Diseña la búsqueda</div>
             <h2 id="labTitle">Construye un detector</h2>
             <p>
               Tienes un presupuesto limitado. Elige mejoras para que una posible
               señal sea más fácil de distinguir del ruido.
             </p>
           </div>
-          <button class="back" type="button">← Los cuatro juegos</button>
+          <button class="back" type="button">← Los tres juegos</button>
         </div>
         <div class="stage">
           <div class="budget">
@@ -1041,8 +820,8 @@
             </button>
           </div>
           <div id="labResult" class="result" aria-live="polite">
-            Elige mejoras y prueba tu diseño. Es una simulación sencilla, no una
-            reproducción de TREX-DM.
+            Elige mejoras y prueba tu diseño. Después verás qué has priorizado y
+            si así será más fácil distinguir una posible señal del fondo.
           </div>
         </div>
       </section>
@@ -1050,13 +829,13 @@
       <section id="route" class="game hidden" aria-labelledby="routeTitle">
         <div class="gameTop">
           <div>
-            <div class="eyebrow">Juego 4 · Misión espacial</div>
+            <div class="eyebrow">Juego 3 · Misión espacial</div>
             <h2 id="routeTitle">Viaje por el universo invisible</h2>
             <p>
               Recoge tres pistas en tu viaje y únelas para resolver el misterio.
             </p>
           </div>
-          <button class="back" type="button">← Los cuatro juegos</button>
+          <button class="back" type="button">← Los tres juegos</button>
         </div>
         <div class="stage">
           <div class="route" aria-label="Progreso de la misión">
@@ -1092,7 +871,6 @@
           window.scrollTo({ top: 0, behavior: "smooth" });
           if (!id) return;
           if (id === "rotation") updateRotation();
-          if (id === "lens") resetLens();
           if (id === "lab") updateLab();
           if (id === "route") renderRoute();
         }
@@ -1184,40 +962,6 @@
         }
         haloSlider.addEventListener("input", updateRotation);
 
-        const lensChoices = [...document.querySelectorAll(".lensChoice")];
-        function resetLens() {
-          lensChoices.forEach((button) => {
-            button.setAttribute("aria-pressed", "false");
-            button.classList.remove("correct", "wrong");
-          });
-          const result = byId("lensResult");
-          result.className = "result";
-          result.textContent =
-            "Elige A, B o C: ¿qué dibujo se parece más a lo que observamos?";
-        }
-        lensChoices.forEach((button) =>
-          button.addEventListener("click", () => {
-            lensChoices.forEach((choice) => {
-              choice.setAttribute("aria-pressed", String(choice === button));
-              choice.classList.remove("correct", "wrong");
-            });
-            const result = byId("lensResult");
-            if (button.dataset.lensChoice === "match") {
-              button.classList.add("correct");
-              result.className = "result good";
-              result.innerHTML =
-                "<strong>¡Ese es!</strong> Los arcos observados son más amplios de lo que explica la materia que vemos. La gravedad indica que hay más masa alrededor, incluida materia oscura.";
-            } else {
-              button.classList.add("wrong");
-              result.className = "result neutral";
-              result.textContent =
-                button.dataset.lensChoice === "little"
-                  ? "Ese arco es demasiado pequeño. Mira cuánto más se curva la luz en la imagen observada."
-                  : "Vas por buen camino: la luz se curva, pero el arco aún es más pequeño que el observado.";
-            }
-          }),
-        );
-
         const budget = 6;
         const costs = { time: 1, mass: 2, quiet: 2, readout: 2 };
         const upgrades = { time: 0, mass: 0, quiet: 0, readout: 0 };
@@ -1261,9 +1005,43 @@
             Math.pow(0.62, quiet) *
             Math.pow(0.78, readout);
           const contrast = signal / Math.sqrt(background);
-          byId("labResult").className = "result good";
+          const choices = [];
+          if (time) choices.push("observar más tiempo");
+          if (mass) choices.push("hacer más grande el detector");
+          if (quiet) choices.push("reducir el ruido de fondo");
+          if (readout) choices.push("mejorar la lectura de las huellas");
+          const choiceSummary = choices.length
+            ? `Has dedicado tus puntos a ${choices.join(", ").replace(/, ([^,]*)$/, " y $1")}.`
+            : "Has mantenido el detector básico, sin mejoras.";
+          let tradeoff;
+          if ((quiet || readout) && (time || mass)) {
+            tradeoff =
+              "Tu plan recoge más datos y, a la vez, intenta quitar ruido o reconocer mejor las huellas.";
+          } else if (quiet || readout) {
+            tradeoff =
+              "Has priorizado quitar ruido o reconocer mejor las huellas, para que menos eventos de fondo se confundan con una señal.";
+          } else if (time || mass) {
+            tradeoff =
+              "Un detector mayor o más tiempo pueden recoger más señal, pero también acumulan más eventos de fondo.";
+          } else {
+            tradeoff = "Sin mejoras, el ruido puede esconder una señal débil.";
+          }
+          const improvement = contrast / (2 / Math.sqrt(18));
+          let verdict;
+          if (improvement >= 1.7) {
+            verdict =
+              "Con estas decisiones, una posible señal sería bastante más fácil de distinguir que con el detector básico.";
+          } else if (improvement >= 1.2) {
+            verdict =
+              "Tu diseño ayuda, aunque todavía podría costar separar la señal del fondo.";
+          } else {
+            verdict =
+              "La mejora es pequeña: el fondo todavía podría tapar la señal. Prueba a reducir el ruido o mejorar la lectura.";
+          }
+          byId("labResult").className =
+            improvement >= 1.7 ? "result good" : "result neutral";
           byId("labResult").innerHTML =
-            `<strong>Tu diseño:</strong> unas ${signal.toFixed(1)} señales posibles frente a ${background.toFixed(1)} eventos de fondo. El indicador de facilidad para distinguirlas es <b>${contrast.toFixed(2)}</b>. ${quiet || readout ? "Reducir el ruido o reconocer mejor los eventos ayuda a separar señal y fondo." : "Has aumentado la exposición: recoges más sucesos, pero también más fondo."} <span class="note">Modelo de juguete: sólo ilustra cómo influyen algunas decisiones.</span>`;
+            `<strong>Resultado de tu elección</strong><br>${choiceSummary}<br><br>En este modelo, si hubiera señal, esperaríamos unas <b>${signal.toFixed(1)} huellas de señal</b> y ${background.toFixed(1)} huellas de fondo (ruido). ${tradeoff} <b>${verdict}</b><p class="note">Son cifras de una simulación sencilla para comparar estrategias; no son predicciones reales de TREX-DM.</p>`;
         });
         byId("resetDetector").addEventListener("click", () => {
           Object.keys(upgrades).forEach((key) => {

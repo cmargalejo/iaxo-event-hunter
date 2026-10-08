@@ -42,18 +42,15 @@ async function main() {
   assert.notEqual(transformBefore, transformAfter);
   await page.locator(".back:visible").click();
 
-  await page.locator('[data-open="lens"]').click();
-  await page.locator('[data-lens-choice="little"]').click();
-  await page.getByText("Ese arco es demasiado pequeño").waitFor();
-  await page.locator('[data-lens-choice="match"]').click();
-  await page.getByText("Los arcos observados son más amplios").waitFor();
-  await page.locator(".back:visible").click();
-
   await page.locator('[data-open="lab"]').click();
   await page.locator('[data-upgrade="time"] [data-change="1"]').click();
   await page.locator('[data-upgrade="quiet"] [data-change="1"]').click();
   await page.locator("#runDetector").click();
-  await page.getByText("Tu diseño:").waitFor();
+  const result = await page.locator("#labResult").innerText();
+  assert.match(result, /observar más tiempo y reducir el ruido de fondo/);
+  assert.match(result, /huellas de señal/);
+  assert.match(result, /huellas de fondo \(ruido\)/);
+  assert.match(result, /Tu diseño ayuda/);
   await page.locator("#resetDetector").click();
   assert.equal(await page.locator("#budgetLeft").textContent(), "6");
   await page.locator(".back:visible").click();
@@ -68,10 +65,11 @@ async function main() {
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.locator(".back:visible").click();
-  assert.equal(await page.locator(".gameCard").count(), 4);
+  assert.equal(await page.locator(".gameCard").count(), 3);
+  assert.equal(await page.locator('[data-open="lens"]').count(), 0);
   await browser.close();
   console.log(
-    "Dark matter browser checks passed: all four games, controls, mission completion and mobile menu.",
+    "Dark matter browser checks passed: three games, clear detector feedback, mission completion and mobile menu.",
   );
 }
 
