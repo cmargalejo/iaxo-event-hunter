@@ -1,0 +1,1166 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Cuatro minijuegos para explorar las pistas de la materia oscura."
+    />
+    <title>Misterios de la materia oscura · CAPA</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #071321;
+        --panel: #10233a;
+        --panel2: #152b45;
+        --line: #29435f;
+        --ink: #eef5ff;
+        --muted: #b4c3d6;
+        --cyan: #6ad8ff;
+        --gold: #ffd166;
+        --pink: #ff8ac7;
+        --green: #7ce0b4;
+        --red: #ff9c9c;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--ink);
+        background:
+          radial-gradient(ellipse at 16% 0%, #183456 0, transparent 36rem),
+          radial-gradient(ellipse at 95% 28%, #172d48 0, transparent 32rem),
+          var(--bg);
+        font:
+          16px/1.5 system-ui,
+          sans-serif;
+      }
+      button,
+      input {
+        font: inherit;
+      }
+      button {
+        color: inherit;
+      }
+      .wrap {
+        width: min(1100px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 24px 0 56px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 22px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+      }
+      .brandMark {
+        display: grid;
+        width: 40px;
+        height: 40px;
+        place-items: center;
+        border-radius: 13px;
+        color: #092039;
+        background: var(--cyan);
+        font-size: 23px;
+      }
+      .pill {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 7px 13px;
+        color: var(--muted);
+        background: #ffffff08;
+        font-size: 14px;
+      }
+      .hero,
+      .game {
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: #0d1e32ed;
+        box-shadow: 0 20px 65px #0003;
+      }
+      .hero {
+        padding: clamp(24px, 5vw, 54px);
+        text-align: center;
+      }
+      .eyebrow {
+        color: var(--cyan);
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+      }
+      h1 {
+        max-width: 760px;
+        margin: 8px auto 12px;
+        font-size: clamp(36px, 7vw, 66px);
+        line-height: 1.04;
+        letter-spacing: -0.04em;
+      }
+      h2 {
+        margin: 0 0 10px;
+        font-size: clamp(25px, 4vw, 36px);
+        line-height: 1.15;
+      }
+      h3 {
+        margin: 0 0 8px;
+        font-size: 19px;
+      }
+      p {
+        margin: 0 0 14px;
+        color: var(--muted);
+      }
+      .lead {
+        max-width: 670px;
+        margin: 0 auto 25px;
+        font-size: 18px;
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 28px;
+        text-align: left;
+      }
+      .gameCard {
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+        width: 100%;
+        min-height: 148px;
+        padding: 20px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: var(--panel);
+        text-align: left;
+        cursor: pointer;
+        transition:
+          transform 0.16s,
+          border-color 0.16s,
+          background 0.16s;
+      }
+      .gameCard:hover,
+      .gameCard:focus-visible {
+        transform: translateY(-2px);
+        border-color: var(--cyan);
+        background: var(--panel2);
+        outline: none;
+      }
+      .number {
+        display: grid;
+        flex: 0 0 43px;
+        width: 43px;
+        height: 43px;
+        place-items: center;
+        border-radius: 14px;
+        color: #092039;
+        background: var(--cyan);
+        font-size: 20px;
+        font-weight: 900;
+      }
+      .gameCard:nth-child(2) .number {
+        background: var(--pink);
+      }
+      .gameCard:nth-child(3) .number {
+        background: var(--gold);
+      }
+      .gameCard:nth-child(4) .number {
+        background: var(--green);
+      }
+      .gameCard strong {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 19px;
+      }
+      .gameCard span:last-child {
+        color: var(--muted);
+      }
+      .game {
+        padding: clamp(20px, 4vw, 38px);
+      }
+      .hidden {
+        display: none !important;
+      }
+      .gameTop {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 22px;
+      }
+      .gameTop p {
+        max-width: 680px;
+      }
+      .back,
+      .secondary,
+      .primary,
+      .choice,
+      .stepButton,
+      .adjust {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px 15px;
+        background: #ffffff0a;
+        cursor: pointer;
+        transition:
+          background 0.15s,
+          border-color 0.15s,
+          transform 0.15s;
+      }
+      .back:hover,
+      .secondary:hover,
+      .choice:hover,
+      .stepButton:hover,
+      .adjust:hover {
+        border-color: var(--cyan);
+        background: #6ad8ff18;
+      }
+      .primary {
+        border: 0;
+        padding: 12px 20px;
+        color: #072035;
+        background: var(--cyan);
+        font-weight: 850;
+      }
+      .primary:hover {
+        transform: translateY(-1px);
+        background: #9ce8ff;
+      }
+      .secondary {
+        color: var(--muted);
+      }
+      .stage {
+        padding: clamp(16px, 3vw, 26px);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        background: #071522;
+      }
+      .stageTitle {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 8px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .chart {
+        display: block;
+        width: 100%;
+        max-height: 340px;
+        margin: 7px auto 12px;
+      }
+      .chart text,
+      .lensSvg text {
+        fill: var(--muted);
+        font:
+          12px system-ui,
+          sans-serif;
+      }
+      .sliderBlock {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 6px 18px;
+        align-items: center;
+        margin: 14px 0 4px;
+      }
+      .sliderBlock label {
+        font-weight: 750;
+      }
+      .sliderBlock output {
+        min-width: 54px;
+        color: var(--gold);
+        font-weight: 850;
+        text-align: right;
+      }
+      input[type="range"] {
+        grid-column: 1 / -1;
+        width: 100%;
+        accent-color: var(--cyan);
+        cursor: pointer;
+      }
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .swatch {
+        width: 20px;
+        height: 4px;
+        border-radius: 9px;
+        background: var(--gold);
+      }
+      .swatch.dots {
+        height: 10px;
+        width: 10px;
+        border-radius: 50%;
+        background: var(--cyan);
+      }
+      .result {
+        min-height: 54px;
+        margin-top: 14px;
+        padding: 13px 15px;
+        border: 1px solid #ffffff12;
+        border-radius: 13px;
+        background: #ffffff08;
+        color: var(--muted);
+      }
+      .result strong {
+        color: var(--ink);
+      }
+      .result.good {
+        border-color: #7ce0b466;
+        color: #c9ffe8;
+      }
+      .result.neutral {
+        border-color: #ffd16666;
+        color: #fff0c5;
+      }
+      .note {
+        margin-top: 13px;
+        color: #93a8c0;
+        font-size: 13px;
+      }
+      .lensLayout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) minmax(220px, 0.6fr);
+        gap: 20px;
+        align-items: center;
+      }
+      .lensSvg {
+        display: block;
+        width: 100%;
+        max-height: 380px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: radial-gradient(ellipse, #11243b, #06101b);
+      }
+      .targetArc {
+        fill: none;
+        stroke: var(--cyan);
+        stroke-width: 5;
+        stroke-linecap: round;
+        stroke-dasharray: 2 10;
+        opacity: 0.68;
+      }
+      .predArc {
+        fill: none;
+        stroke: var(--gold);
+        stroke-width: 4;
+        stroke-linecap: round;
+      }
+      .budget {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 8px 0 18px;
+        padding: 15px 17px;
+        border-radius: 14px;
+        background: #ffd16615;
+      }
+      .budget strong {
+        color: var(--gold);
+        font-size: 22px;
+      }
+      .upgradeList {
+        display: grid;
+        gap: 10px;
+      }
+      .upgrade {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 4px 12px;
+        align-items: center;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        background: var(--panel);
+      }
+      .upgrade p {
+        grid-column: 1;
+        margin: 0;
+        font-size: 14px;
+      }
+      .upgradeControls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        grid-column: 2;
+        grid-row: 1 / span 2;
+      }
+      .adjust {
+        width: 38px;
+        height: 38px;
+        padding: 0;
+        font-size: 21px;
+      }
+      .quantity {
+        min-width: 20px;
+        text-align: center;
+        font-weight: 800;
+      }
+      .route {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 10px;
+        margin: 15px 0 22px;
+      }
+      .routeItem {
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        color: #8295ad;
+        background: #ffffff05;
+        text-align: center;
+      }
+      .routeItem.active {
+        border-color: var(--cyan);
+        color: var(--ink);
+        background: #6ad8ff14;
+      }
+      .routeItem.done {
+        border-color: #7ce0b488;
+        color: var(--green);
+      }
+      .quizChoices {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin: 17px 0 5px;
+      }
+      .choice {
+        min-height: 58px;
+        text-align: left;
+      }
+      .choice.correct {
+        border-color: var(--green);
+        background: #7ce0b41c;
+      }
+      .choice.wrong {
+        border-color: var(--red);
+        background: #ff9c9c1a;
+      }
+      .mapStars {
+        fill: #f6f2c4;
+      }
+      footer {
+        padding-top: 20px;
+        color: #7e93ab;
+        font-size: 13px;
+        text-align: center;
+      }
+      @media (max-width: 700px) {
+        .wrap {
+          width: min(100% - 20px, 600px);
+          padding-top: 14px;
+        }
+        header {
+          margin-bottom: 13px;
+        }
+        .cards,
+        .lensLayout {
+          grid-template-columns: 1fr;
+        }
+        .gameTop {
+          display: block;
+        }
+        .gameTop .back {
+          margin: 8px 0 0;
+        }
+        .route {
+          gap: 6px;
+        }
+        .routeItem {
+          padding: 9px 5px;
+          font-size: 13px;
+        }
+        .quizChoices {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <header>
+        <div class="brand">
+          <span class="brandMark" aria-hidden="true">✦</span
+          ><span>CAPA · Juegos de ciencia</span>
+        </div>
+        <span class="pill">DÍA DE LA MATERIA OSCURA</span>
+      </header>
+
+      <section id="home" class="hero">
+        <div class="eyebrow">Cuatro maneras de investigar lo invisible</div>
+        <h1>Misterios de la materia oscura</h1>
+        <p class="lead">
+          No podemos verla directamente, pero sí buscar pistas de sus efectos.
+          Elige un juego y ponte a investigar.
+        </p>
+        <div class="cards">
+          <button class="gameCard" data-open="rotation">
+            <span class="number">1</span
+            ><span
+              ><strong>Ajusta la galaxia</strong
+              ><span>¿Por qué giran tan deprisa sus estrellas?</span></span
+            >
+          </button>
+          <button class="gameCard" data-open="lens">
+            <span class="number">2</span
+            ><span
+              ><strong>¿Dónde está la masa?</strong
+              ><span>Usa la luz deformada para encontrarla.</span></span
+            >
+          </button>
+          <button class="gameCard" data-open="lab">
+            <span class="number">3</span
+            ><span
+              ><strong>Construye un detector</strong
+              ><span
+                >Elige cómo gastar el presupuesto de una búsqueda.</span
+              ></span
+            >
+          </button>
+          <button class="gameCard" data-open="route">
+            <span class="number">4</span
+            ><span
+              ><strong>Viaje por el universo invisible</strong
+              ><span>Resuelve tres pistas y completa la misión.</span></span
+            >
+          </button>
+        </div>
+      </section>
+
+      <section
+        id="rotation"
+        class="game hidden"
+        aria-labelledby="rotationTitle"
+      >
+        <div class="gameTop">
+          <div>
+            <div class="eyebrow">Juego 1 · Galaxias</div>
+            <h2 id="rotationTitle">Ajusta la galaxia</h2>
+            <p>
+              Los puntos azules muestran cómo se mueven las estrellas. Ajusta el
+              halo invisible para que tu predicción (amarilla) se acerque a las
+              mediciones.
+            </p>
+          </div>
+          <button class="back" type="button">← Los cuatro juegos</button>
+        </div>
+        <div class="stage">
+          <div class="stageTitle">
+            <span>Velocidad de las estrellas</span
+            ><span>Esquema simplificado</span>
+          </div>
+          <svg
+            class="chart"
+            id="rotationChart"
+            viewBox="0 0 560 270"
+            role="img"
+            aria-label="Gráfico de la velocidad de las estrellas según su distancia al centro de la galaxia"
+          >
+            <g stroke="#29435f" stroke-width="1">
+              <path d="M55 35H530M55 75H530M55 115H530M55 155H530M55 195H530" />
+              <path
+                d="M55 35V205M135 35V205M215 35V205M295 35V205M375 35V205M455 35V205M530 35V205"
+              />
+            </g>
+            <path
+              d="M55 35V205H530"
+              fill="none"
+              stroke="#7890aa"
+              stroke-width="2"
+            />
+            <text x="18" y="42">rápido</text>
+            <text x="20" y="204">lento</text>
+            <text x="200" y="248">Distancia desde el centro</text>
+            <text x="55" y="224">centro</text>
+            <text x="497" y="224">borde</text>
+            <polyline
+              id="rotationPrediction"
+              fill="none"
+              stroke="#ffd166"
+              stroke-width="5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <g id="rotationObserved"></g>
+          </svg>
+          <div class="legend">
+            <span><i class="swatch dots"></i> Medición de las estrellas</span
+            ><span><i class="swatch"></i> Tu predicción</span>
+          </div>
+          <div class="sliderBlock">
+            <label for="haloSlider">Materia invisible en el halo</label
+            ><output id="haloValue" for="haloSlider">0 %</output
+            ><input
+              id="haloSlider"
+              type="range"
+              min="0"
+              max="100"
+              value="0"
+              aria-label="Cantidad de materia invisible en el halo"
+            />
+          </div>
+          <div id="rotationResult" class="result" aria-live="polite">
+            Arrastra el control: con sólo las estrellas visibles, la predicción
+            se queda corta en el borde de la galaxia.
+          </div>
+        </div>
+        <p class="note">
+          La curva es una ilustración para aprender la idea; las galaxias reales
+          tienen medidas y formas distintas.
+        </p>
+      </section>
+
+      <section id="lens" class="game hidden" aria-labelledby="lensTitle">
+        <div class="gameTop">
+          <div>
+            <div class="eyebrow">Juego 2 · Luz y gravedad</div>
+            <h2 id="lensTitle">¿Dónde está la masa?</h2>
+            <p>
+              La gravedad puede cambiar el camino de la luz. Ajusta la masa
+              invisible hasta que los arcos que predice el modelo coincidan con
+              los que observamos.
+            </p>
+          </div>
+          <button class="back" type="button">← Los cuatro juegos</button>
+        </div>
+        <div class="stage lensLayout">
+          <svg
+            class="lensSvg"
+            viewBox="0 0 520 320"
+            role="img"
+            aria-label="Una galaxia delante curva la luz de una galaxia lejana y crea arcos alrededor"
+          >
+            <defs>
+              <radialGradient id="galaxyGlow">
+                <stop stop-color="#fff4bd" />
+                <stop offset=".25" stop-color="#ffa9dc" />
+                <stop offset="1" stop-color="#8a77c7" stop-opacity="0" />
+              </radialGradient>
+            </defs>
+            <g class="mapStars">
+              <circle cx="40" cy="40" r="1.5" />
+              <circle cx="114" cy="83" r="2" />
+              <circle cx="458" cy="51" r="1.5" />
+              <circle cx="474" cy="252" r="2" />
+              <circle cx="78" cy="270" r="1.5" />
+              <circle cx="406" cy="292" r="1.5" />
+              <circle cx="209" cy="37" r="1.3" />
+            </g>
+            <path id="lensTargetTop" class="targetArc" />
+            <path id="lensTargetBottom" class="targetArc" />
+            <path id="lensPredictionTop" class="predArc" />
+            <path id="lensPredictionBottom" class="predArc" />
+            <circle cx="260" cy="157" r="20" fill="url(#galaxyGlow)" />
+            <circle cx="260" cy="157" r="6" fill="#fff2ca" />
+            <circle
+              cx="260"
+              cy="157"
+              r="31"
+              fill="none"
+              stroke="#ffd166"
+              stroke-opacity=".5"
+              stroke-width="1.5"
+            />
+            <text x="260" y="209" text-anchor="middle">
+              galaxia que curva la luz
+            </text>
+            <text x="260" y="299" text-anchor="middle">
+              arcos observados · azul punteado
+            </text>
+          </svg>
+          <div>
+            <h3>¿Cuánta masa falta?</h3>
+            <p>
+              El círculo dorado representa la galaxia visible. La gravedad que
+              curva la luz sugiere que hay más masa alrededor.
+            </p>
+            <div class="sliderBlock">
+              <label for="lensSlider">Masa invisible</label
+              ><output id="lensValue" for="lensSlider">0 %</output
+              ><input
+                id="lensSlider"
+                type="range"
+                min="0"
+                max="100"
+                value="0"
+                aria-label="Masa invisible alrededor de la galaxia"
+              />
+            </div>
+            <div id="lensResult" class="result" aria-live="polite">
+              Mueve el control para hacer coincidir tus arcos con los que vemos.
+            </div>
+            <p class="note">
+              Es un dibujo de una lente gravitatoria, no una fotografía real. La
+              masa se deduce por cómo desvía la luz.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="lab" class="game hidden" aria-labelledby="labTitle">
+        <div class="gameTop">
+          <div>
+            <div class="eyebrow">Juego 3 · Diseña la búsqueda</div>
+            <h2 id="labTitle">Construye un detector</h2>
+            <p>
+              Tienes un presupuesto limitado. Elige mejoras para que una posible
+              señal sea más fácil de distinguir del ruido.
+            </p>
+          </div>
+          <button class="back" type="button">← Los cuatro juegos</button>
+        </div>
+        <div class="stage">
+          <div class="budget">
+            <span>Presupuesto disponible</span
+            ><strong><span id="budgetLeft">6</span> puntos</strong>
+          </div>
+          <div class="upgradeList">
+            <div class="upgrade" data-upgrade="time">
+              <div>
+                <h3>Observar más tiempo <small>(1 punto)</small></h3>
+                <p>
+                  Da más oportunidades de registrar señal y también más ruido.
+                </p>
+              </div>
+              <div class="upgradeControls">
+                <button
+                  class="adjust"
+                  data-change="-1"
+                  aria-label="Quitar tiempo"
+                >
+                  −</button
+                ><span class="quantity" id="timeCount">0</span
+                ><button
+                  class="adjust"
+                  data-change="1"
+                  aria-label="Añadir tiempo"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <div class="upgrade" data-upgrade="mass">
+              <div>
+                <h3>Aumentar el detector <small>(2 puntos)</small></h3>
+                <p>
+                  Un detector mayor puede registrar más señales y más sucesos de
+                  fondo.
+                </p>
+              </div>
+              <div class="upgradeControls">
+                <button
+                  class="adjust"
+                  data-change="-1"
+                  aria-label="Quitar tamaño"
+                >
+                  −</button
+                ><span class="quantity" id="massCount">0</span
+                ><button
+                  class="adjust"
+                  data-change="1"
+                  aria-label="Añadir tamaño"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <div class="upgrade" data-upgrade="quiet">
+              <div>
+                <h3>Reducir el ruido <small>(2 puntos)</small></h3>
+                <p>Mejorar el entorno y descartar más eventos de fondo.</p>
+              </div>
+              <div class="upgradeControls">
+                <button
+                  class="adjust"
+                  data-change="-1"
+                  aria-label="Quitar reducción de ruido"
+                >
+                  −</button
+                ><span class="quantity" id="quietCount">0</span
+                ><button
+                  class="adjust"
+                  data-change="1"
+                  aria-label="Añadir reducción de ruido"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <div class="upgrade" data-upgrade="readout">
+              <div>
+                <h3>Leer mejor las señales <small>(2 puntos)</small></h3>
+                <p>Reconocer más señales posibles sin aceptar tanto ruido.</p>
+              </div>
+              <div class="upgradeControls">
+                <button
+                  class="adjust"
+                  data-change="-1"
+                  aria-label="Quitar mejora de lectura"
+                >
+                  −</button
+                ><span class="quantity" id="readoutCount">0</span
+                ><button
+                  class="adjust"
+                  data-change="1"
+                  aria-label="Añadir mejora de lectura"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+          <div
+            style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 17px"
+          >
+            <button id="runDetector" class="primary" type="button">
+              Probar mi diseño</button
+            ><button id="resetDetector" class="secondary" type="button">
+              Reiniciar
+            </button>
+          </div>
+          <div id="labResult" class="result" aria-live="polite">
+            Elige mejoras y prueba tu diseño. Es una simulación sencilla, no una
+            reproducción de TREX-DM.
+          </div>
+        </div>
+      </section>
+
+      <section id="route" class="game hidden" aria-labelledby="routeTitle">
+        <div class="gameTop">
+          <div>
+            <div class="eyebrow">Juego 4 · Misión espacial</div>
+            <h2 id="routeTitle">Viaje por el universo invisible</h2>
+            <p>
+              Recoge tres pistas en tu viaje y únelas para resolver el misterio.
+            </p>
+          </div>
+          <button class="back" type="button">← Los cuatro juegos</button>
+        </div>
+        <div class="stage">
+          <div class="route" aria-label="Progreso de la misión">
+            <div class="routeItem active" data-route-step="0">1 · Galaxias</div>
+            <div class="routeItem" data-route-step="1">2 · Luz</div>
+            <div class="routeItem" data-route-step="2">3 · Laboratorio</div>
+          </div>
+          <div id="routePuzzle"></div>
+          <div id="routeResult" class="result" aria-live="polite">
+            Resuelve la pista para continuar.
+          </div>
+        </div>
+      </section>
+      <footer>Una colección de prototipos para aprender jugando · CAPA</footer>
+    </main>
+
+    <script>
+      (() => {
+        const home = document.querySelector("#home");
+        const games = [...document.querySelectorAll(".game")];
+        const rotationData = [0.3, 0.53, 0.73, 0.83, 0.88, 0.9, 0.91];
+        const visibleOnly = [0.3, 0.57, 0.77, 0.74, 0.65, 0.55, 0.48];
+        const chartX = [55, 135, 215, 295, 375, 455, 530];
+        const chartY = (v) => 205 - v * 170;
+        const haloSlider = document.querySelector("#haloSlider");
+        const lensSlider = document.querySelector("#lensSlider");
+        const byId = (id) => document.getElementById(id);
+
+        function showGame(id = "") {
+          home.classList.toggle("hidden", Boolean(id));
+          games.forEach((game) =>
+            game.classList.toggle("hidden", game.id !== id),
+          );
+          window.scrollTo({ top: 0, behavior: "smooth" });
+          if (!id) return;
+          if (id === "rotation") updateRotation();
+          if (id === "lens") updateLens();
+          if (id === "lab") updateLab();
+          if (id === "route") renderRoute();
+        }
+        document
+          .querySelectorAll("[data-open]")
+          .forEach((button) =>
+            button.addEventListener("click", () =>
+              showGame(button.dataset.open),
+            ),
+          );
+        document
+          .querySelectorAll(".back")
+          .forEach((button) =>
+            button.addEventListener("click", () => showGame()),
+          );
+
+        function updateRotation() {
+          const amount = Number(haloSlider.value) / 100;
+          const predictions = visibleOnly.map(
+            (v, i) => v + (rotationData[i] - v) * amount,
+          );
+          byId("rotationPrediction").setAttribute(
+            "points",
+            predictions.map((v, i) => `${chartX[i]},${chartY(v)}`).join(" "),
+          );
+          const points = byId("rotationObserved");
+          points.replaceChildren(
+            ...rotationData.map((v, i) => {
+              const dot = document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "circle",
+              );
+              dot.setAttribute("cx", chartX[i]);
+              dot.setAttribute("cy", chartY(v));
+              dot.setAttribute("r", "6");
+              dot.setAttribute("fill", "#6ad8ff");
+              dot.setAttribute("stroke", "#071321");
+              dot.setAttribute("stroke-width", "2");
+              return dot;
+            }),
+          );
+          byId("haloValue").textContent = `${haloSlider.value} %`;
+          const error =
+            predictions.reduce(
+              (sum, v, i) => sum + Math.abs(v - rotationData[i]),
+              0,
+            ) / predictions.length;
+          const result = byId("rotationResult");
+          if (error < 0.015) {
+            result.className = "result good";
+            result.innerHTML =
+              "<strong>¡Encaja!</strong> Hace falta un halo con materia invisible para explicar cómo se mueven las estrellas más alejadas.";
+          } else if (error < 0.07) {
+            result.className = "result neutral";
+            result.textContent =
+              "¡Casi! Prueba a añadir un poco más de masa invisible.";
+          } else {
+            result.className = "result";
+            result.textContent =
+              "La predicción todavía se queda corta en las estrellas más alejadas. Añade materia invisible al halo.";
+          }
+        }
+        haloSlider.addEventListener("input", updateRotation);
+
+        function arcPath(radius, upper) {
+          const cx = 260,
+            cy = 157;
+          const start = upper ? 200 : 20;
+          const end = upper ? 340 : 160;
+          const point = (angle) => [
+            cx + radius * Math.cos((angle * Math.PI) / 180),
+            cy + radius * Math.sin((angle * Math.PI) / 180),
+          ];
+          const [x1, y1] = point(start),
+            [x2, y2] = point(end);
+          return `M ${x1.toFixed(1)} ${y1.toFixed(1)} A ${radius} ${radius} 0 0 1 ${x2.toFixed(1)} ${y2.toFixed(1)}`;
+        }
+        function updateLens() {
+          const value = Number(lensSlider.value);
+          const radius = 28 + value * 0.56;
+          const targetRadius = 72;
+          byId("lensTargetTop").setAttribute("d", arcPath(targetRadius, true));
+          byId("lensTargetBottom").setAttribute(
+            "d",
+            arcPath(targetRadius, false),
+          );
+          byId("lensPredictionTop").setAttribute("d", arcPath(radius, true));
+          byId("lensPredictionBottom").setAttribute(
+            "d",
+            arcPath(radius, false),
+          );
+          byId("lensValue").textContent = `${value} %`;
+          const difference = Math.abs(radius - targetRadius);
+          const result = byId("lensResult");
+          if (difference < 5) {
+            result.className = "result good";
+            result.innerHTML =
+              "<strong>¡Has encontrado la pista!</strong> La luz se curva como si hubiera más masa que la que vemos.";
+          } else if (difference < 15) {
+            result.className = "result neutral";
+            result.textContent =
+              "Casi coincide. Ajusta un poco la masa invisible.";
+          } else {
+            result.className = "result";
+            result.textContent =
+              "Los arcos predichos (amarillos) aún no encajan con los observados (azul punteado).";
+          }
+        }
+        lensSlider.addEventListener("input", updateLens);
+
+        const budget = 6;
+        const costs = { time: 1, mass: 2, quiet: 2, readout: 2 };
+        const upgrades = { time: 0, mass: 0, quiet: 0, readout: 0 };
+        function updateLab() {
+          const used = Object.entries(upgrades).reduce(
+            (sum, [key, count]) => sum + costs[key] * count,
+            0,
+          );
+          byId("budgetLeft").textContent = budget - used;
+          Object.entries(upgrades).forEach(([key, count]) => {
+            byId(`${key}Count`).textContent = count;
+          });
+        }
+        document.querySelectorAll(".adjust").forEach((button) =>
+          button.addEventListener("click", () => {
+            const key = button.closest(".upgrade").dataset.upgrade;
+            const change = Number(button.dataset.change);
+            const used = Object.entries(upgrades).reduce(
+              (sum, [name, count]) => sum + costs[name] * count,
+              0,
+            );
+            if (change < 0 && upgrades[key] > 0) upgrades[key]--;
+            if (change > 0 && used + costs[key] <= budget) upgrades[key]++;
+            updateLab();
+            byId("labResult").className = "result";
+            byId("labResult").textContent =
+              "Aún puedes cambiar tu diseño. Pulsa «Probar mi diseño» cuando estés listo.";
+          }),
+        );
+        byId("runDetector").addEventListener("click", () => {
+          const time = upgrades.time,
+            mass = upgrades.mass,
+            quiet = upgrades.quiet,
+            readout = upgrades.readout;
+          const signal =
+            2 * (1 + 0.35 * time) * (1 + 0.45 * mass) * (1 + 0.22 * readout);
+          const background =
+            18 *
+            (1 + 0.3 * time) *
+            (1 + 0.4 * mass) *
+            Math.pow(0.62, quiet) *
+            Math.pow(0.78, readout);
+          const contrast = signal / Math.sqrt(background);
+          byId("labResult").className = "result good";
+          byId("labResult").innerHTML =
+            `<strong>Tu diseño:</strong> unas ${signal.toFixed(1)} señales posibles frente a ${background.toFixed(1)} eventos de fondo. El indicador de facilidad para distinguirlas es <b>${contrast.toFixed(2)}</b>. ${quiet || readout ? "Reducir el ruido o reconocer mejor los eventos ayuda a separar señal y fondo." : "Has aumentado la exposición: recoges más sucesos, pero también más fondo."} <span class="note">Modelo de juguete: sólo ilustra cómo influyen algunas decisiones.</span>`;
+        });
+        byId("resetDetector").addEventListener("click", () => {
+          Object.keys(upgrades).forEach((key) => {
+            upgrades[key] = 0;
+          });
+          updateLab();
+          byId("labResult").className = "result";
+          byId("labResult").textContent =
+            "Elige mejoras y prueba tu diseño. Es una simulación sencilla, no una reproducción de TREX-DM.";
+        });
+        updateLab();
+
+        const puzzles = [
+          {
+            title: "Pista 1 · Una galaxia veloz",
+            question:
+              "En las afueras de algunas galaxias, las estrellas se mueven más deprisa de lo que explica la materia que vemos. ¿Qué podría ayudar a explicarlo?",
+            options: [
+              "Un halo de materia invisible",
+              "Que las estrellas se han olvidado de frenar",
+            ],
+            answer: 0,
+            clue: "Las velocidades sugieren que hay más masa de la que vemos.",
+          },
+          {
+            title: "Pista 2 · La luz doblada",
+            question:
+              "La luz de una galaxia lejana aparece curvada alrededor de un cúmulo. ¿Qué nos cuenta esa curva?",
+            options: [
+              "Cuánta masa está curvando la luz",
+              "El color favorito de las galaxias",
+            ],
+            answer: 0,
+            clue: "La gravedad curva la luz y permite hacer un mapa de la masa.",
+          },
+          {
+            title: "Pista 3 · Bajo la montaña",
+            question:
+              "Un detector encuentra un evento que podría parecerse a una señal. ¿Qué hacemos antes de anunciar un descubrimiento?",
+            options: [
+              "Comprobar el fondo y reunir más pruebas",
+              "Celebrarlo al ver el primer evento",
+            ],
+            answer: 0,
+            clue: "Una pista aislada no basta: hay que descartar el ruido y confirmar el resultado.",
+          },
+        ];
+        let routeStep = 0;
+        function renderRoute() {
+          document
+            .querySelectorAll("[data-route-step]")
+            .forEach((item, index) => {
+              item.classList.toggle(
+                "active",
+                index === routeStep && routeStep < puzzles.length,
+              );
+              item.classList.toggle(
+                "done",
+                index < routeStep || routeStep === puzzles.length,
+              );
+            });
+          const container = byId("routePuzzle");
+          if (routeStep >= puzzles.length) {
+            container.innerHTML = `<div class="eyebrow">¡Misión completada!</div><h3>¿Qué tienen en común las tres pistas?</h3><p>En todos los casos inferimos materia que no vemos directamente por los efectos de su gravedad. La búsqueda de partículas, como los WIMPs, es otra forma de investigar el misterio.</p><button id="restartRoute" class="secondary" type="button">Volver a empezar</button>`;
+            byId("restartRoute").addEventListener("click", () => {
+              routeStep = 0;
+              renderRoute();
+              byId("routeResult").textContent =
+                "Resuelve la pista para continuar.";
+            });
+            byId("routeResult").className = "result good";
+            byId("routeResult").textContent = "¡Has reunido las tres pistas!";
+            return;
+          }
+          const puzzle = puzzles[routeStep];
+          container.innerHTML = `<div class="eyebrow">${puzzle.title}</div><h3>${puzzle.question}</h3><div class="quizChoices">${puzzle.options.map((option, index) => `<button class="choice" type="button" data-answer="${index}">${option}</button>`).join("")}</div>`;
+          container.querySelectorAll("[data-answer]").forEach((button) =>
+            button.addEventListener("click", () => {
+              const result = byId("routeResult");
+              if (Number(button.dataset.answer) === puzzle.answer) {
+                container
+                  .querySelectorAll("[data-answer]")
+                  .forEach((choice) => {
+                    choice.disabled = true;
+                  });
+                result.className = "result good";
+                result.innerHTML = `<strong>¡Pista conseguida!</strong> ${puzzle.clue}`;
+                routeStep++;
+                window.setTimeout(renderRoute, 900);
+              } else {
+                result.className = "result neutral";
+                result.textContent =
+                  "No del todo. Piensa qué nos puede contar la gravedad y prueba otra vez.";
+                button.classList.add("wrong");
+              }
+            }),
+          );
+          byId("routeResult").className = "result";
+          byId("routeResult").textContent =
+            "Elige una respuesta para conseguir la pista.";
+        }
+
+        byId("lensTargetTop").setAttribute("d", arcPath(72, true));
+        byId("lensTargetBottom").setAttribute("d", arcPath(72, false));
+      })();
+    </script>
+  </body>
+</html>

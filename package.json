@@ -3,8 +3,8 @@
   "private": true,
   "scripts": {
     "check": "node tests/check.cjs",
-    "test": "node tests/game.cjs && node tests/trex.cjs",
-    "format": "prettier --write index.html trex-dm.html tests/*.cjs package.json REVISION_TECNICA.md"
+    "test": "node tests/game.cjs && node tests/trex.cjs && node tests/dark-matter.cjs",
+    "format": "prettier --write index.html trex-dm.html materia-oscura.html tests/*.cjs package.json REVISION_TECNICA.md"
   },
   "devDependencies": {
     "playwright": "1.63.0",
