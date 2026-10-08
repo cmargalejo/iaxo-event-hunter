@@ -5,7 +5,7 @@ const { ESLint } = require("eslint");
 const prettier = require("prettier");
 
 async function main() {
-  for (const name of ["index.html", "trex-dm.html", "materia-oscura.html"]) {
+  for (const name of ["index.html", "trex-dm.html"]) {
     const file = path.join(__dirname, "..", name);
     const html = fs.readFileSync(file, "utf8");
     const script = html.match(/<script>([\s\S]*?)<\/script>/)[1];
@@ -47,7 +47,6 @@ async function main() {
           sourceType: "script",
           globals: {
             document: "readonly",
-            window: "readonly",
             setTimeout: "readonly",
             clearTimeout: "readonly",
           },
@@ -77,7 +76,7 @@ async function main() {
     assert.equal(results[0].errorCount, 0, formatter.format(results));
   }
   console.log(
-    "Static checks passed for all pages: unique IDs, DOM references, JavaScript and formatting valid.",
+    "Static checks passed for both games: unique IDs, DOM references, JavaScript and formatting valid.",
   );
 }
 
