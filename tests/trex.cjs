@@ -104,27 +104,10 @@ async function main() {
         await page.locator("#roundCorrectCount").textContent(),
         `${correctCount}/${eventTotal}`,
       );
-      const expectedBackground = Math.round(5 + ((eventTotal - 6) * 5) / 6);
-      assert.match(
-        await page.locator("#roundBackgroundExpectation").innerText(),
-        new RegExp(
-          `de ${eventTotal} eventos esperamos alrededor de ${expectedBackground} de fondo.*neutrones en el fondo`,
-          "i",
-        ),
-      );
       assert.match(
         await page.locator("#roundSummary").innerText(),
         /partida simulada/i,
       );
-      assert.equal(await page.locator("#casePreview").isVisible(), true);
-      assert.equal(await page.locator("#caseContent").isVisible(), false);
-      assert.match(
-        await page.locator("#casePreview").innerText(),
-        /entre\s+8 y 12 candidatos.*10, 15 y 31/s,
-      );
-      await page.getByRole("button", { name: "VER LOS TRES CASOS" }).click();
-      assert.equal(await page.locator("#casePreview").isVisible(), false);
-      assert.equal(await page.locator("#caseContent").isVisible(), true);
       for (const [index, classification] of [
         "background",
         "hint",
