@@ -532,47 +532,65 @@
           </p>
         </div>
         <hr />
-        <p class="small">AHORA, PRACTICA CÓMO SE INTERPRETAN LOS RECUENTOS</p>
-        <div class="small">
-          CUADERNO DE INVESTIGACIÓN · CASO <span id="caseNumber">1</span>/3
+        <div id="casePreview" class="notice">
+          <div class="small">ANTES DE LOS TRES CASOS</div>
+          <h2>¿Cuántos candidatos esperamos por el fondo?</h2>
+          <p>
+            En estos ejemplos inventados, esperamos entre
+            <b>8 y 12 candidatos</b> aunque no haya WIMPs. Después compararás
+            esa cantidad con tres recuentos: <b>10, 15 y 31</b>.
+          </p>
+          <p class="small">
+            Es una cifra para practicar; el número real depende del tiempo de
+            observación y de las condiciones del experimento.
+          </p>
+          <button class="primary" id="startCases" type="button">
+            VER LOS TRES CASOS
+          </button>
         </div>
-        <h2 id="caseTitle">¿Qué nos dicen los datos?</h2>
-        <p id="caseDescription"></p>
-        <div class="caseNumbers">
-          <div>
-            <span class="small">Fondo que esperábamos</span
-            ><b id="expectedCount"></b><span class="small">eventos</span>
+        <div id="caseContent" class="hidden">
+          <p class="small">AHORA, PRACTICA CÓMO SE INTERPRETAN LOS RECUENTOS</p>
+          <div class="small">
+            CUADERNO DE INVESTIGACIÓN · CASO <span id="caseNumber">1</span>/3
           </div>
-          <div>
-            <span class="small">Candidatos observados</span
-            ><b id="observedCount"></b><span class="small">eventos</span>
+          <h2 id="caseTitle">¿Qué nos dicen los datos?</h2>
+          <p id="caseDescription"></p>
+          <div class="caseNumbers">
+            <div>
+              <span class="small">Fondo que esperábamos</span
+              ><b id="expectedCount"></b><span class="small">eventos</span>
+            </div>
+            <div>
+              <span class="small">Candidatos observados</span
+              ><b id="observedCount"></b><span class="small">eventos</span>
+            </div>
           </div>
+          <p>Elige la conclusión más cuidadosa:</p>
+          <div class="choices">
+            <button class="primary" data-conclusion="background" type="button">
+              Los datos encajan con el fondo esperado
+            </button>
+            <button class="primary" data-conclusion="hint" type="button">
+              Hay una pista interesante que debemos estudiar
+            </button>
+            <button class="primary" data-conclusion="discovery" type="button">
+              Ya hemos descubierto materia oscura
+            </button>
+          </div>
+          <div
+            id="caseFeedback"
+            class="feedback"
+            role="status"
+            aria-live="polite"
+          ></div>
+          <button class="primary hidden" id="nextCase" type="button">
+            SIGUIENTE CASO
+          </button>
+          <p class="small">
+            Cifras inventadas para el juego. No son datos ni resultados de
+            TREX-DM.
+          </p>
         </div>
-        <p>Elige la conclusión más cuidadosa:</p>
-        <div class="choices">
-          <button class="primary" data-conclusion="background" type="button">
-            Los datos encajan con el fondo esperado
-          </button>
-          <button class="primary" data-conclusion="hint" type="button">
-            Hay una pista interesante que debemos estudiar
-          </button>
-          <button class="primary" data-conclusion="discovery" type="button">
-            Ya hemos descubierto materia oscura
-          </button>
-        </div>
-        <div
-          id="caseFeedback"
-          class="feedback"
-          role="status"
-          aria-live="polite"
-        ></div>
-        <button class="primary hidden" id="nextCase" type="button">
-          SIGUIENTE CASO
-        </button>
-        <p class="small">
-          Cifras inventadas para el juego. No son datos ni resultados de
-          TREX-DM.
-        </p>
       </section>
 
       <section id="decision" class="card center hidden">
@@ -954,8 +972,12 @@
           caseScore = 0;
           showRoundResults();
           show("evidence");
-          showCase();
         } else showGameEvent();
+      });
+      document.getElementById("startCases").addEventListener("click", () => {
+        document.getElementById("casePreview").classList.add("hidden");
+        document.getElementById("caseContent").classList.remove("hidden");
+        showCase();
       });
       document.querySelectorAll("[data-conclusion]").forEach((button) => {
         button.addEventListener("click", () => {
