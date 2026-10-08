@@ -400,8 +400,15 @@
         pointer-events: none;
       }
       .dot.keep {
-        background: var(--good);
-        box-shadow: 0 0 15px var(--good);
+        background: #ffe45c;
+        border: 2px solid #fff9c2;
+        box-shadow:
+          0 0 8px #ffe45c,
+          0 0 20px #ffe45c;
+        z-index: 2;
+      }
+      .dot.clickable.keep:hover {
+        transform: translate(-50%, -50%) scale(1.18);
       }
       @media (max-width: 700px) {
         .bgexamples {
@@ -705,6 +712,11 @@
               style="aspect-ratio: 900/360"
             ></canvas>
           </div>
+          <p class="small" style="max-width: 760px; margin: 14px auto 0">
+            Cerca de <b>8 keV</b> puede aparecer un pico de fondo producido por
+            el cobre del detector. Si un candidato cae justo ahí, podría venir
+            del detector y no ser señal de axiones.
+          </p>
         </div>
         <p id="conclusion"></p>
         <div class="note">
@@ -1191,6 +1203,16 @@
           const vals = [];
           for (let E = 0.2; E <= 12; E += 0.05) vals.push([E, primakoff(E)]);
           const max = Math.max(...vals.map((v) => v[1]));
+          const copperX = L + ((W - L - R) * 8) / 12;
+          c.fillStyle = "#ffd16620";
+          c.fillRect(copperX - 7, T, 14, H - B - T);
+          c.save();
+          c.translate(copperX + 5, T + 8);
+          c.rotate(Math.PI / 2);
+          c.fillStyle = "#ffd166";
+          c.font = "bold 13px system-ui";
+          c.fillText("FONDO DEL COBRE · 8 keV", 0, 0);
+          c.restore();
           c.beginPath();
           vals.forEach((v, i) => {
             const x = L + ((W - L - R) * v[0]) / 12,
