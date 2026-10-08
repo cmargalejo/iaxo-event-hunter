@@ -15,12 +15,38 @@ async function main() {
 
   await page.locator('[data-open="rotation"]').click();
   await page.locator("#haloSlider").fill("100");
-  await page.getByText("¡Encaja!").waitFor();
+  await page.locator("#rotationResult").getByText("¡Encaja!").waitFor();
+  const fittedSpin = await page
+    .locator("#spiralDisc")
+    .evaluate((el) => el.style.animationDuration);
+  assert.equal(
+    await page
+      .locator("#spiralDisc")
+      .evaluate((el) => getComputedStyle(el).animationName),
+    "galaxyTurn",
+  );
+  await page.locator("#haloSlider").fill("160");
+  await page.getByText("Te has pasado").waitFor();
+  assert.equal(await page.locator("#haloValue").textContent(), "Muchísima");
+  const excessiveSpin = await page
+    .locator("#spiralDisc")
+    .evaluate((el) => el.style.animationDuration);
+  assert.notEqual(fittedSpin, excessiveSpin);
+  const transformBefore = await page
+    .locator("#spiralDisc")
+    .evaluate((el) => getComputedStyle(el).transform);
+  await page.waitForTimeout(180);
+  const transformAfter = await page
+    .locator("#spiralDisc")
+    .evaluate((el) => getComputedStyle(el).transform);
+  assert.notEqual(transformBefore, transformAfter);
   await page.locator(".back:visible").click();
 
   await page.locator('[data-open="lens"]').click();
-  await page.locator("#lensSlider").fill("79");
-  await page.getByText("¡Has encontrado la pista!").waitFor();
+  await page.locator('[data-lens-choice="little"]').click();
+  await page.getByText("Ese arco es demasiado pequeño").waitFor();
+  await page.locator('[data-lens-choice="match"]').click();
+  await page.getByText("Los arcos observados son más amplios").waitFor();
   await page.locator(".back:visible").click();
 
   await page.locator('[data-open="lab"]').click();

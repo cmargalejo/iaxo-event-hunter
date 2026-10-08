@@ -260,11 +260,45 @@
         margin: 7px auto 12px;
       }
       .chart text,
-      .lensSvg text {
-        fill: var(--muted);
-        font:
-          12px system-ui,
-          sans-serif;
+      .galaxySpin {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        margin: 12px auto 4px;
+        padding: 12px 16px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: #ffffff05;
+      }
+      .galaxySpin svg {
+        width: 126px;
+        flex: 0 0 126px;
+      }
+      .spiralDisc {
+        transform-box: view-box;
+        transform-origin: 100px 100px;
+        animation: galaxyTurn 8s linear infinite;
+      }
+      @keyframes galaxyTurn {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .spinCopy strong {
+        display: block;
+        color: var(--ink);
+      }
+      .spinCopy span {
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .sliderEnds {
+        display: flex;
+        justify-content: space-between;
+        grid-column: 1 / -1;
+        color: var(--muted);
+        font-size: 12px;
       }
       .sliderBlock {
         display: grid;
@@ -339,31 +373,109 @@
       }
       .lensLayout {
         display: grid;
-        grid-template-columns: minmax(0, 1.4fr) minmax(220px, 0.6fr);
-        gap: 20px;
-        align-items: center;
+        gap: 18px;
+      }
+      .lensMatch {
+        display: grid;
+        grid-template-columns: minmax(180px, 0.8fr) minmax(0, 2fr);
+        gap: 18px;
+        align-items: stretch;
+      }
+      .lensReference,
+      .lensChoice {
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--panel);
+      }
+      .lensReference {
+        text-align: center;
+      }
+      .lensReference strong {
+        display: block;
+      }
+      .lensOptions {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
       }
       .lensSvg {
         display: block;
         width: 100%;
-        max-height: 380px;
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        background: radial-gradient(ellipse, #11243b, #06101b);
+        max-height: 180px;
+        margin: 5px auto 10px;
       }
-      .targetArc {
+      .lensChoice {
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+        align-items: center;
+        color: var(--ink);
+        text-align: center;
+        cursor: pointer;
+        transition:
+          border-color 0.15s,
+          background 0.15s,
+          transform 0.15s;
+      }
+      .lensChoice:hover,
+      .lensChoice:focus-visible {
+        transform: translateY(-2px);
+        border-color: var(--cyan);
+        outline: none;
+      }
+      .lensChoice[aria-pressed="true"] {
+        border-color: var(--cyan);
+      }
+      .lensChoice.correct {
+        border-color: var(--green);
+        background: #7ce0b41c;
+      }
+      .lensChoice.wrong {
+        border-color: var(--red);
+        background: #ff9c9c1a;
+      }
+      .lensLetter {
+        display: grid;
+        width: 30px;
+        height: 30px;
+        place-items: center;
+        border-radius: 50%;
+        color: #071321;
+        background: var(--cyan);
+        font-weight: 900;
+      }
+      .lensChoice span:last-child {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .lensExplanation {
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .lensTargetCircle {
         fill: none;
         stroke: var(--cyan);
         stroke-width: 5;
-        stroke-linecap: round;
-        stroke-dasharray: 2 10;
-        opacity: 0.68;
+        stroke-dasharray: 3 8;
       }
-      .predArc {
+      .lensModelCircle {
         fill: none;
-        stroke: var(--gold);
+        stroke: #ffd166;
         stroke-width: 4;
-        stroke-linecap: round;
+      }
+      .lensCenter {
+        fill: #ffd166;
+        stroke: #fff0bf;
+        stroke-width: 2;
+      }
+      .lensStars {
+        fill: #e8dcff;
+      }
+      .lensCaption {
+        color: var(--muted);
+        font-size: 13px;
       }
       .budget {
         display: flex;
@@ -456,9 +568,6 @@
         border-color: var(--red);
         background: #ff9c9c1a;
       }
-      .mapStars {
-        fill: #f6f2c4;
-      }
       footer {
         padding-top: 20px;
         color: #7e93ab;
@@ -473,9 +582,21 @@
         header {
           margin-bottom: 13px;
         }
-        .cards,
-        .lensLayout {
+        .cards {
           grid-template-columns: 1fr;
+        }
+        .lensMatch {
+          grid-template-columns: 1fr;
+        }
+        .lensOptions {
+          gap: 7px;
+        }
+        .lensChoice {
+          padding: 9px 5px;
+        }
+        .lensLetter {
+          width: 26px;
+          height: 26px;
         }
         .gameTop {
           display: block;
@@ -493,6 +614,14 @@
         .quizChoices {
           grid-template-columns: 1fr;
         }
+        .galaxySpin {
+          gap: 10px;
+          padding: 10px;
+        }
+        .galaxySpin svg {
+          width: 100px;
+          flex-basis: 100px;
+        }
       }
       @media (prefers-reduced-motion: reduce) {
         *,
@@ -500,6 +629,9 @@
         *::after {
           scroll-behavior: auto !important;
           transition: none !important;
+        }
+        .spiralDisc {
+          animation: none !important;
         }
       }
     </style>
@@ -577,6 +709,60 @@
             <span>Velocidad de las estrellas</span
             ><span>Esquema simplificado</span>
           </div>
+          <div class="galaxySpin">
+            <svg
+              viewBox="0 0 200 200"
+              role="img"
+              aria-label="Espiral de galaxia que gira más rápido al aumentar la masa invisible"
+            >
+              <circle
+                cx="100"
+                cy="100"
+                r="88"
+                fill="#6ad8ff"
+                fill-opacity=".035"
+                stroke="#6ad8ff"
+                stroke-opacity=".18"
+              />
+              <g
+                id="spiralDisc"
+                class="spiralDisc"
+                fill="none"
+                stroke-linecap="round"
+                stroke-width="8"
+              >
+                <path
+                  d="M100 100C112 88 128 96 125 111S105 129 91 116 87 80 112 70 157 89 149 121 111 160 76 138 62 74 101 52 178 62 181 111"
+                  stroke="#6ad8ff"
+                />
+                <path
+                  d="M100 100C112 88 128 96 125 111S105 129 91 116 87 80 112 70 157 89 149 121 111 160 76 138 62 74 101 52 178 62 181 111"
+                  stroke="#b28cff"
+                  transform="rotate(120 100 100)"
+                />
+                <path
+                  d="M100 100C112 88 128 96 125 111S105 129 91 116 87 80 112 70 157 89 149 121 111 160 76 138 62 74 101 52 178 62 181 111"
+                  stroke="#ff8ac7"
+                  transform="rotate(240 100 100)"
+                />
+                <circle
+                  cx="100"
+                  cy="100"
+                  r="9"
+                  fill="#fff0bf"
+                  stroke="#ffd166"
+                  stroke-width="3"
+                />
+              </g>
+            </svg>
+            <div class="spinCopy">
+              <strong>La galaxia está girando</strong>
+              <span
+                >Al añadir masa al halo, aumenta la velocidad que predecimos
+                para las estrellas del borde.</span
+              >
+            </div>
+          </div>
           <svg
             class="chart"
             id="rotationChart"
@@ -617,15 +803,18 @@
           </div>
           <div class="sliderBlock">
             <label for="haloSlider">Materia invisible en el halo</label
-            ><output id="haloValue" for="haloSlider">0 %</output
+            ><output id="haloValue" for="haloSlider">Sólo visible</output
             ><input
               id="haloSlider"
               type="range"
               min="0"
-              max="100"
+              max="160"
               value="0"
-              aria-label="Cantidad de materia invisible en el halo"
+              aria-label="Cantidad de materia invisible en el halo, desde nada hasta demasiada"
             />
+            <div class="sliderEnds">
+              <span>Sólo materia visible</span><span>Más de la necesaria</span>
+            </div>
           </div>
           <div id="rotationResult" class="result" aria-live="polite">
             Arrastra el control: con sólo las estrellas visibles, la predicción
@@ -642,86 +831,91 @@
         <div class="gameTop">
           <div>
             <div class="eyebrow">Juego 2 · Luz y gravedad</div>
-            <h2 id="lensTitle">¿Dónde está la masa?</h2>
+            <h2 id="lensTitle">Sigue la luz</h2>
             <p>
-              La gravedad puede cambiar el camino de la luz. Ajusta la masa
-              invisible hasta que los arcos que predice el modelo coincidan con
-              los que observamos.
+              La gravedad curva la luz. Mira los arcos que observamos y elige el
+              dibujo que más se parece. ¿Cuál necesita más masa para formarse?
             </p>
           </div>
           <button class="back" type="button">← Los cuatro juegos</button>
         </div>
         <div class="stage lensLayout">
-          <svg
-            class="lensSvg"
-            viewBox="0 0 520 320"
-            role="img"
-            aria-label="Una galaxia delante curva la luz de una galaxia lejana y crea arcos alrededor"
-          >
-            <defs>
-              <radialGradient id="galaxyGlow">
-                <stop stop-color="#fff4bd" />
-                <stop offset=".25" stop-color="#ffa9dc" />
-                <stop offset="1" stop-color="#8a77c7" stop-opacity="0" />
-              </radialGradient>
-            </defs>
-            <g class="mapStars">
-              <circle cx="40" cy="40" r="1.5" />
-              <circle cx="114" cy="83" r="2" />
-              <circle cx="458" cy="51" r="1.5" />
-              <circle cx="474" cy="252" r="2" />
-              <circle cx="78" cy="270" r="1.5" />
-              <circle cx="406" cy="292" r="1.5" />
-              <circle cx="209" cy="37" r="1.3" />
-            </g>
-            <path id="lensTargetTop" class="targetArc" />
-            <path id="lensTargetBottom" class="targetArc" />
-            <path id="lensPredictionTop" class="predArc" />
-            <path id="lensPredictionBottom" class="predArc" />
-            <circle cx="260" cy="157" r="20" fill="url(#galaxyGlow)" />
-            <circle cx="260" cy="157" r="6" fill="#fff2ca" />
-            <circle
-              cx="260"
-              cy="157"
-              r="31"
-              fill="none"
-              stroke="#ffd166"
-              stroke-opacity=".5"
-              stroke-width="1.5"
-            />
-            <text x="260" y="209" text-anchor="middle">
-              galaxia que curva la luz
-            </text>
-            <text x="260" y="299" text-anchor="middle">
-              arcos observados · azul punteado
-            </text>
-          </svg>
-          <div>
-            <h3>¿Cuánta masa falta?</h3>
-            <p>
-              El círculo dorado representa la galaxia visible. La gravedad que
-              curva la luz sugiere que hay más masa alrededor.
-            </p>
-            <div class="sliderBlock">
-              <label for="lensSlider">Masa invisible</label
-              ><output id="lensValue" for="lensSlider">0 %</output
-              ><input
-                id="lensSlider"
-                type="range"
-                min="0"
-                max="100"
-                value="0"
-                aria-label="Masa invisible alrededor de la galaxia"
-              />
+          <div class="lensMatch">
+            <div class="lensReference">
+              <strong>Lo que observamos</strong>
+              <svg
+                class="lensSvg"
+                viewBox="0 0 180 140"
+                role="img"
+                aria-label="Arco amplio de luz alrededor de una galaxia"
+              >
+                <g class="lensStars">
+                  <circle cx="25" cy="22" r="2" />
+                  <circle cx="149" cy="26" r="2" />
+                  <circle cx="30" cy="115" r="2" />
+                  <circle cx="152" cy="111" r="2" />
+                </g>
+                <circle class="lensTargetCircle" cx="90" cy="68" r="47" />
+                <circle class="lensCenter" cx="90" cy="68" r="10" />
+              </svg>
+              <span class="lensCaption">Arcos de una galaxia lejana</span>
             </div>
-            <div id="lensResult" class="result" aria-live="polite">
-              Mueve el control para hacer coincidir tus arcos con los que vemos.
+            <div
+              class="lensOptions"
+              aria-label="Elige el modelo que coincide con los arcos observados"
+            >
+              <button
+                class="lensChoice"
+                type="button"
+                data-lens-choice="little"
+                aria-pressed="false"
+              >
+                <span class="lensLetter">A</span>
+                <svg class="lensSvg" viewBox="0 0 180 140" aria-hidden="true">
+                  <circle class="lensModelCircle" cx="90" cy="68" r="20" />
+                  <circle class="lensCenter" cx="90" cy="68" r="10" />
+                </svg>
+                <span>Poca curvatura</span>
+              </button>
+              <button
+                class="lensChoice"
+                type="button"
+                data-lens-choice="some"
+                aria-pressed="false"
+              >
+                <span class="lensLetter">B</span>
+                <svg class="lensSvg" viewBox="0 0 180 140" aria-hidden="true">
+                  <circle class="lensModelCircle" cx="90" cy="68" r="34" />
+                  <circle class="lensCenter" cx="90" cy="68" r="10" />
+                </svg>
+                <span>Más curvatura</span>
+              </button>
+              <button
+                class="lensChoice"
+                type="button"
+                data-lens-choice="match"
+                aria-pressed="false"
+              >
+                <span class="lensLetter">C</span>
+                <svg class="lensSvg" viewBox="0 0 180 140" aria-hidden="true">
+                  <circle class="lensModelCircle" cx="90" cy="68" r="47" />
+                  <circle class="lensCenter" cx="90" cy="68" r="10" />
+                </svg>
+                <span>Arco amplio</span>
+              </button>
             </div>
-            <p class="note">
-              Es un dibujo de una lente gravitatoria, no una fotografía real. La
-              masa se deduce por cómo desvía la luz.
-            </p>
           </div>
+          <p class="lensExplanation">
+            Compara el tamaño de cada arco con el que observamos. Los círculos
+            dorados representan la galaxia que curva la luz.
+          </p>
+          <div id="lensResult" class="result" aria-live="polite">
+            Elige A, B o C: ¿qué dibujo se parece más a lo que observamos?
+          </div>
+          <p class="note">
+            Es un esquema para jugar: en el universo real, la forma de los arcos
+            puede ser mucho más variada.
+          </p>
         </div>
       </section>
 
@@ -886,9 +1080,8 @@
         const rotationData = [0.3, 0.53, 0.73, 0.83, 0.88, 0.9, 0.91];
         const visibleOnly = [0.3, 0.57, 0.77, 0.74, 0.65, 0.55, 0.48];
         const chartX = [55, 135, 215, 295, 375, 455, 530];
-        const chartY = (v) => 205 - v * 170;
+        const chartY = (v) => 205 - v * 140;
         const haloSlider = document.querySelector("#haloSlider");
-        const lensSlider = document.querySelector("#lensSlider");
         const byId = (id) => document.getElementById(id);
 
         function showGame(id = "") {
@@ -899,7 +1092,7 @@
           window.scrollTo({ top: 0, behavior: "smooth" });
           if (!id) return;
           if (id === "rotation") updateRotation();
-          if (id === "lens") updateLens();
+          if (id === "lens") resetLens();
           if (id === "lab") updateLab();
           if (id === "route") renderRoute();
         }
@@ -941,21 +1134,48 @@
               return dot;
             }),
           );
-          byId("haloValue").textContent = `${haloSlider.value} %`;
+          const sliderValue = Number(haloSlider.value);
+          const amountLabel = byId("haloValue");
+          if (sliderValue === 0) amountLabel.textContent = "Sólo visible";
+          else if (sliderValue < 75) amountLabel.textContent = "Falta masa";
+          else if (sliderValue < 95) amountLabel.textContent = "Casi";
+          else if (sliderValue <= 105) amountLabel.textContent = "¡Encaja!";
+          else if (sliderValue <= 130)
+            amountLabel.textContent = "Hay demasiada";
+          else amountLabel.textContent = "Muchísima";
           const error =
             predictions.reduce(
               (sum, v, i) => sum + Math.abs(v - rotationData[i]),
               0,
             ) / predictions.length;
+          const signedDifference =
+            predictions.reduce((sum, v, i) => sum + v - rotationData[i], 0) /
+            predictions.length;
+          const outerSpeed = predictions[predictions.length - 1];
+          const turnProgress = Math.max(
+            0,
+            Math.min(
+              1,
+              (outerSpeed - visibleOnly.at(-1)) / (1.2 - visibleOnly.at(-1)),
+            ),
+          );
+          byId("spiralDisc").style.animationDuration =
+            `${(11 - turnProgress * 9).toFixed(1)}s`;
           const result = byId("rotationResult");
-          if (error < 0.015) {
+          if (error < 0.01) {
             result.className = "result good";
             result.innerHTML =
               "<strong>¡Encaja!</strong> Hace falta un halo con materia invisible para explicar cómo se mueven las estrellas más alejadas.";
           } else if (error < 0.07) {
             result.className = "result neutral";
             result.textContent =
-              "¡Casi! Prueba a añadir un poco más de masa invisible.";
+              signedDifference > 0
+                ? "¡Casi! Has añadido un poco más de masa de la necesaria."
+                : "¡Casi! Prueba a añadir un poco más de masa invisible.";
+          } else if (signedDifference > 0.025) {
+            result.className = "result neutral";
+            result.textContent =
+              "Te has pasado: con tanta materia invisible, las estrellas del borde girarían más deprisa de lo que observamos.";
           } else {
             result.className = "result";
             result.textContent =
@@ -964,51 +1184,39 @@
         }
         haloSlider.addEventListener("input", updateRotation);
 
-        function arcPath(radius, upper) {
-          const cx = 260,
-            cy = 157;
-          const start = upper ? 200 : 20;
-          const end = upper ? 340 : 160;
-          const point = (angle) => [
-            cx + radius * Math.cos((angle * Math.PI) / 180),
-            cy + radius * Math.sin((angle * Math.PI) / 180),
-          ];
-          const [x1, y1] = point(start),
-            [x2, y2] = point(end);
-          return `M ${x1.toFixed(1)} ${y1.toFixed(1)} A ${radius} ${radius} 0 0 1 ${x2.toFixed(1)} ${y2.toFixed(1)}`;
-        }
-        function updateLens() {
-          const value = Number(lensSlider.value);
-          const radius = 28 + value * 0.56;
-          const targetRadius = 72;
-          byId("lensTargetTop").setAttribute("d", arcPath(targetRadius, true));
-          byId("lensTargetBottom").setAttribute(
-            "d",
-            arcPath(targetRadius, false),
-          );
-          byId("lensPredictionTop").setAttribute("d", arcPath(radius, true));
-          byId("lensPredictionBottom").setAttribute(
-            "d",
-            arcPath(radius, false),
-          );
-          byId("lensValue").textContent = `${value} %`;
-          const difference = Math.abs(radius - targetRadius);
+        const lensChoices = [...document.querySelectorAll(".lensChoice")];
+        function resetLens() {
+          lensChoices.forEach((button) => {
+            button.setAttribute("aria-pressed", "false");
+            button.classList.remove("correct", "wrong");
+          });
           const result = byId("lensResult");
-          if (difference < 5) {
-            result.className = "result good";
-            result.innerHTML =
-              "<strong>¡Has encontrado la pista!</strong> La luz se curva como si hubiera más masa que la que vemos.";
-          } else if (difference < 15) {
-            result.className = "result neutral";
-            result.textContent =
-              "Casi coincide. Ajusta un poco la masa invisible.";
-          } else {
-            result.className = "result";
-            result.textContent =
-              "Los arcos predichos (amarillos) aún no encajan con los observados (azul punteado).";
-          }
+          result.className = "result";
+          result.textContent =
+            "Elige A, B o C: ¿qué dibujo se parece más a lo que observamos?";
         }
-        lensSlider.addEventListener("input", updateLens);
+        lensChoices.forEach((button) =>
+          button.addEventListener("click", () => {
+            lensChoices.forEach((choice) => {
+              choice.setAttribute("aria-pressed", String(choice === button));
+              choice.classList.remove("correct", "wrong");
+            });
+            const result = byId("lensResult");
+            if (button.dataset.lensChoice === "match") {
+              button.classList.add("correct");
+              result.className = "result good";
+              result.innerHTML =
+                "<strong>¡Ese es!</strong> Los arcos observados son más amplios de lo que explica la materia que vemos. La gravedad indica que hay más masa alrededor, incluida materia oscura.";
+            } else {
+              button.classList.add("wrong");
+              result.className = "result neutral";
+              result.textContent =
+                button.dataset.lensChoice === "little"
+                  ? "Ese arco es demasiado pequeño. Mira cuánto más se curva la luz en la imagen observada."
+                  : "Vas por buen camino: la luz se curva, pero el arco aún es más pequeño que el observado.";
+            }
+          }),
+        );
 
         const budget = 6;
         const costs = { time: 1, mass: 2, quiet: 2, readout: 2 };
@@ -1157,9 +1365,6 @@
           byId("routeResult").textContent =
             "Elige una respuesta para conseguir la pista.";
         }
-
-        byId("lensTargetTop").setAttribute("d", arcPath(72, true));
-        byId("lensTargetBottom").setAttribute("d", arcPath(72, false));
       })();
     </script>
   </body>
