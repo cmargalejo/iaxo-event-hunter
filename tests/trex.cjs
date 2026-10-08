@@ -29,6 +29,10 @@ async function main() {
         await page.locator("#lesson").innerText(),
         /Los WIMPs son partículas hipotéticas/,
       );
+      assert.match(
+        await page.locator("#trexDiagramDescription").textContent(),
+        /gas de neón o argón.*amplifica/s,
+      );
       await page.getByRole("button", { name: "VER LOS EVENTOS" }).click();
       assert.equal(await page.locator("#backgroundIntro").isVisible(), true);
       assert.equal(await page.locator(".eventExample canvas").count(), 6);

@@ -125,37 +125,19 @@
         border-radius: 18px;
         background: #ffffff08;
       }
-      .detector {
-        min-height: 190px;
-        display: grid;
-        place-items: center;
-        position: relative;
-        overflow: hidden;
-        border: 2px solid #a9c6d760;
-        border-radius: 16px;
-        background: radial-gradient(ellipse, #13283a, #07111b);
+      .detectorIllustration {
+        min-height: 280px;
+        margin: 0;
+        padding: 8px;
+        border: 1px solid #a9c6d760;
+        border-radius: 18px;
+        background: radial-gradient(ellipse, #183b49, #07111b 72%);
       }
-      .detector::before,
-      .detector::after {
-        content: "";
-        position: absolute;
-        background: #9ab5c720;
-      }
-      .detector::before {
+      .detectorIllustration svg {
+        display: block;
         width: 100%;
-        height: 1px;
-      }
-      .detector::after {
-        height: 100%;
-        width: 1px;
-      }
-      .gas {
-        z-index: 1;
-        border: 1px dashed #72e0c088;
-        padding: 14px 18px;
-        border-radius: 12px;
-        color: #b3f5e4;
-        text-align: center;
+        max-width: 540px;
+        height: auto;
       }
       .eventbox {
         display: grid;
@@ -353,18 +335,168 @@
               menos partículas del exterior.
             </p>
           </div>
-          <div
-            class="detector"
-            role="img"
-            aria-label="Esquema de una cámara con gas donde podría producirse una señal diminuta"
-          >
-            <div class="gas">
-              GAS<br /><span class="small">neón o argón</span><br /><span
-                aria-hidden="true"
-                >✦</span
+          <figure class="detectorIllustration">
+            <svg
+              viewBox="0 0 560 340"
+              role="img"
+              aria-labelledby="trexDiagramTitle trexDiagramDescription"
+            >
+              <title id="trexDiagramTitle">
+                Una partícula choca dentro del gas de TREX-DM
+              </title>
+              <desc id="trexDiagramDescription">
+                Una cámara contiene gas de neón o argón. Un WIMP podría chocar
+                con un núcleo y producir una pequeña huella que el detector
+                amplifica.
+              </desc>
+              <defs>
+                <linearGradient id="chamberFill" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#317b82" stop-opacity=".7" />
+                  <stop offset="1" stop-color="#143640" stop-opacity=".6" />
+                </linearGradient>
+                <radialGradient id="hitGlow">
+                  <stop offset="0" stop-color="#fff5ad" stop-opacity=".95" />
+                  <stop offset=".28" stop-color="#72e0c0" stop-opacity=".55" />
+                  <stop offset="1" stop-color="#72e0c0" stop-opacity="0" />
+                </radialGradient>
+                <marker
+                  id="arrowHead"
+                  markerWidth="8"
+                  markerHeight="8"
+                  refX="6"
+                  refY="4"
+                  orient="auto"
+                >
+                  <path d="M0 0 8 4 0 8Z" fill="#d9c7ff" />
+                </marker>
+              </defs>
+              <g fill="#d8f6ed" opacity=".75">
+                <circle cx="56" cy="54" r="2" />
+                <circle cx="486" cy="63" r="2.5" />
+                <circle cx="516" cy="242" r="2" />
+                <circle cx="60" cy="268" r="2.5" />
+                <circle cx="122" cy="45" r="1.5" />
+                <circle cx="438" cy="292" r="1.8" />
+              </g>
+              <g stroke="#c2d8e4" stroke-width="5">
+                <path
+                  d="M78 104h-17v132h17m404-132h17v132h-17"
+                  fill="#8299a8"
+                />
+                <rect
+                  x="78"
+                  y="90"
+                  width="404"
+                  height="160"
+                  rx="28"
+                  fill="url(#chamberFill)"
+                />
+                <path d="M97 102h366M97 238h366" opacity=".34" />
+              </g>
+              <g fill="#9cebd8" opacity=".7">
+                <circle cx="124" cy="137" r="4" />
+                <circle cx="169" cy="203" r="3" />
+                <circle cx="211" cy="134" r="3" />
+                <circle cx="239" cy="219" r="4" />
+                <circle cx="339" cy="122" r="3" />
+                <circle cx="385" cy="210" r="4" />
+                <circle cx="443" cy="151" r="3" />
+                <circle cx="424" cy="224" r="2.5" />
+              </g>
+              <text
+                x="280"
+                y="78"
+                fill="#b8f2e4"
+                font-family="system-ui, sans-serif"
+                font-size="14"
+                font-weight="750"
+                text-anchor="middle"
+                letter-spacing="1.5"
               >
-            </div>
-          </div>
+                CÁMARA LLENA DE GAS
+              </text>
+              <text
+                x="280"
+                y="278"
+                fill="#b9c7da"
+                font-family="system-ui, sans-serif"
+                font-size="14"
+                text-anchor="middle"
+              >
+                NEÓN O ARGÓN
+              </text>
+              <path
+                d="M105 172h126"
+                fill="none"
+                stroke="#d9c7ff"
+                stroke-width="3"
+                stroke-dasharray="7 8"
+                marker-end="url(#arrowHead)"
+              />
+              <circle cx="124" cy="172" r="10" fill="#d9c7ff" />
+              <text
+                x="125"
+                y="158"
+                fill="#e5dcff"
+                font-family="system-ui, sans-serif"
+                font-size="12"
+                font-weight="700"
+                text-anchor="middle"
+              >
+                WIMP
+              </text>
+              <circle cx="252" cy="172" r="48" fill="url(#hitGlow)" />
+              <g stroke="#fff0a6" stroke-width="2" opacity=".8">
+                <path d="M252 145v54m-27-27h54m-46-19 38 38m0-38-38 38" />
+              </g>
+              <circle cx="252" cy="172" r="14" fill="#f7d977" />
+              <circle cx="247" cy="168" r="5" fill="#fff7d3" />
+              <path
+                d="M265 164q20-16 37-4t31-3"
+                fill="none"
+                stroke="#fff0a6"
+                stroke-width="4"
+                stroke-linecap="round"
+              />
+              <path
+                d="M350 177h92"
+                fill="none"
+                stroke="#72e0c0"
+                stroke-width="2"
+                stroke-dasharray="4 6"
+              />
+              <rect
+                x="438"
+                y="149"
+                width="25"
+                height="54"
+                rx="8"
+                fill="#72e0c0"
+              />
+              <path
+                d="M444 177h5l4-12 5 24 4-12h2"
+                fill="none"
+                stroke="#07352f"
+                stroke-width="2.5"
+                stroke-linejoin="round"
+              />
+              <text
+                x="390"
+                y="222"
+                fill="#aaf3df"
+                font-family="system-ui, sans-serif"
+                font-size="12"
+                font-weight="700"
+                text-anchor="middle"
+              >
+                HUELLA AMPLIFICADA
+              </text>
+            </svg>
+            <figcaption class="small center">
+              Un posible choque deja una huella diminuta que el detector hace
+              visible.
+            </figcaption>
+          </figure>
         </div>
         <p class="notice">
           <b>Una pista:</b> todavía no se ha confirmado que existan WIMPs. Aquí
