@@ -526,6 +526,7 @@
               ><b id="roundCorrectCount"></b>
             </div>
           </div>
+          <p id="roundBackgroundExpectation" class="small"></p>
           <p class="small">
             Este resumen corresponde a tus respuestas en una partida simulada.
             Un candidato no significa que hayas encontrado un WIMP.
@@ -536,9 +537,10 @@
           <div class="small">ANTES DE LOS TRES CASOS</div>
           <h2>¿Cuántos candidatos esperamos por el fondo?</h2>
           <p>
-            En estos ejemplos inventados, esperamos entre
-            <b>8 y 12 candidatos</b> aunque no haya WIMPs. Después compararás
-            esa cantidad con tres recuentos: <b>10, 15 y 31</b>.
+            En los tres casos inventados del cuaderno —una exposición distinta a
+            la tanda de huellas— esperamos entre <b>8 y 12 candidatos</b> aunque
+            no haya WIMPs. Después compararás esa cantidad con tres recuentos:
+            <b>10, 15 y 31</b>.
           </p>
           <p class="small">
             Es una cifra para practicar; el número real depende del tiempo de
@@ -905,6 +907,11 @@
           String(candidateChoices);
         document.getElementById("roundCorrectCount").textContent =
           `${score}/${events.length}`;
+        const expectedBackground = Math.round(
+          5 + ((events.length - 6) * 5) / 6,
+        );
+        document.getElementById("roundBackgroundExpectation").textContent =
+          `En esta tanda simulada, de ${events.length} eventos esperamos alrededor de ${expectedBackground} de fondo. Incluimos los neutrones en el fondo, aunque puedan parecer una señal.`;
       };
       document
         .getElementById("start")

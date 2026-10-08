@@ -104,6 +104,14 @@ async function main() {
         await page.locator("#roundCorrectCount").textContent(),
         `${correctCount}/${eventTotal}`,
       );
+      const expectedBackground = Math.round(5 + ((eventTotal - 6) * 5) / 6);
+      assert.match(
+        await page.locator("#roundBackgroundExpectation").innerText(),
+        new RegExp(
+          `de ${eventTotal} eventos esperamos alrededor de ${expectedBackground} de fondo.*neutrones en el fondo`,
+          "i",
+        ),
+      );
       assert.match(
         await page.locator("#roundSummary").innerText(),
         /partida simulada/i,
