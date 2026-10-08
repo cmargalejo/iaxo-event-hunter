@@ -18,6 +18,12 @@ async function main() {
       const errors = [];
       page.on("pageerror", (error) => errors.push(error.message));
       await page.goto(url);
+      assert.equal(
+        await page
+          .getByRole("link", { name: "IAXO Event Hunter" })
+          .getAttribute("href"),
+        "./",
+      );
       await page.getByRole("button", { name: "EMPEZAR" }).click();
       assert.match(
         await page.locator("#lesson").innerText(),
