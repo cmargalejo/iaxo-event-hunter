@@ -48,11 +48,17 @@ async function main() {
   await page.locator("#runDetector").click();
   const result = await page.locator("#labResult").innerText();
   assert.match(result, /observar más tiempo y reducir el ruido de fondo/);
-  assert.match(result, /huellas de señal/);
-  assert.match(result, /huellas de fondo \(ruido\)/);
   assert.match(result, /Tu diseño ayuda/);
+  await page.locator("#labChart").waitFor({ state: "visible" });
+  assert.equal(await page.locator("#signalAmount").textContent(), "2,7");
+  assert.equal(await page.locator("#backgroundAmount").textContent(), "14,5");
+  assert.match(
+    await page.locator("#labChart").getAttribute("aria-label"),
+    /misma escala/,
+  );
   await page.locator("#resetDetector").click();
   assert.equal(await page.locator("#budgetLeft").textContent(), "6");
+  await page.locator("#labChart").waitFor({ state: "hidden" });
   await page.locator(".back:visible").click();
 
   await page.locator('[data-open="route"]').click();

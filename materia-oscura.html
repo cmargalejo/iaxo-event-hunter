@@ -368,6 +368,64 @@
         color: #93a8c0;
         font-size: 13px;
       }
+      .comparisonChart {
+        margin: 12px 0 0;
+        padding: 15px;
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        background: var(--panel);
+      }
+      .comparisonChart figcaption {
+        margin-bottom: 14px;
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 750;
+      }
+      .chartBarRow {
+        display: grid;
+        grid-template-columns: minmax(100px, 150px) minmax(0, 1fr) 52px;
+        gap: 12px;
+        align-items: center;
+        margin: 10px 0;
+      }
+      .chartBarRow > span {
+        font-weight: 700;
+      }
+      .chartTrack {
+        height: 20px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: #ffffff12;
+      }
+      .chartFill {
+        width: 0;
+        height: 100%;
+        border-radius: inherit;
+        transition: width 0.25s ease-out;
+      }
+      .signalFill {
+        background: var(--cyan);
+      }
+      .backgroundFill {
+        background: var(--gold);
+      }
+      .chartBarRow output {
+        color: var(--ink);
+        font-weight: 800;
+        text-align: right;
+      }
+      .chartScale {
+        display: flex;
+        justify-content: space-between;
+        margin: 3px 64px 0 162px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .chartNote {
+        margin: 12px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
       .budget {
         display: flex;
         justify-content: space-between;
@@ -499,6 +557,15 @@
         .galaxySpin svg {
           width: 100px;
           flex-basis: 100px;
+        }
+        .chartBarRow {
+          grid-template-columns: minmax(78px, 95px) minmax(0, 1fr) 42px;
+          gap: 8px;
+          font-size: 13px;
+        }
+        .chartScale {
+          margin-right: 50px;
+          margin-left: 103px;
         }
       }
       @media (prefers-reduced-motion: reduce) {
@@ -823,6 +890,32 @@
             Elige mejoras y prueba tu diseño. Después verás qué has priorizado y
             si así será más fácil distinguir una posible señal del fondo.
           </div>
+          <figure id="labChart" class="comparisonChart hidden">
+            <figcaption>
+              Huellas esperadas · las dos barras usan la misma escala
+            </figcaption>
+            <div class="chartBarRow">
+              <span>Señal posible</span>
+              <div class="chartTrack">
+                <div id="signalBar" class="chartFill signalFill"></div>
+              </div>
+              <output id="signalAmount">0</output>
+            </div>
+            <div class="chartBarRow">
+              <span>Fondo (ruido)</span>
+              <div class="chartTrack">
+                <div id="backgroundBar" class="chartFill backgroundFill"></div>
+              </div>
+              <output id="backgroundAmount">0</output>
+            </div>
+            <div class="chartScale">
+              <span>0 huellas</span><span id="chartScaleMax">0</span>
+            </div>
+            <p class="chartNote">
+              Cuanto más largas las barras, más huellas de ese tipo esperamos
+              encontrar.
+            </p>
+          </figure>
         </div>
       </section>
 
@@ -986,6 +1079,7 @@
             if (change < 0 && upgrades[key] > 0) upgrades[key]--;
             if (change > 0 && used + costs[key] <= budget) upgrades[key]++;
             updateLab();
+            byId("labChart").classList.add("hidden");
             byId("labResult").className = "result";
             byId("labResult").textContent =
               "Aún puedes cambiar tu diseño. Pulsa «Probar mi diseño» cuando estés listo.";
@@ -1041,13 +1135,28 @@
           byId("labResult").className =
             improvement >= 1.7 ? "result good" : "result neutral";
           byId("labResult").innerHTML =
-            `<strong>Resultado de tu elección</strong><br>${choiceSummary}<br><br>En este modelo, si hubiera señal, esperaríamos unas <b>${signal.toFixed(1)} huellas de señal</b> y ${background.toFixed(1)} huellas de fondo (ruido). ${tradeoff} <b>${verdict}</b><p class="note">Son cifras de una simulación sencilla para comparar estrategias; no son predicciones reales de TREX-DM.</p>`;
+            `<strong>Resultado de tu elección</strong><br>${choiceSummary}<br><br>${tradeoff}<br><b>${verdict}</b>`;
+          const chartMax = Math.ceil(Math.max(signal, background));
+          const signalText = signal.toFixed(1).replace(".", ",");
+          const backgroundText = background.toFixed(1).replace(".", ",");
+          byId("signalBar").style.width = `${(signal / chartMax) * 100}%`;
+          byId("backgroundBar").style.width =
+            `${(background / chartMax) * 100}%`;
+          byId("signalAmount").textContent = signalText;
+          byId("backgroundAmount").textContent = backgroundText;
+          byId("chartScaleMax").textContent = `${chartMax} huellas`;
+          byId("labChart").setAttribute(
+            "aria-label",
+            `Comparación en la misma escala: ${signalText} huellas de señal y ${backgroundText} de fondo.`,
+          );
+          byId("labChart").classList.remove("hidden");
         });
         byId("resetDetector").addEventListener("click", () => {
           Object.keys(upgrades).forEach((key) => {
             upgrades[key] = 0;
           });
           updateLab();
+          byId("labChart").classList.add("hidden");
           byId("labResult").className = "result";
           byId("labResult").textContent =
             "Elige mejoras y prueba tu diseño. Es una simulación sencilla, no una reproducción de TREX-DM.";
