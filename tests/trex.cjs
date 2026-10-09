@@ -24,6 +24,16 @@ async function main() {
           .getAttribute("href"),
         "./",
       );
+      assert.deepEqual(
+        await page.locator("#intro .gameLink a").evaluate((a) => {
+          const style = getComputedStyle(a);
+          return { color: style.color, background: style.backgroundColor };
+        }),
+        {
+          color: "rgb(224, 255, 247)",
+          background: "rgb(22, 67, 63)",
+        },
+      );
       await page.getByRole("button", { name: "EMPEZAR" }).click();
       assert.match(
         await page.locator("#lesson").innerText(),

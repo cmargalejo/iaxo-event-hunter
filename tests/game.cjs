@@ -60,6 +60,16 @@ async function openGame(browser, seed, width = 1365) {
       .evaluate((img) => img.complete && img.naturalWidth > 0),
     true,
   );
+  const gameLinkStyle = await page
+    .locator("#intro .gameLink a")
+    .evaluate((a) => {
+      const style = getComputedStyle(a);
+      return { color: style.color, background: style.backgroundColor };
+    });
+  assert.deepEqual(gameLinkStyle, {
+    color: "rgb(224, 248, 255)",
+    background: "rgb(18, 56, 82)",
+  });
   return { page, errors, context };
 }
 
