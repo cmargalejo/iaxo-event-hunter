@@ -19,6 +19,16 @@ async function main() {
       page.on("pageerror", (error) => errors.push(error.message));
       await page.goto(url);
       assert.equal(
+        await page.locator("header .brand span").textContent(),
+        "TREX-DM",
+      );
+      assert.equal(
+        await page
+          .locator("header .brand img")
+          .evaluate((img) => img.complete && img.naturalWidth > 0),
+        true,
+      );
+      assert.equal(
         await page
           .getByRole("link", { name: "IAXO Event Hunter" })
           .getAttribute("href"),
@@ -30,8 +40,8 @@ async function main() {
           return { color: style.color, background: style.backgroundColor };
         }),
         {
-          color: "rgb(224, 255, 247)",
-          background: "rgb(22, 67, 63)",
+          color: "rgb(224, 248, 255)",
+          background: "rgb(18, 56, 82)",
         },
       );
       await page.getByRole("button", { name: "EMPEZAR" }).click();
