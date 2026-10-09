@@ -31,8 +31,43 @@ async function main() {
       );
       assert.match(
         await page.locator("#trexDiagramDescription").textContent(),
-        /gas de neón o argón.*amplifica/s,
+        /dos zonas de\s+deriva.*cátodo central.*ionización.*deriva.*amplifica/s,
       );
+      assert.equal(await page.locator("#lesson svg").count(), 1);
+      const diagramLabels = await page
+        .locator("#lesson svg text")
+        .allTextContents();
+      for (const label of [
+        "CÁMARA LLENA DE GAS",
+        "NEÓN O ARGÓN",
+        "WIMP",
+        "MICROMEGAS",
+        "CÁTODO CENTRAL",
+        "HUELLA AMPLIFICADA",
+      ]) {
+        assert.ok(
+          diagramLabels.some((text) => text.includes(label)),
+          label,
+        );
+      }
+      const motionTracks = page.locator("#lesson svg animateMotion");
+      assert.equal(await motionTracks.count(), 4);
+      for (const track of await motionTracks.all()) {
+        assert.equal(await track.getAttribute("dur"), "9s");
+        assert.equal(await track.getAttribute("repeatCount"), "indefinite");
+        const keyTimes = (await track.getAttribute("keyTimes"))
+          .split(";")
+          .map(Number);
+        const keyPoints = (await track.getAttribute("keyPoints")).split(";");
+        assert.equal(keyTimes.length, keyPoints.length);
+        assert.equal(keyTimes[0], 0);
+        assert.equal(keyTimes.at(-1), 1);
+        assert.ok(
+          keyTimes.every(
+            (time, index) => index === 0 || time >= keyTimes[index - 1],
+          ),
+        );
+      }
       await page.getByRole("button", { name: "VER LOS EVENTOS" }).click();
       assert.equal(await page.locator("#backgroundIntro").isVisible(), true);
       assert.equal(await page.locator(".eventExample canvas").count(), 6);
