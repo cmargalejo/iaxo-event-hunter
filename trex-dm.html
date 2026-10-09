@@ -814,7 +814,7 @@
           <div class="eventExample">
             <canvas id="exampleAlpha" width="500" height="500"></canvas
             ><b>ALFA</b>
-            <div class="small">un trazo corto y denso</div>
+            <div class="small">mucha energía en un tramo corto</div>
           </div>
           <div class="eventExample">
             <canvas id="exampleNeutron" width="500" height="500"></canvas
@@ -1117,15 +1117,20 @@
         };
         const cx = 250 + (random() - 0.5) * 130;
         const cy = 250 + (random() - 0.5) * 130;
-        const dot = (x, y, radius = 3) => {
-          ctx.globalAlpha = 0.55 + random() * 0.45;
+        const dot = (x, y, radius = 3, intensity = 1) => {
+          ctx.globalAlpha = Math.min(1, (0.55 + random() * 0.45) * intensity);
           ctx.beginPath();
           ctx.arc(x, y, radius * (0.7 + random() * 0.7), 0, Math.PI * 2);
           ctx.fill();
         };
-        const cloud = (x, y, count, spreadX, spreadY) => {
+        const cloud = (x, y, count, spreadX, spreadY, intensity = 1) => {
           for (let i = 0; i < count; i++)
-            dot(x + gaussian() * spreadX, y + gaussian() * spreadY);
+            dot(
+              x + gaussian() * spreadX,
+              y + gaussian() * spreadY,
+              3,
+              intensity,
+            );
         };
         ctx.fillStyle = "#75f0c5";
         if (type === "wimp" || type === "neutron") {
@@ -1172,15 +1177,23 @@
           }
         } else if (type === "alpha") {
           const angle = random() * Math.PI;
-          for (let i = 0; i < 36; i++) {
-            const distance = (i - 18) * 3.3;
+          for (let i = 0; i < 44; i++) {
+            const distance = (i - 21.5) * 2.7;
             dot(
               cx + Math.cos(angle) * distance + gaussian() * 9,
               cy + Math.sin(angle) * distance + gaussian() * 9,
-              4.3,
+              5.2,
+              1.55,
             );
           }
-          cloud(cx + Math.cos(angle) * 55, cy + Math.sin(angle) * 55, 20, 7, 7);
+          cloud(
+            cx + Math.cos(angle) * 55,
+            cy + Math.sin(angle) * 55,
+            26,
+            7,
+            7,
+            1.55,
+          );
         } else {
           cloud(cx - 42, cy - 26, 22, 12, 13);
           cloud(cx + 44, cy + 29, 22, 13, 12);
