@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Una aventura de cinco minutos para pequeños detectives de partículas. Descubre cómo TREX-DM busca pistas de materia oscura." />
+    <title>Detectives de lo invisible · TREX-DM Junior</title>
+    <style>
+      :root { color-scheme: light; --ink:#182b40; --muted:#526275; --paper:#faf7ed; --mint:#d1f2d8; --green:#216848; --orange:#ff7547; --line:#d8dccf; }
+      * { box-sizing:border-box; }
+      [hidden] { display:none !important; }
+      body { margin:0; background:var(--paper); color:var(--ink); font-family:ui-rounded,"Trebuchet MS",system-ui,sans-serif; }
+      button, input { font:inherit; }
+      a { color:inherit; text-underline-offset:4px; }
+      button,a,input { -webkit-tap-highlight-color:transparent; }
+      button { cursor:pointer; }
+      button:focus-visible,a:focus-visible,input:focus-visible { outline:3px solid #266db5; outline-offset:5px; }
+      button:disabled { cursor:default; }
+      .shell { max-width:1180px; margin:auto; padding:0 36px; }
+      header { min-height:100px; display:flex; align-items:center; justify-content:space-between; gap:20px; border-bottom:1px solid var(--line); }
+      .brand { display:flex; align-items:center; gap:12px; text-decoration:none; }
+      .brandmark { background:var(--ink); color:var(--mint); width:43px; height:43px; border-radius:14px; display:grid; place-items:center; font-size:27px; }
+      .brand strong { display:block; font-size:18px; letter-spacing:-.5px; }
+      .brand small { display:block; margin-top:3px; font-size:11px; letter-spacing:2px; text-transform:uppercase; }
+      .edition { border:1px solid var(--line); padding:8px 13px; border-radius:30px; font-size:12px; font-weight:bold; }
+      main { min-height:660px; padding:32px 0 42px; }
+      .topline { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:24px; }
+      .eyebrow { font-size:11px; font-weight:bold; letter-spacing:2px; text-transform:uppercase; color:var(--green); }
+      .time { font-size:12px; color:var(--muted); }
+      .hero { display:grid; grid-template-columns:1fr 1.03fr; gap:48px; align-items:center; }
+      h1 { font-size:clamp(48px,6.3vw,78px); line-height:1.02; font-weight:900; letter-spacing:-4px; margin:22px 0; }
+      h1 em { font-style:normal; color:var(--green); }
+      h2 { font-size:clamp(32px,4vw,49px); line-height:1.07; letter-spacing:-1.8px; margin:12px 0 18px; }
+      h3 { font-size:22px; margin:8px 0; }
+      p { font-size:18px; line-height:1.6; color:var(--muted); margin:12px 0 22px; }
+      .introcopy { max-width:425px; }
+      .pillrow { display:flex; gap:8px; flex-wrap:wrap; margin:25px 0; }
+      .pill { border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-size:12px; }
+      .primary,.secondary,.choice { min-height:54px; border-radius:13px; padding:15px 22px; border:2px solid var(--ink); font-weight:bold; font-size:16px; }
+      .primary { color:white; background:var(--ink); box-shadow:0 4px 0 #aeb9ab; }
+      .primary:hover { background:#2d465d; }
+      .primary .arrow { padding-left:28px; color:var(--mint); }
+      .secondary { background:transparent; }
+      .tiny { font-size:12px; line-height:1.6; }
+      .artpanel { background:var(--mint); border-radius:34px; position:relative; overflow:hidden; border:1px solid #b5d6bc; }
+      .artpanel svg { width:100%; display:block; }
+      .artlabel { position:absolute; left:24px; top:24px; background:var(--paper); border:1px solid #bed4b9; border-radius:20px; padding:8px 12px; font-size:11px; font-weight:bold; letter-spacing:1px; }
+      .artcaption { text-align:center; padding:0 20px 22px; font-size:12px; color:#365645; }
+      .roadmap { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; margin-top:42px; border-top:1px solid var(--line); padding-top:26px; }
+      .roadmap div { display:flex; align-items:flex-start; gap:12px; }
+      .roadmap b { font-size:11px; color:var(--green); border:1px solid #b9ceba; border-radius:50%; width:29px; height:29px; display:grid; place-items:center; flex-shrink:0; }
+      .roadmap strong { font-size:14px; display:block; margin:4px 0 7px; }
+      .roadmap small { font-size:12px; color:var(--muted); }
+      footer { display:flex; justify-content:space-between; gap:20px; flex-wrap:wrap; padding:22px 0 30px; border-top:1px solid var(--line); font-size:12px; color:var(--muted); }
+      footer nav { display:flex; gap:20px; flex-wrap:wrap; }
+      .stepbar { display:flex; align-items:center; gap:10px; margin-bottom:30px; }
+      .stepbar span { height:5px; flex:1; background:#e0e3d7; border-radius:5px; }
+      .stepbar span.active { background:var(--green); }
+      .screenhead { max-width:690px; margin-bottom:28px; }
+      .split { display:grid; grid-template-columns:1.1fr 1fr; align-items:center; gap:40px; }
+      .mountain-stage { border-radius:28px; overflow:hidden; background:#cce9db; }
+      .mountain-stage svg { width:100%; display:block; }
+      #detector-group { transition:transform .5s ease; }
+      .cosmic { transition:opacity .5s; }
+      .shielded .cosmic { opacity:.08; }
+      .range-label { display:flex; justify-content:space-between; margin:12px 0; font-size:12px; font-weight:bold; }
+      input[type="range"] { width:100%; accent-color:var(--green); min-height:44px; cursor:pointer; }
+      .bubble { padding:20px 22px; background:white; border:1px solid var(--line); border-radius:18px; margin-bottom:24px; }
+      .bubble p { font-size:17px; margin:0; }
+      .bubble strong { color:var(--green); }
+      .controlhint { font-size:13px; }
+      .fieldguide { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin:24px 0; }
+      .guidecard { border:1px solid var(--line); border-radius:22px; background:white; padding:22px; }
+      .guidecard p { font-size:16px; margin-bottom:0; }
+      .trace { width:100%; background:#182b40; border-radius:18px; display:block; }
+      .guidecard .trace { max-height:205px; }
+      .notice { background:#f4e9c9; padding:15px 20px; border-radius:13px; font-size:15px; color:#5a4926; }
+      .missionlayout { display:grid; grid-template-columns:1.05fr 1fr; gap:36px; align-items:start; }
+      .display { background:var(--ink); border-radius:25px; padding:18px; color:var(--mint); }
+      .displaytop { display:flex; justify-content:space-between; font-size:11px; letter-spacing:1px; padding:4px 5px 15px; }
+      .display .trace { border:1px solid #536474; }
+      .displaybottom { font-size:11px; color:#bccdbf; text-align:center; padding:15px 8px 3px; }
+      .choices { display:flex; flex-direction:column; gap:12px; margin:25px 0 18px; }
+      .choice { display:flex; text-align:left; align-items:center; gap:14px; background:white; }
+      .choice.keep { background:var(--mint); border-color:#448460; }
+      .choice.skip { background:#f7e4d8; border-color:#b77850; }
+      .choice.selected { box-shadow:0 0 0 3px var(--ink); }
+      .choice:disabled { color:var(--muted); }
+      .choice.selected:disabled { color:var(--ink); }
+      .choice .symbol { font-size:26px; width:30px; text-align:center; }
+      .feedback { border-left:4px solid var(--green); padding:12px 17px; background:#e5efdf; border-radius:0 12px 12px 0; color:var(--ink); font-size:16px; line-height:1.55; margin-bottom:20px; }
+      .notebookrow { display:flex; gap:8px; margin:18px 0; }
+      .notebookrow span { width:34px; height:34px; border:1px dashed #98a895; border-radius:50%; display:grid; place-items:center; font-weight:bold; font-size:13px; }
+      .notebookrow .done { background:var(--mint); border-style:solid; }
+      .notebook { background:white; border:1px solid var(--line); border-radius:23px; padding:24px; margin:24px 0; }
+      .entries { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+      .entry { padding:12px; background:var(--paper); border-radius:12px; font-size:12px; }
+      .entry .trace { border-radius:8px; margin-bottom:10px; }
+      .entry b { display:block; margin-bottom:5px; }
+      .entry span { color:var(--muted); }
+      .notebook.accepted { border-top:5px solid var(--green); }
+      .notebook.rejected { border-top:5px solid #b77850; }
+      .notebook h3 { margin:0 0 18px; }
+      .move { display:block; margin-top:12px; border:1px solid #8c9c8c; border-radius:9px; background:white; color:var(--ink); min-height:44px; padding:8px; font-size:12px; width:100%; }
+      .empty { grid-column:1 / -1; font-size:15px; margin:0; }
+      .comparison-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin:24px 0; }
+      .sample { background:white; border:1px solid var(--line); border-radius:20px; padding:24px; }
+      .sample:first-child { background:#e7f3e2; border-color:#8bac8b; }
+      .sample b { font-size:48px; display:block; margin:14px 0; }
+      .sample-dots { display:flex; gap:8px; flex-wrap:wrap; min-height:30px; }
+      .sample-dots span { width:26px; height:26px; border-radius:50%; background:var(--green); border:2px solid var(--ink); }
+      .sample .tiny { margin-bottom:0; }
+      .conclusion { max-width:800px; margin:auto; }
+      .final { text-align:center; max-width:730px; margin:20px auto; }
+      .badge { width:112px; height:112px; background:var(--mint); border:2px solid #568665; border-radius:50%; margin:20px auto 26px; display:grid; place-items:center; font-size:57px; box-shadow:0 0 0 9px #e8efde; }
+      .learning { text-align:left; background:white; border:1px solid var(--line); border-radius:20px; padding:20px 24px; margin:26px 0; }
+      .learning p { font-size:16px; margin:8px 0; }
+      .actions { display:flex; gap:16px; flex-wrap:wrap; justify-content:center; align-items:center; }
+      .science-note { margin:24px auto 0; max-width:730px; font-size:12px; }
+      @media(max-width:760px) { .shell { padding:0 20px; } header { min-height:84px; } .edition { font-size:10px; } .brand strong { font-size:15px; } .brand small { font-size:9px; } .hero,.split,.missionlayout { grid-template-columns:1fr; gap:24px; } h1 { letter-spacing:-2.5px; margin-top:10px; } .introcopy { max-width:none; } .hero .artpanel { max-width:500px; width:100%; margin:auto; } .roadmap { gap:12px; } .roadmap div { flex-direction:column; } .roadmap strong { font-size:12px; } .roadmap small { font-size:11px; line-height:1.6; display:block; } .fieldguide { gap:12px; } .guidecard { padding:13px; } .guidecard h3 { font-size:18px; } .guidecard p { font-size:14px; } .entries { grid-template-columns:repeat(2,1fr); } .notebook { padding:16px; } main { padding-top:24px; min-height:0; } .screenhead { margin-bottom:20px; } .display { max-width:440px; width:100%; margin:auto; } .topline { margin-bottom:20px; } }
+      @media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none !important; scroll-behavior:auto !important; } }
+      @media(max-width:480px) { .comparison-grid { grid-template-columns:1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header>
+        <a class="brand" href="./trex-dm-junior.html" aria-label="Detectives de lo invisible, inicio"><span class="brandmark" aria-hidden="true">✳</span><span><strong>Detectives de lo invisible</strong><small>TREX-DM · Junior</small></span></a>
+        <span class="edition">DARK MATTER DAY</span>
+      </header>
+      <main id="main">
+        <section id="welcome" aria-labelledby="welcome-title">
+          <div class="topline"><span class="eyebrow">Una pequeña gran investigación</span><span class="time">7–11 años · unos 5 min</span></div>
+          <div class="hero">
+            <div>
+              <h1 id="welcome-title" tabindex="-1">Lo invisible<br />deja <em>pistas.</em></h1>
+              <p class="introcopy">Hay un misterio en el universo: la materia oscura. ¿Nos ayudas a buscar sus posibles huellas?</p>
+              <div class="pillrow"><span class="pill">⌁ Explora un laboratorio</span><span class="pill">✳ Investiga 6 pistas</span></div>
+              <button class="primary" id="start">¡Vamos a investigar! <span class="arrow" aria-hidden="true">→</span></button>
+              <p class="tiny">Sin prisas. Puedes jugar con alguien mayor.</p>
+            </div>
+            <div class="artpanel">
+              <span class="artlabel">MISIÓN 01 / BAJO LA MONTAÑA</span>
+              <svg viewBox="0 0 520 420" role="img" aria-labelledby="hero-art-title">
+                <title id="hero-art-title">Un pequeño detector busca pistas en un laboratorio bajo una montaña.</title>
+                <circle cx="425" cy="99" r="25" fill="#fdf5d5" />
+                <g fill="#5d866c"><circle cx="100" cy="93" r="3"/><circle cx="358" cy="62" r="3"/><path d="M452 168v14m-7-7h14M140 140v14m-7-7h14" stroke="#5d866c" stroke-width="2"/></g>
+                <path d="M0 272 134 118 232 210 318 92 520 279V420H0Z" fill="#85b490"/>
+                <path d="m134 118-43 49 35-10 21 15 15-19Zm184-26-45 63 33-15 19 14 20-19Z" fill="#edf0d5"/>
+                <path d="M0 296 137 220 249 283 388 186 520 273V420H0Z" fill="#51846a"/>
+                <path d="M0 348 151 289 304 340 455 268 520 295V420H0Z" fill="#37694f"/>
+                <path d="M125 420V333a77 77 0 0 1 154 0v87" fill="#233e36" stroke="#aac9a7" stroke-width="3"/>
+                <path d="M278 366h177" stroke="#aac9a7" stroke-width="3" stroke-dasharray="5 7"/>
+                <g transform="translate(150 277)">
+                  <path d="M53 0V-18" stroke="#182b40" stroke-width="6"/><circle cx="53" cy="-22" r="8" fill="#ff7547"/>
+                  <rect width="110" height="99" rx="25" fill="#faf7ed" stroke="#182b40" stroke-width="4"/>
+                  <rect x="13" y="20" width="84" height="44" rx="14" fill="#182b40"/>
+                  <circle cx="38" cy="40" r="6" fill="#bcebc9"/><circle cx="73" cy="40" r="6" fill="#bcebc9"/>
+                  <path d="M43 77q12 11 24 0" fill="none" stroke="#216848" stroke-width="4" stroke-linecap="round"/>
+                  <path d="M-3 48-18 62m130-14 18-18M27 99v14m56-14v14" stroke="#182b40" stroke-width="8" stroke-linecap="round"/>
+                </g>
+                <g transform="translate(344 293) rotate(-12)"><rect width="105" height="53" rx="10" fill="#f8efcd"/><text x="52" y="23" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#182b40">LABORATORIO</text><text x="52" y="40" text-anchor="middle" font-family="sans-serif" font-weight="bold" font-size="13" fill="#182b40">CANFRANC</text></g>
+              </svg>
+              <div class="artcaption">Una montaña. Un detector. Un misterio enorme.</div>
+            </div>
+          </div>
+          <div class="roadmap"><div><b>01</b><span><strong>Busca un lugar tranquilo</strong><small>Baja bajo la montaña.</small></span></div><div><b>02</b><span><strong>Aprende a mirar</strong><small>Compara las huellas.</small></span></div><div><b>03</b><span><strong>Piensa como detective</strong><small>Completa tu cuaderno.</small></span></div></div>
+        </section>
+
+        <section id="mountain" hidden aria-labelledby="mountain-title">
+          <div class="stepbar" aria-label="Paso 1 de 3: el laboratorio"><span class="active"></span><span></span><span></span></div>
+          <div class="screenhead"><span class="eyebrow">01 / Un lugar tranquilo</span><h2 id="mountain-title" tabindex="-1">¡Bajemos bajo la montaña!</h2><p>Del espacio llegan partículas que dejan muchas huellas. La roca ayuda a frenar muchas de ellas.</p></div>
+          <div class="split">
+            <div>
+              <div class="mountain-stage" id="mountain-stage">
+                <svg viewBox="0 0 520 360" role="img" aria-labelledby="mountain-description">
+                  <title id="mountain-description">El detector baja desde la superficie hasta el laboratorio. La roca reduce muchas partículas cósmicas.</title>
+                  <path d="M0 176 110 75 186 132 281 37 403 149 455 103 520 164V360H0Z" fill="#72987a"/>
+                  <path d="m281 37-38 45 27-9 22 16 15-17Z" fill="#f3efd9"/>
+                  <path d="M0 215h520v145H0Z" fill="#4c7258"/>
+                  <g stroke="#74957a" fill="none" stroke-width="2"><path d="m20 250 95-12 71 15 130-15 176 10M15 301l119 12 126-20 139 15 98-12M40 342l93-10 133 10 178-9"/></g>
+                  <g class="cosmic" stroke="#faf2ae" stroke-width="3" stroke-dasharray="9 6"><path d="m70 0 80 340M180 0l-50 340M325 0 270 340M460 0 345 340M390 0l55 340"/></g>
+                  <path d="M205 190v130h100V190" fill="#233e36" stroke="#c5d6b2" stroke-width="3"/>
+                  <g id="detector-group" transform="translate(222 126)"><rect width="66" height="58" rx="16" fill="#faf7ed" stroke="#182b40" stroke-width="3"/><rect x="9" y="11" width="48" height="25" rx="8" fill="#182b40"/><circle cx="23" cy="23" r="4" fill="#bcebc9"/><circle cx="43" cy="23" r="4" fill="#bcebc9"/><path d="M26 45h14" stroke="#216848" stroke-width="3"/><path d="M33 0v-10" stroke="#182b40" stroke-width="3"/><circle cx="33" cy="-12" r="5" fill="#ff7547"/></g>
+                  <text x="325" y="292" fill="#edf0d5" font-family="sans-serif" font-size="12">LABORATORIO</text>
+                </svg>
+              </div>
+              <label class="controlhint" for="depth">Desliza para bajar el detector ↓</label>
+              <input id="depth" type="range" min="0" max="100" value="0" step="1" aria-valuetext="En la superficie" />
+              <div class="range-label"><span>Superficie</span><span>Bajo la montaña</span></div>
+            </div>
+            <div><div class="bubble" role="status" id="mountain-message"><p>¡Cuántas huellas! Lleva el detector hasta el laboratorio.</p></div><p class="controlhint">También puedes usar las flechas del teclado o este botón.</p><button class="secondary" id="lower">Bajar al laboratorio ↓</button><p class="tiny">TREX-DM está en el Laboratorio Subterráneo de Canfranc. La montaña reduce el ruido cósmico, pero no elimina todas las señales de fondo.</p><button class="primary" id="to-guide" hidden>¡Ahora, a buscar pistas! →</button></div>
+          </div>
+        </section>
+
+        <section id="guide" hidden aria-labelledby="guide-title">
+          <div class="stepbar" aria-label="Paso 2 de 3: las huellas"><span class="active"></span><span class="active"></span><span></span></div>
+          <div class="screenhead"><span class="eyebrow">02 / Aprende a mirar</span><h2 id="guide-title" tabindex="-1">No vemos la partícula.<br />Vemos su huella.</h2><p>TREX-DM contiene gas. Si una partícula interacciona con él, puede dejar una señal que el detector registra.</p></div>
+          <div class="fieldguide"><div class="guidecard"><div id="guide-small"></div><h3>Una huella pequeña</h3><p>La guardamos para investigar. Podría parecerse a la señal que buscamos.</p></div><div class="guidecard"><div id="guide-long"></div><h3>Un camino largo</h3><p>Lo apartamos en este juego. No tiene la forma de nuestra pista.</p></div></div>
+          <p class="notice">¡Ojo! Otras partículas también pueden dejar huellas pequeñas. La forma, por sí sola, no resuelve el misterio.</p>
+          <button class="primary" id="to-clues">Investigar las 6 pistas →</button>
+          <p class="science-note">Dibujos simplificados para jugar. Buscamos posibles señales de WIMPs: partículas propuestas para explicar la materia oscura cuya existencia aún no se ha confirmado.</p>
+        </section>
+
+        <section id="clues" hidden aria-labelledby="clues-title">
+          <div class="stepbar" aria-label="Paso 2 de 3: investigar seis pistas"><span class="active"></span><span class="active"></span><span></span></div>
+          <div class="missionlayout">
+            <div class="display"><div class="displaytop"><span>TREX-DM / DETECTOR</span><span id="trace-count">PISTA 01 / 06</span></div><div id="current-trace"></div><div class="displaybottom">Recreación de una señal · no son datos reales</div></div>
+            <div><span class="eyebrow" id="clue-label">Pista 1 de 6</span><h2 id="clues-title" tabindex="-1">¿Guardamos esta pista?</h2><p>Busca una huella pequeña y agrupada. Mira con calma.</p><div class="choices"><button class="choice keep" id="keep"><span class="symbol" aria-hidden="true">＋</span>Guardar para investigar</button><button class="choice skip" id="skip"><span class="symbol" aria-hidden="true">↗</span>Apartar esta huella</button></div><div class="feedback" id="clue-feedback" role="status" hidden></div><button class="primary" id="next-clue" hidden>Siguiente pista →</button><div class="notebookrow" id="notebook-progress" aria-label="0 de 6 pistas revisadas"></div><p class="tiny">Guardar una pista no significa haber descubierto materia oscura.</p></div>
+          </div>
+        </section>
+
+        <section id="conclusion" class="conclusion" hidden aria-labelledby="conclusion-title">
+          <div class="stepbar" aria-label="Paso 3 de 3: el cuaderno"><span class="active"></span><span class="active"></span><span class="active"></span></div>
+          <span class="eyebrow">03 / Tu cuaderno de detective</span><h2 id="conclusion-title" tabindex="-1">Cada pista, en su sitio.</h2><p id="notebook-summary" aria-live="polite"></p>
+          <div class="notebook accepted"><h3 id="accepted-title">Aceptadas para investigar</h3><div class="entries" id="accepted-entries"></div></div>
+          <div class="notebook rejected"><h3 id="rejected-title">Rechazadas en esta búsqueda</h3><div class="entries" id="rejected-entries"></div></div>
+          <p class="notice">Puedes cambiar de idea: guarda las huellas pequeñas y agrupadas. Apartar una huella en este juego no significa que carezca de interés científico.</p>
+          <h3>¿Qué hacemos con las aceptadas?</h3><p>¡Compararlas! El equipo tiene otra muestra simulada, solo de fondo: señales de otras causas que pueden parecerse a las que buscamos.</p>
+          <button class="primary" id="investigate">Comparar mis pistas con el fondo →</button><div id="notebook-feedback" class="feedback" role="status" hidden></div>
+        </section>
+
+        <section id="comparison" class="conclusion" hidden aria-labelledby="comparison-title">
+          <div class="stepbar" aria-label="Paso 3 de 3: comparar las pistas"><span class="active"></span><span class="active"></span><span class="active"></span></div>
+          <span class="eyebrow">Una prueba más / Comparar</span><h2 id="comparison-title" tabindex="-1">¿Más, menos o parecido?</h2>
+          <p>Estas dos muestras representan el mismo tiempo de observación. En ambas contamos solo las huellas pequeñas y agrupadas.</p>
+          <div class="comparison-grid"><div class="sample"><h3>Tus pistas aceptadas</h3><b id="sample-count"></b><div class="sample-dots" id="sample-dots" aria-hidden="true"></div><p class="tiny">Las que has guardado y revisado.</p></div><div class="sample"><h3>Muestra solo de fondo</h3><b id="control-count"></b><div class="sample-dots" id="control-dots" aria-hidden="true"></div><p class="tiny">También puede producir pistas pequeñas.</p></div></div>
+          <p class="tiny">Todos los números son inventados para jugar. El fondo puede variar de una muestra a otra; esta comparación no mide si hay un descubrimiento.</p>
+          <h3>Comparadas con el fondo, ¿cómo son tus pistas?</h3><div class="choices"><button class="choice" data-comparison="more">Hay más pistas en mi muestra.</button><button class="choice" data-comparison="same">Hay el mismo número de pistas.</button><button class="choice" data-comparison="less">Hay menos pistas en mi muestra.</button></div>
+          <div id="comparison-feedback" class="feedback" role="status" hidden></div>
+          <div id="discovery-question" hidden><h3>¿Qué le decimos al equipo?</h3><div class="choices"><button class="choice" id="announce">¡Ya sabemos que es materia oscura!</button><button class="choice keep" id="finish-investigation">Necesitamos más pruebas. ¡Sigamos investigando!</button></div><div id="conclusion-feedback" class="feedback" role="status" hidden></div></div>
+          <button class="secondary" id="back-notebook">← Volver al cuaderno</button>
+        </section>
+
+        <section id="finish" class="final" hidden aria-labelledby="finish-title">
+          <span class="eyebrow">Misión completada</span><div class="badge" aria-hidden="true">✳</div><h2 id="finish-title" tabindex="-1">¡Ya piensas como<br />un detective de partículas!</h2><p>Hoy has aprendido a mirar, comparar y hacer preguntas. Así empieza una gran investigación.</p><div class="learning"><p><b>01.</b> La montaña ayuda a reducir muchas huellas del espacio.</p><p><b>02.</b> Una huella pequeña es una pista para estudiar.</p><p id="round-result"></p><p><b>03.</b> Para anunciar un descubrimiento hacen falta más pruebas.</p></div><div class="actions"><button class="primary" id="restart">Volver a investigar ↻</button><a href="./trex-dm.html">Explorar TREX-DM completo →</a></div><p class="science-note">La materia oscura nos intriga por sus efectos gravitatorios. Aún no sabemos de qué está hecha. TREX-DM busca posibles señales de algunas partículas candidatas, como los WIMPs.</p>
+        </section>
+      </main>
+      <footer><span>Una aventura de TREX-DM · Curiosidad sin límite de edad.</span><nav aria-label="Actividades originales"><a href="./trex-dm.html">TREX-DM · versión completa ↗</a><a href="./index.html">IAXO · versión completa ↗</a></nav></footer>
+    </div>
+    <script>
+      "use strict";
+      const get = (id) => document.getElementById(id);
+      const screens = ["welcome", "mountain", "guide", "clues", "conclusion", "comparison", "finish"];
+      const templates = [
+        { shape: "small", compact: true, description: "Un grupo pequeño y compacto de puntos.", keep: "Buena pista para estudiar: es pequeña y está agrupada. Pero un neutrón también podría dejar una huella así. Todavía no sabemos qué la causó.", skip: "Mira qué pequeña y agrupada está. La guardaríamos para estudiarla, aunque otras partículas, como los neutrones, pueden dejar huellas parecidas." },
+        { shape: "long", compact: false, description: "Una huella larga que cruza el detector.", keep: "Has guardado un camino largo. En este juego buscamos huellas pequeñas; esta la apartaríamos.", skip: "Bien observado: es un camino largo. Lo apartamos para centrarnos en las huellas pequeñas." },
+        { shape: "spread", compact: false, description: "Muchos puntos repartidos por una zona amplia.", keep: "Esta huella ocupa una zona amplia. La pista que buscamos es pequeña y agrupada.", skip: "Buena observación: los puntos están muy repartidos. No es la forma pequeña que buscamos." },
+        { shape: "double", compact: false, description: "Dos grupos de puntos separados entre sí.", keep: "Hay dos grupos separados. En esta práctica buscamos una sola huella pequeña y agrupada.", skip: "Has visto los dos grupos separados. En esta práctica los apartamos." }
+      ];
+      let deck = [];
+      let previousCount = 0;
+      let previousOutcome = "";
+      let controlCount = 0;
+      let outcome = "";
+      let clueIndex = 0;
+      let choices = [];
+      let answered = false;
+
+      function randomItem(items) { return items[Math.floor(Math.random() * items.length)]; }
+
+      function newRound() {
+        const compactCount = randomItem([2, 3, 4].filter((count) => count !== previousCount));
+        previousCount = compactCount;
+        outcome = randomItem(["more", "same", "less"].filter((value) => value !== previousOutcome));
+        previousOutcome = outcome;
+        controlCount = outcome === "same" ? compactCount : compactCount + (outcome === "more" ? -1 : 1) * randomItem([1, 2]);
+        deck = Array.from({ length: 6 }, (_, index) => ({ ...templates[index < compactCount ? 0 : randomItem([1, 2, 3])], seed: Math.floor(Math.random() * 2147483646) + 1 }));
+        for (let index = deck.length - 1; index > 0; index -= 1) {
+          const other = Math.floor(Math.random() * (index + 1));
+          [deck[index], deck[other]] = [deck[other], deck[index]];
+        }
+        clueIndex = 0;
+        choices = [];
+        answered = false;
+        get("comparison-feedback").hidden = true;
+        get("discovery-question").hidden = true;
+        get("conclusion-feedback").hidden = true;
+      }
+
+      function showScreen(id) {
+        screens.forEach((screen) => { get(screen).hidden = screen !== id; });
+        get(id).querySelector("h1, h2").focus({ preventScroll: true });
+        get("main").scrollIntoView({ block: "start", behavior: "instant" });
+      }
+
+      function trace(shape, description, seed = 1) {
+        let randomState = seed;
+        const random = () => { randomState = (Math.imul(randomState, 1664525) + 1013904223) >>> 0; return randomState / 4294967296; };
+        let points = [];
+        const cx = 110 + random() * 140;
+        const cy = 100 + random() * 100;
+        if (shape === "small") {
+          points = Array.from({ length: 12 + Math.floor(random() * 9) }, () => [cx + (random() - .5) * 28, cy + (random() - .5) * 28]);
+        } else if (shape === "long") {
+          const angle = random() * Math.PI;
+          points = Array.from({ length: 42 }, (_,i) => [180 + (i - 20.5) * 5.5 * Math.cos(angle) + (random() - .5) * 7, 150 + (i - 20.5) * 5.5 * Math.sin(angle) + (random() - .5) * 7]);
+        } else if (shape === "spread") {
+          points = Array.from({ length: 55 }, () => [cx + (random() - .5) * 170, cy + (random() - .5) * 145]);
+        } else {
+          points = Array.from({ length: 26 }, (_,i) => [cx + (i < 13 ? -65 : 65) + (random() - .5) * 25, cy + (random() - .5) * 25]);
+        }
+        const dots = points.map(([x,y],i) => `<circle cx="${x}" cy="${y}" r="${i%3 === 0 ? 4 : 2.7}" fill="${i%4 === 0 ? "#ffbe7b" : "#b9f4cf"}"/>`).join("");
+        return `<svg class="trace" viewBox="0 0 360 300" role="img" aria-label="${description}"><g stroke="#ffffff0d" stroke-width="1"><path d="M60 0v300M120 0v300M180 0v300M240 0v300M300 0v300M0 60h360M0 120h360M0 180h360M0 240h360"/></g><path d="M15 30V15h15m300 0h15v15M15 270v15h15m300 0h15v-15" fill="none" stroke="#6c9587" stroke-width="2"/>${dots}</svg>`;
+      }
+
+      function updateDepth() {
+        const value = Number(get("depth").value);
+        const underground = value >= 90;
+        get("detector-group").setAttribute("transform", `translate(222 ${126 + value * 1.32})`);
+        get("mountain-stage").classList.toggle("shielded", underground);
+        get("depth").setAttribute("aria-valuetext", underground ? "En el laboratorio bajo la montaña" : value === 0 ? "En la superficie" : "Bajando hacia el laboratorio");
+        get("mountain-message").innerHTML = underground ? "<p><strong>¡Mucho más tranquilo!</strong> La roca ha frenado muchas partículas del espacio. Aún quedan otras huellas que investigar.</p>" : "<p>¡Cuántas huellas! Lleva el detector hasta el laboratorio.</p>";
+        get("to-guide").hidden = !underground;
+        get("lower").hidden = underground;
+      }
+
+      function renderClue() {
+        answered = false;
+        const item = deck[clueIndex];
+        get("current-trace").innerHTML = trace(item.shape, item.description, item.seed);
+        get("trace-count").textContent = `PISTA 0${clueIndex + 1} / 06`;
+        get("clue-label").textContent = `Pista ${clueIndex + 1} de 6`;
+        get("clue-feedback").hidden = true;
+        get("next-clue").hidden = true;
+        get("next-clue").textContent = clueIndex === 5 ? "Abrir mi cuaderno →" : "Siguiente pista →";
+        ["keep", "skip"].forEach((id) => { get(id).disabled = false; get(id).classList.remove("selected"); });
+        renderProgress();
+      }
+
+      function renderProgress() {
+        get("notebook-progress").innerHTML = deck.map((_,i) => `<span class="${i < choices.length ? "done" : ""}" aria-hidden="true">${i < choices.length ? "✓" : i + 1}</span>`).join("");
+        get("notebook-progress").setAttribute("aria-label", `${choices.length} de 6 pistas revisadas`);
+      }
+
+      function choose(keep) {
+        if (answered) return;
+        answered = true;
+        choices.push(keep);
+        get(keep ? "keep" : "skip").classList.add("selected");
+        get("clue-feedback").textContent = deck[clueIndex][keep ? "keep" : "skip"];
+        get("clue-feedback").hidden = false;
+        get("next-clue").hidden = false;
+        get("next-clue").focus({ preventScroll: true });
+        ["keep", "skip"].forEach((id) => { get(id).disabled = true; });
+        renderProgress();
+      }
+
+      function openNotebook() {
+        const count = choices.filter(Boolean).length;
+        get("notebook-summary").textContent = `Has revisado 6 huellas y has guardado ${count} ${count === 1 ? "pista" : "pistas"}. Este cuaderno recoge tus decisiones. ¡Guardar no es descubrir!`;
+        get("accepted-title").textContent = `Aceptadas para investigar · ${count}`;
+        get("rejected-title").textContent = `Rechazadas en esta búsqueda · ${6 - count}`;
+        for (const accepted of [true, false]) {
+          const entries = deck.map((item, index) => ({ item, index })).filter(({ index }) => choices[index] === accepted);
+          get(accepted ? "accepted-entries" : "rejected-entries").innerHTML = entries.length ? entries.map(({ item, index }) => `<div class="entry" data-index="${index}">${trace(item.shape, item.description, item.seed)}<b>Pista ${index + 1}</b><span>${item.compact ? "Pequeña: la estudiaríamos." : "Otra forma: la apartaríamos."}</span><button class="move" data-move="${index}" aria-label="Pista ${index + 1}: ${accepted ? "mover a rechazadas" : "mover a aceptadas"}">${accepted ? "Apartar esta pista ↗" : "Aceptar esta pista ＋"}</button></div>`).join("") : `<p class="empty">${accepted ? "Todavía no has aceptado ninguna pista. Puedes revisar las rechazadas." : "No has rechazado ninguna pista. Puedes revisar las aceptadas."}</p>`;
+        }
+        get("notebook-feedback").hidden = true;
+        showScreen("conclusion");
+      }
+
+      function compareSamples() {
+        const mistakes = deck.map((item, index) => item.compact !== choices[index] ? index + 1 : null).filter(Boolean);
+        if (mistakes.length) {
+          get("notebook-feedback").textContent = `Antes de comparar, revisa ${mistakes.length === 1 ? "la pista" : "las pistas"} ${mistakes.join(", ")}. Usemos la misma regla en las dos muestras: aceptar solo huellas pequeñas y agrupadas. Puedes moverlas entre las listas.`;
+          get("notebook-feedback").hidden = false;
+          return;
+        }
+        const count = choices.filter(Boolean).length;
+        get("sample-count").textContent = `${count} pistas`;
+        get("control-count").textContent = `${controlCount} ${controlCount === 1 ? "pista" : "pistas"}`;
+        get("sample-dots").innerHTML = "<span></span>".repeat(count);
+        get("control-dots").innerHTML = "<span></span>".repeat(controlCount);
+        get("round-result").textContent = `En esta partida: ${count} pistas aceptadas frente a ${controlCount} de fondo. ${outcome === "more" ? "Tener más pistas invita a comprobar otras explicaciones." : outcome === "same" ? "El fondo puede producir el mismo número de pistas." : "También podemos obtener menos pistas: los recuentos varían."}`;
+        showScreen("comparison");
+      }
+
+      document.querySelectorAll("[data-comparison]").forEach((button) => button.addEventListener("click", () => {
+        const correct = button.dataset.comparison === outcome;
+        get("comparison-feedback").textContent = correct ? outcome === "more" ? "¡Bien contado! Hay más pistas en tu muestra. Pero el fondo también varía: este pequeño exceso, por sí solo, no demuestra que sea materia oscura." : outcome === "same" ? "¡Bien contado! Hay tantas pistas como en la muestra de fondo. Este recuento no muestra una diferencia; tampoco descarta que existan WIMPs." : "¡Bien contado! Hay menos pistas que en la muestra de fondo. Los recuentos pueden variar; esto tampoco descarta que existan WIMPs." : "Cuenta los círculos de cada caja y compara de nuevo. Cada círculo representa una pista aceptada.";
+        get("comparison-feedback").hidden = false;
+        get("discovery-question").hidden = !correct;
+      }));
+      ["accepted-entries", "rejected-entries"].forEach((id) => get(id).addEventListener("click", (event) => {
+        const button = event.target.closest("[data-move]");
+        if (!button) return;
+        const index = Number(button.dataset.move);
+        choices[index] = !choices[index];
+        get("comparison-feedback").hidden = true;
+        get("discovery-question").hidden = true;
+        get("conclusion-feedback").hidden = true;
+        openNotebook();
+        get("conclusion").querySelector(`[data-move="${index}"]`).focus({ preventScroll: true });
+      }));
+
+      get("start").addEventListener("click", () => showScreen("mountain"));
+      get("depth").addEventListener("input", updateDepth);
+      get("lower").addEventListener("click", () => { get("depth").value = "100"; updateDepth(); get("to-guide").focus({ preventScroll:true }); });
+      get("to-guide").addEventListener("click", () => showScreen("guide"));
+      get("to-clues").addEventListener("click", () => { renderClue(); showScreen("clues"); });
+      get("keep").addEventListener("click", () => choose(true));
+      get("skip").addEventListener("click", () => choose(false));
+      get("next-clue").addEventListener("click", () => {
+        if (!answered) return;
+        if (clueIndex === deck.length - 1) { openNotebook(); return; }
+        clueIndex += 1;
+        renderClue();
+        showScreen("clues");
+      });
+      get("announce").addEventListener("click", () => { get("conclusion-feedback").textContent = "Todavía no: otras partículas pueden dejar pistas parecidas. Necesitamos comprobar otras explicaciones y reunir más pruebas. ¿Qué le propones al equipo?"; get("conclusion-feedback").hidden = false; });
+      get("investigate").addEventListener("click", compareSamples);
+      get("back-notebook").addEventListener("click", openNotebook);
+      get("finish-investigation").addEventListener("click", () => showScreen("finish"));
+      get("restart").addEventListener("click", () => {
+        newRound();
+        get("depth").value = "0";
+        updateDepth();
+        showScreen("welcome");
+      });
+      get("guide-small").innerHTML = trace("small", "Ejemplo de una huella pequeña y agrupada.");
+      get("guide-long").innerHTML = trace("long", "Ejemplo de una huella larga.");
+      newRound();
+    </script>
+  </body>
+</html>
