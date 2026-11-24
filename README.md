@@ -4,13 +4,13 @@ Educational games in Spanish about searching for axions and dark matter.
 
 ## Play the games
 
-**Click a game below to play directly in your browser. No download, installation or account is needed.**
+**Click a link or scan a QR code with your phone to play directly in your browser. No download, installation or account is needed.**
 
-| Game | Play online | What you will do |
-| --- | --- | --- |
-| **IAXO Event Hunter** | **[Play IAXO Event Hunter](https://cmargalejo.github.io/iaxo-event-hunter/)** | Identify events that look like X-rays, select candidates by position and explore whether they could be explained by background. |
-| **TREX-DM · Cazadores de WIMPs** | **[Play TREX-DM](https://cmargalejo.github.io/iaxo-event-hunter/trex-dm.html)** | Learn how a gas detector works, classify event traces and interpret possible dark-matter candidates. |
-| **TREX-DM Junior · Detectives de lo invisible** | **[Play TREX-DM Junior](https://cmargalejo.github.io/iaxo-event-hunter/trex-dm-junior.html)** | A short activity for ages 7–11: put the detector under a mountain, collect clues and compare counts. |
+| Game | Play online | QR code | What you will do |
+| --- | --- | --- | --- |
+| **IAXO Event Hunter** | **[Play IAXO Event Hunter](https://cmargalejo.github.io/iaxo-event-hunter/)** | [<img src="docs/qr-codes/iaxo-event-hunter.png" alt="QR code for IAXO Event Hunter" width="160" height="160">](https://cmargalejo.github.io/iaxo-event-hunter/) | Identify events that look like X-rays, select candidates by position and explore whether they could be explained by background. |
+| **TREX-DM · Cazadores de WIMPs** | **[Play TREX-DM](https://cmargalejo.github.io/iaxo-event-hunter/trex-dm.html)** | [<img src="docs/qr-codes/trex-dm.png" alt="QR code for TREX-DM" width="160" height="160">](https://cmargalejo.github.io/iaxo-event-hunter/trex-dm.html) | Learn how a gas detector works, classify event traces and interpret possible dark-matter candidates. |
+| **TREX-DM Junior · Detectives de lo invisible** | **[Play TREX-DM Junior](https://cmargalejo.github.io/iaxo-event-hunter/trex-dm-junior.html)** | [<img src="docs/qr-codes/trex-dm-junior.png" alt="QR code for TREX-DM Junior" width="160" height="160">](https://cmargalejo.github.io/iaxo-event-hunter/trex-dm-junior.html) | A short activity for ages 7–11: put the detector under a mountain, collect clues and compare counts. |
 
 Bookmark these links to return straight to the games. They are hosted on GitHub Pages; this repository contains their source code.
 
