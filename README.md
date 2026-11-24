@@ -14,6 +14,20 @@ Educational games in Spanish about searching for axions and dark matter.
 
 Bookmark these links to return straight to the games. They are hosted on GitHub Pages; this repository contains their source code.
 
+## Print or download the QR codes
+
+**[Download all three A4 sheets in one PDF](docs/qr-codes/all-games-a4.pdf)** — one page per game, ready to print for activities.
+
+Each sheet includes the game's name, a large QR code and its web address. The PDFs use vector QR codes, so they stay sharp when printed. Choose **A4, portrait, actual size (100%)** in the print dialog.
+
+| Game | Printable A4 sheet | High-resolution QR image |
+| --- | --- | --- |
+| IAXO Event Hunter | [Download PDF](docs/qr-codes/iaxo-event-hunter-a4.pdf) | [Download PNG · 2160 × 2160](docs/qr-codes/iaxo-event-hunter.png) |
+| TREX-DM | [Download PDF](docs/qr-codes/trex-dm-a4.pdf) | [Download PNG · 2160 × 2160](docs/qr-codes/trex-dm.png) |
+| TREX-DM Junior | [Download PDF](docs/qr-codes/trex-dm-junior-a4.pdf) | [Download PNG · 2352 × 2352](docs/qr-codes/trex-dm-junior.png) |
+
+On GitHub, use **Download raw file** if a link opens a file preview. The PNGs are saved at 300 dpi and can also be placed in posters or slides; keep the white margin around each code.
+
 ## Open a local copy
 
 If you have downloaded or cloned the repository, open one of these files in your browser:
