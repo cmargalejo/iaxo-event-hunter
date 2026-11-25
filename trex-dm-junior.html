@@ -13,7 +13,7 @@
       button, input { font:inherit; }
       a { color:inherit; text-underline-offset:4px; }
       button,a,input { -webkit-tap-highlight-color:transparent; }
-      button { cursor:pointer; }
+      button { cursor:pointer; touch-action:manipulation; }
       button:focus-visible,a:focus-visible,input:focus-visible { outline:3px solid #266db5; outline-offset:5px; }
       button:disabled { cursor:default; }
       .shell { max-width:1080px; margin:auto; padding:0 36px; }
@@ -71,6 +71,13 @@
       .missionlayout { display:grid; grid-template-columns:1.05fr 1fr; gap:36px; align-items:start; }
       .display { background:var(--ink); border-radius:20px; padding:12px; color:var(--mint); }
       .display .trace { max-height:270px; }
+      #current-trace { cursor:grab; touch-action:none; user-select:none; border-radius:18px; }
+      #current-trace.dragging { opacity:.35; cursor:grabbing; }
+      #current-trace.answered { cursor:default; touch-action:auto; }
+      .drag-preview { position:fixed; z-index:20; width:110px; pointer-events:none; transform:translate(-50%,-65%); filter:drop-shadow(0 8px 12px #182b4040); }
+      .drag-preview .trace { border:3px solid white; border-radius:14px; }
+      .choice.drop-target { outline:3px solid var(--green); outline-offset:3px; background:var(--mint); }
+      .drag-help { font-size:14px; margin:0 0 12px; }
       .displaybottom { font-size:11px; color:#bccdbf; text-align:center; padding:10px 8px 2px; }
       .choices { display:flex; flex-direction:column; gap:12px; margin:12px 0 18px; }
       .choice { display:flex; text-align:left; align-items:center; gap:14px; background:white; }
@@ -100,8 +107,13 @@
       .sample { background:white; border:1px solid var(--line); border-radius:16px; padding:20px; }
       .sample:first-child { background:#e7f3e2; border-color:#8bac8b; }
       .sample b { font-size:clamp(26px,4vw,40px); display:block; margin:14px 0; }
-      .sample-dots { display:flex; gap:8px; flex-wrap:wrap; min-height:30px; }
-      .sample-dots span { width:26px; height:26px; border-radius:50%; background:var(--green); border:2px solid var(--ink); }
+      .count-unit { display:block; font-size:14px; font-weight:normal; color:var(--muted); margin-top:3px; }
+      .sample-dots { display:flex; gap:8px; flex-wrap:wrap; min-height:44px; }
+      .count-token { width:44px; height:44px; flex:0 0 44px; border-radius:50%; background:var(--paper); border:2px solid var(--green); color:var(--green); font-weight:bold; padding:0; display:grid; place-items:center; }
+      .count-token::before { content:""; width:12px; height:12px; border-radius:50%; background:var(--green); }
+      .count-token[aria-pressed="true"] { background:var(--green); color:white; }
+      .count-token[aria-pressed="true"]::before { display:none; }
+      .counting-hint { font-size:16px; color:var(--green); }
       .sample .tiny { margin-bottom:0; }
       .comparison-choices { display:grid; grid-template-columns:repeat(3,1fr); }
       .comparison-choices .choice { justify-content:center; padding:12px; }
@@ -114,7 +126,7 @@
       .science-note { margin:24px auto 0; max-width:730px; font-size:12px; }
       @media(max-width:760px) { .shell { padding:0 20px; } header { min-height:76px; } .brand strong { font-size:15px; } .brand small { font-size:9px; } .hero,.split,.missionlayout { grid-template-columns:1fr; gap:24px; } .hero { padding:0; } h1 { margin-top:12px; } .introcopy { max-width:none; } .hero .artpanel { max-width:360px; width:100%; margin:auto; } .fieldguide { gap:16px; } .guidecard h3 { font-size:18px; } .guidecard p { font-size:15px; } main { padding-top:24px; min-height:0; } .screenhead { margin-bottom:20px; } .display { max-width:360px; width:100%; margin:auto; } .display .trace { max-height:210px; } .missionlayout { gap:18px; } }
       @media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none !important; scroll-behavior:auto !important; } }
-      @media(max-width:600px) { .notebook-groups { grid-template-columns:1fr; gap:8px; } .sample { padding:14px; } .sample h3 { font-size:16px; } .sample-dots { gap:6px; } .sample-dots span { width:20px; height:20px; } .comparison-grid { gap:12px; } footer { font-size:11px; } footer nav { gap:16px; } }
+      @media(max-width:600px) { .notebook-groups { grid-template-columns:1fr; gap:8px; } .sample { padding:12px; } .sample h3 { font-size:16px; min-height:2.4em; } .sample-dots { gap:6px; } .comparison-grid { gap:12px; } .comparison-choices .choice { padding:12px 5px; } footer { font-size:11px; } footer nav { gap:16px; } }
     </style>
   </head>
   <body>
@@ -179,7 +191,7 @@
               <input id="depth" type="range" min="0" max="100" value="0" step="1" aria-valuetext="En la superficie" />
               <div class="range-label"><span>Superficie</span><span>Bajo la montaña</span></div>
             </div>
-            <div><div class="bubble" role="status" id="mountain-message"><p>Lleva el detector hasta el laboratorio.</p></div><button class="secondary" id="lower">Bajar al laboratorio ↓</button><button class="primary" id="to-guide" hidden>¡Ahora, a buscar pistas! →</button><details class="more"><summary>¿Dónde está TREX-DM?</summary><p>En el Laboratorio Subterráneo de Canfranc. La montaña reduce las partículas del espacio, pero no elimina todas las señales de fondo.</p></details></div>
+            <div><div class="bubble" role="status" id="mountain-message"><p>Lleva el detector hasta el laboratorio.</p></div><button class="secondary" id="lower">Bajar al laboratorio ↓</button><button class="primary" id="to-guide" hidden>¡Ahora, a buscar pistas! →</button><details class="more"><summary>¿Dónde está TREX-DM?</summary><p>En el Laboratorio Subterráneo de Canfranc. La montaña frena muchas partículas del espacio. Otras aún llegan al detector y dejan huellas.</p></details></div>
           </div>
         </section>
 
@@ -194,10 +206,10 @@
 
         <section id="clues" hidden aria-labelledby="clues-title">
           <div class="stepbar" aria-label="Paso 2 de 3: investigar seis pistas"><span class="active"></span><span class="active"></span><span></span></div>
-          <div class="screenhead"><span class="eyebrow" id="clue-label">Pista 1 de 6</span><h2 id="clues-title" tabindex="-1">¿Guardamos esta pista?</h2><p>Guarda las huellas pequeñas y agrupadas.</p></div>
+          <div class="screenhead"><span class="eyebrow" id="clue-label">Pista 1 de 6</span><h2 id="clues-title" tabindex="-1">¿Guardamos esta pista?</h2><p>Arrastra la huella hasta <b>Guardar</b> o <b>Apartar</b>. Guarda las pequeñas y agrupadas.</p></div>
           <div class="missionlayout">
             <div class="display"><div id="current-trace"></div><div class="displaybottom">Dibujo para jugar · no son datos reales</div></div>
-            <div><div class="choices"><button class="choice keep" id="keep"><span class="symbol" aria-hidden="true">＋</span>Guardar</button><button class="choice skip" id="skip"><span class="symbol" aria-hidden="true">↗</span>Apartar</button></div><div class="feedback" id="clue-feedback" role="status" hidden></div><button class="primary" id="next-clue" hidden>Siguiente pista →</button><div class="notebookrow" id="notebook-progress" role="img" aria-label="0 de 6 pistas revisadas"></div></div>
+            <div><p class="drag-help">También puedes tocar un botón.</p><div class="choices"><button class="choice keep" id="keep"><span class="symbol" aria-hidden="true">＋</span>Guardar</button><button class="choice skip" id="skip"><span class="symbol" aria-hidden="true">↗</span>Apartar</button></div><div class="feedback" id="clue-feedback" role="status" hidden></div><button class="primary" id="next-clue" hidden>Siguiente pista →</button><div class="notebookrow" id="notebook-progress" role="img" aria-label="0 de 6 pistas revisadas"></div></div>
           </div>
         </section>
 
@@ -206,17 +218,18 @@
           <span class="eyebrow">03 / Tu cuaderno de detective</span><h2 id="conclusion-title" tabindex="-1">Cada pista, en su sitio.</h2><p id="notebook-summary" aria-live="polite"></p>
           <div class="notebook-groups"><div class="notebook accepted"><h3 id="accepted-title">Guardadas</h3><div class="entries" id="accepted-entries"></div></div>
           <div class="notebook rejected"><h3 id="rejected-title">Apartadas</h3><div class="entries" id="rejected-entries"></div></div></div>
-          <p>Ahora compararemos tus pistas con el <b>fondo</b>: señales de otras causas que pueden parecerse a las que buscamos.</p>
+          <p>Otras partículas también dejan pistas parecidas. Compáralas con una ronda de ejemplo en la que <b>solo hay otras partículas</b>.</p>
           <button class="primary" id="investigate">Comparar las pistas →</button><div id="notebook-feedback" class="feedback" role="status" hidden></div>
         </section>
 
         <section id="comparison" class="conclusion" hidden aria-labelledby="comparison-title">
           <div class="stepbar" aria-label="Paso 3 de 3: comparar las pistas"><span class="active"></span><span class="active"></span><span class="active"></span></div>
           <span class="eyebrow">03 / Comparar</span><h2 id="comparison-title" tabindex="-1">Cuenta y compara.</h2>
-          <p>Las dos muestras representan el mismo tiempo. Contamos solo huellas pequeñas y agrupadas.</p>
-          <div class="comparison-grid"><div class="sample"><h3>Tus pistas</h3><b id="sample-count"></b><div class="sample-dots" id="sample-dots" aria-hidden="true"></div></div><div class="sample"><h3>Solo fondo</h3><b id="control-count"></b><div class="sample-dots" id="control-dots" aria-hidden="true"></div></div></div>
-          <p class="tiny">Números inventados para jugar. El fondo puede variar entre muestras.</p>
-          <h3>¿Tienes más, las mismas o menos pistas que el fondo?</h3><div class="choices comparison-choices"><button class="choice" data-comparison="more">Más</button><button class="choice" data-comparison="same">Las mismas</button><button class="choice" data-comparison="less">Menos</button></div>
+          <p>Toca cada círculo para contar una pista. Las dos rondas duran lo mismo y contamos solo huellas pequeñas.</p>
+          <div class="comparison-grid"><div class="sample"><h3 id="sample-title">Tus pistas</h3><b id="sample-count"></b><div class="sample-dots" id="sample-dots" role="group" aria-labelledby="sample-title"></div></div><div class="sample"><h3 id="control-title">Otras partículas</h3><b id="control-count"></b><div class="sample-dots" id="control-dots" role="group" aria-labelledby="control-title"></div></div></div>
+          <p class="counting-hint" id="counting-hint" role="status"></p>
+          <details class="more"><summary>¿De dónde salen estas pistas?</summary><p>Son dibujos y números inventados para jugar. En la ronda de ejemplo solo hay otras partículas, sin materia oscura. El número de pistas puede cambiar de una ronda a otra.</p></details>
+          <h3>¿Tienes más, las mismas o menos pistas que en el ejemplo?</h3><div class="choices comparison-choices"><button class="choice" data-comparison="more" disabled>Más</button><button class="choice" data-comparison="same" disabled>Las mismas</button><button class="choice" data-comparison="less" disabled>Menos</button></div>
           <div id="comparison-feedback" class="feedback" role="status" hidden></div>
           <div id="discovery-question" hidden><h3>¿Qué le decimos al equipo?</h3><div class="choices"><button class="choice" id="announce">¡Es materia oscura!</button><button class="choice keep" id="finish-investigation">Necesitamos más pruebas.</button></div><div id="conclusion-feedback" class="feedback" role="status" hidden></div></div>
           <button class="secondary" id="back-notebook">← Volver al cuaderno</button>
@@ -233,7 +246,7 @@
       const get = (id) => document.getElementById(id);
       const screens = ["welcome", "mountain", "guide", "clues", "conclusion", "comparison", "finish"];
       const templates = [
-        { shape: "small", compact: true, description: "Un grupo pequeño y compacto de puntos.", keep: "Buena pista para estudiar: es pequeña y está agrupada. Pero un neutrón también podría dejar una huella así. Todavía no sabemos qué la causó.", skip: "Mira qué pequeña y agrupada está. La guardaríamos para estudiarla, aunque otras partículas, como los neutrones, pueden dejar huellas parecidas." },
+        { shape: "small", compact: true, description: "Un grupo pequeño y compacto de puntos.", keep: "¡Una pista pequeña y agrupada! La guardamos. Otras partículas también dejan huellas así: aún no sabemos qué la causó.", skip: "Es pequeña y agrupada: la guardaríamos. Aún no sabemos qué partícula la dejó." },
         { shape: "long", compact: false, description: "Una huella larga que cruza el detector.", keep: "Has guardado un camino largo. En este juego buscamos huellas pequeñas; esta la apartaríamos.", skip: "Bien observado: es un camino largo. Lo apartamos para centrarnos en las huellas pequeñas." },
         { shape: "spread", compact: false, description: "Muchos puntos repartidos por una zona amplia.", keep: "Esta huella ocupa una zona amplia. La pista que buscamos es pequeña y agrupada.", skip: "Buena observación: los puntos están muy repartidos. No es la forma pequeña que buscamos." },
         { shape: "double", compact: false, description: "Dos grupos de puntos separados entre sí.", keep: "Hay dos grupos separados. En esta práctica buscamos una sola huella pequeña y agrupada.", skip: "Has visto los dos grupos separados. En esta práctica los apartamos." }
@@ -246,6 +259,8 @@
       let clueIndex = 0;
       let choices = [];
       let answered = false;
+      let counted = { sample: new Map(), control: new Map() };
+      let drag = null;
 
       function randomItem(items) { return items[Math.floor(Math.random() * items.length)]; }
 
@@ -263,6 +278,7 @@
         clueIndex = 0;
         choices = [];
         answered = false;
+        counted = { sample: new Map(), control: new Map() };
         get("comparison-feedback").hidden = true;
         get("discovery-question").hidden = true;
         get("conclusion-feedback").hidden = true;
@@ -306,7 +322,9 @@
       }
 
       function renderClue() {
+        cancelDrag();
         answered = false;
+        get("current-trace").classList.remove("answered");
         const item = deck[clueIndex];
         get("current-trace").innerHTML = trace(item.shape, item.description, item.seed);
         get("clue-label").textContent = `Pista ${clueIndex + 1} de 6`;
@@ -324,7 +342,9 @@
 
       function choose(keep) {
         if (answered) return;
+        cancelDrag();
         answered = true;
+        get("current-trace").classList.add("answered");
         choices.push(keep);
         get(keep ? "keep" : "skip").classList.add("selected");
         get("clue-feedback").textContent = deck[clueIndex][keep ? "keep" : "skip"];
@@ -334,6 +354,56 @@
         ["keep", "skip"].forEach((id) => { get(id).disabled = true; });
         renderProgress();
       }
+
+      function dropTarget(x, y) {
+        const target = document.elementFromPoint(x, y)?.closest("#keep, #skip");
+        return target && !target.disabled ? target : null;
+      }
+
+      function cancelDrag(releaseCapture = true) {
+        if (!drag) return;
+        const pointerId = drag.pointerId;
+        drag.preview?.remove();
+        drag = null;
+        const surface = get("current-trace");
+        surface.classList.remove("dragging");
+        document.querySelectorAll(".drop-target").forEach((button) => button.classList.remove("drop-target"));
+        if (releaseCapture && surface.hasPointerCapture(pointerId)) surface.releasePointerCapture(pointerId);
+      }
+
+      const dragSurface = get("current-trace");
+      dragSurface.addEventListener("pointerdown", (event) => {
+        if (answered || drag || !event.isPrimary || event.button !== 0) return;
+        event.preventDefault();
+        drag = { pointerId: event.pointerId, x: event.clientX, y: event.clientY, preview: null };
+        dragSurface.setPointerCapture(event.pointerId);
+      });
+      dragSurface.addEventListener("pointermove", (event) => {
+        if (!drag || drag.pointerId !== event.pointerId) return;
+        if (!drag.preview && Math.hypot(event.clientX - drag.x, event.clientY - drag.y) < 10) return;
+        if (!drag.preview) {
+          drag.preview = document.createElement("div");
+          drag.preview.className = "drag-preview";
+          drag.preview.setAttribute("aria-hidden", "true");
+          drag.preview.innerHTML = dragSurface.innerHTML;
+          document.body.append(drag.preview);
+          dragSurface.classList.add("dragging");
+        }
+        drag.preview.style.left = `${event.clientX}px`;
+        drag.preview.style.top = `${event.clientY}px`;
+        const target = dropTarget(event.clientX, event.clientY);
+        ["keep", "skip"].forEach((id) => get(id).classList.toggle("drop-target", get(id) === target));
+      });
+      dragSurface.addEventListener("pointerup", (event) => {
+        if (!drag || drag.pointerId !== event.pointerId) return;
+        const target = drag.preview ? dropTarget(event.clientX, event.clientY) : null;
+        cancelDrag(false);
+        if (target) choose(target.id === "keep");
+      });
+      ["pointercancel", "lostpointercapture"].forEach((type) => dragSurface.addEventListener(type, (event) => {
+        if (drag?.pointerId === event.pointerId) cancelDrag(false);
+      }));
+      document.addEventListener("keydown", (event) => { if (event.key === "Escape") cancelDrag(); });
 
       function openNotebook() {
         const count = choices.filter(Boolean).length;
@@ -351,22 +421,54 @@
       function compareSamples() {
         const mistakes = deck.map((item, index) => item.compact !== choices[index] ? index + 1 : null).filter(Boolean);
         if (mistakes.length) {
-          get("notebook-feedback").textContent = `Antes de comparar, revisa ${mistakes.length === 1 ? "la pista" : "las pistas"} ${mistakes.join(", ")}. Usemos la misma regla en las dos muestras: aceptar solo huellas pequeñas y agrupadas. Puedes moverlas entre las listas.`;
+          get("notebook-feedback").textContent = `Revisa ${mistakes.length === 1 ? "la pista" : "las pistas"} ${mistakes.join(", ")}. Usemos la misma regla en las dos rondas: guardar solo huellas pequeñas y agrupadas. Puedes moverlas entre las listas.`;
           get("notebook-feedback").hidden = false;
           return;
         }
         const count = choices.filter(Boolean).length;
-        get("sample-count").textContent = `${count} pistas`;
-        get("control-count").textContent = `${controlCount} ${controlCount === 1 ? "pista" : "pistas"}`;
-        get("sample-dots").innerHTML = "<span></span>".repeat(count);
-        get("control-dots").innerHTML = "<span></span>".repeat(controlCount);
-        get("round-result").textContent = `En esta partida: ${count} pistas aceptadas frente a ${controlCount} de fondo. ${outcome === "more" ? "Tener más pistas invita a comprobar otras explicaciones." : outcome === "same" ? "El fondo puede producir el mismo número de pistas." : "También podemos obtener menos pistas: los recuentos varían."}`;
+        for (const [group, total] of [["sample", count], ["control", controlCount]]) {
+          get(`${group}-dots`).innerHTML = total ? Array.from({ length: total }, (_, index) => `<button type="button" class="count-token" data-group="${group}" data-token="${index}" aria-pressed="false"></button>`).join("") : '<p class="tiny">Aquí no hay ninguna.</p>';
+        }
+        updateCounting();
+        get("round-result").textContent = `Has guardado ${count} pistas. En el ejemplo había ${controlCount}. Otras partículas también pueden dejar pistas parecidas. ¡Sigamos investigando!`;
         showScreen("comparison");
       }
 
+      function allCounted() {
+        return counted.sample.size === choices.filter(Boolean).length && counted.control.size === controlCount;
+      }
+
+      function updateCounting() {
+        for (const [group, total] of [["sample", choices.filter(Boolean).length], ["control", controlCount]]) {
+          const amount = counted[group].size;
+          get(`${group}-count`).innerHTML = `${amount}<span class="count-unit">${amount === total ? amount === 1 ? "pista" : "pistas" : "contadas"}</span>`;
+          get(`${group}-dots`).querySelectorAll("button").forEach((button) => {
+            const index = Number(button.dataset.token);
+            const order = counted[group].get(index);
+            button.setAttribute("aria-pressed", String(Boolean(order)));
+            button.setAttribute("aria-label", `${group === "sample" ? "Tu pista" : "Pista del ejemplo"} ${index + 1}, ${order ? `contada como ${order}` : "sin contar"}`);
+            button.textContent = order || "";
+          });
+        }
+        const complete = allCounted();
+        document.querySelectorAll("[data-comparison]").forEach((button) => { button.disabled = !complete; });
+        get("counting-hint").textContent = complete ? "¡Ya están contadas! Ahora compara." : `Llevas ${counted.sample.size} de tus pistas y ${counted.control.size} del ejemplo. Toca las que faltan.`;
+      }
+
+      ["sample-dots", "control-dots"].forEach((id) => get(id).addEventListener("click", (event) => {
+        const button = event.target.closest("[data-token]");
+        if (!button) return;
+        const group = counted[button.dataset.group];
+        const index = Number(button.dataset.token);
+        if (group.has(index)) return;
+        group.set(index, group.size + 1);
+        updateCounting();
+      }));
+
       document.querySelectorAll("[data-comparison]").forEach((button) => button.addEventListener("click", () => {
+        if (!allCounted()) return;
         const correct = button.dataset.comparison === outcome;
-        get("comparison-feedback").textContent = correct ? outcome === "more" ? "¡Bien contado! Hay más pistas en tu muestra. Pero el fondo también varía: este pequeño exceso, por sí solo, no demuestra que sea materia oscura." : outcome === "same" ? "¡Bien contado! Hay tantas pistas como en la muestra de fondo. Este recuento no muestra una diferencia; tampoco descarta que existan WIMPs." : "¡Bien contado! Hay menos pistas que en la muestra de fondo. Los recuentos pueden variar; esto tampoco descarta que existan WIMPs." : "Cuenta los círculos de cada caja y compara de nuevo. Cada círculo representa una pista aceptada.";
+        get("comparison-feedback").textContent = correct ? outcome === "more" ? "¡Sí, tienes más! Otras partículas también dejan pistas y su número puede cambiar. Tener más no basta para saber si hay materia oscura." : outcome === "same" ? "¡Sí, hay las mismas! Otras partículas pueden dejar tantas pistas como las tuyas. Aún no sabemos si hay materia oscura." : "¡Sí, tienes menos! El número de pistas puede cambiar de una ronda a otra. Aún no sabemos si hay materia oscura." : "Mira cuántas pistas has contado en cada grupo e inténtalo otra vez.";
         get("comparison-feedback").hidden = false;
         get("discovery-question").hidden = !correct;
       }));
