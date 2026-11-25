@@ -133,26 +133,13 @@ async function main() {
         if (round === 0) await screenshot("junior-notebook");
         await activate(page.locator("#investigate"));
         assert.equal(await page.locator("#comparison").isVisible(), true);
-        if (round === 0) await screenshot("junior-counting");
-        const control = await page.locator("#control-dots button").count();
-        assert.equal(await page.locator("#sample-dots button").count(), count);
-        assert.equal(await page.locator('.count-token[aria-pressed="true"]').count(), 0, "New rounds reset all counters");
-        assert.equal(await page.locator("[data-comparison]:disabled").count(), 3);
-        await page.locator('[data-comparison="more"]').dispatchEvent("click");
-        assert.equal(await page.locator("#discovery-question").isVisible(), false);
-        for (const group of ["sample", "control"]) {
-          const tokens = await page.locator("#" + group + "-dots button").all();
-          if (round % 2 === 0) tokens.reverse();
-          for (let index = 0; index < tokens.length; index += 1) {
-            if (width === 1280) { await tokens[index].focus(); await page.keyboard.press("Space"); }
-            else await activate(tokens[index]);
-            assert.equal(await tokens[index].textContent(), String(index + 1));
-            assert.equal(await tokens[index].getAttribute("aria-pressed"), "true");
-            await activate(tokens[index]);
-            assert.equal(parseInt(await page.locator("#" + group + "-count").textContent(), 10), index + 1, "A clue cannot be counted twice");
-          }
-        }
-        assert.equal(await page.locator("[data-comparison]:disabled").count(), 0);
+        const control = parseInt(await page.locator("#control-count").textContent(), 10);
+        assert.equal(parseInt(await page.locator("#sample-count").textContent(), 10), count);
+        assert.equal(await page.locator("#sample-dots span").count(), count);
+        assert.equal(await page.locator("#control-dots span").count(), control);
+        assert.equal(await page.locator(".sample-dots button").count(), 0);
+        assert.equal(await page.locator("[data-comparison]:disabled").count(), 0, "Compare immediately, without counting clicks");
+        if (round === 0) await screenshot("junior-counts");
         const outcome = count > control ? "more" : count === control ? "same" : "less";
         outcomes.add(outcome);
         assert.notEqual(outcome, previousOutcome, "Consecutive outcomes must differ");
@@ -166,7 +153,7 @@ async function main() {
         await activate(page.locator("#back-notebook"));
         await activate(page.locator("#investigate"));
         assert.equal(parseInt(await page.locator("#control-count").textContent(), 10), control);
-        assert.equal(await page.locator('.count-token[aria-pressed="true"]').count(), count + control, "Counting survives revisiting the notebook");
+        assert.equal(parseInt(await page.locator("#sample-count").textContent(), 10), count);
         await activate(page.locator("#announce"));
         assert.match(await page.locator("#conclusion-feedback").innerText(), /más pruebas/);
         await activate(page.locator("#finish-investigation"));
@@ -179,7 +166,7 @@ async function main() {
       await page.close();
     }
     assert.deepEqual([...outcomes].sort(), ["less", "more", "same"]);
-    console.log("Junior checks passed: nine rounds at desktop/mobile/320px; mouse/touch dragging and cancellation; keyboard/tap alternatives; interactive counting without duplicates; stable counting and drawings; notebook corrections; all comparison outcomes; replay resets; no background jargon.");
+    console.log("Junior checks passed: nine rounds at desktop/mobile/320px; mouse/touch dragging and cancellation; keyboard/tap alternatives; immediate counts and visual comparison; stable counts and drawings; notebook corrections; all comparison outcomes; replay resets; no background jargon.");
   } finally { await browser.close(); }
 }
 main().catch((error) => { console.error(error); process.exitCode = 1; });

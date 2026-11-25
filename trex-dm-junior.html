@@ -91,16 +91,21 @@
       .notebookrow { display:flex; gap:8px; margin:18px 0; }
       .notebookrow span { width:22px; height:4px; border-radius:4px; background:#d8dccf; }
       .notebookrow .done { background:var(--green); }
-      .notebook-groups { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
-      .notebook { padding:16px 0; margin:8px 0; }
+      .notebook-groups { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:32px; margin:24px 0; align-items:start; }
+      .notebook { padding:20px 16px; border:2px solid; border-radius:20px; }
       .entries { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
       .entry { padding:10px; background:white; border:1px solid var(--line); border-radius:12px; font-size:12px; }
       .entry .trace { border-radius:8px; margin-bottom:10px; height:110px; }
       .entry b { display:block; margin-bottom:5px; }
       .entry span { color:var(--muted); }
-      .notebook.accepted { border-top:2px solid #7f9e82; }
-      .notebook.rejected { border-top:2px solid var(--line); }
-      .notebook h3 { margin:0 0 16px; font-size:18px; }
+      .notebook.accepted { background:#e2f1df; border-color:#44855c; }
+      .notebook.rejected { background:#e8edf5; border-color:#7388a2; }
+      .notebook h3 { display:flex; align-items:center; gap:10px; margin:0 0 18px; padding-bottom:16px; border-bottom:2px solid; font-size:20px; }
+      .notebook.accepted h3 { color:#216848; border-color:#a5c7a9; }
+      .notebook.rejected h3 { color:#374e6c; border-color:#b8c5d8; }
+      .notebook h3::before { display:grid; place-items:center; flex:0 0 32px; height:32px; border-radius:9px; color:white; font-size:24px; }
+      .notebook.accepted h3::before { content:"＋"; background:#216848; }
+      .notebook.rejected h3::before { content:"−"; background:#4b6481; }
       .move { display:block; margin-top:12px; border:1px solid #8c9c8c; border-radius:9px; background:white; color:var(--ink); min-height:44px; padding:8px; font-size:12px; width:100%; }
       .empty { grid-column:1 / -1; font-size:15px; margin:0; }
       .comparison-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:24px 0; }
@@ -108,12 +113,8 @@
       .sample:first-child { background:#e7f3e2; border-color:#8bac8b; }
       .sample b { font-size:clamp(26px,4vw,40px); display:block; margin:14px 0; }
       .count-unit { display:block; font-size:14px; font-weight:normal; color:var(--muted); margin-top:3px; }
-      .sample-dots { display:flex; gap:8px; flex-wrap:wrap; min-height:44px; }
-      .count-token { width:44px; height:44px; flex:0 0 44px; border-radius:50%; background:var(--paper); border:2px solid var(--green); color:var(--green); font-weight:bold; padding:0; display:grid; place-items:center; }
-      .count-token::before { content:""; width:12px; height:12px; border-radius:50%; background:var(--green); }
-      .count-token[aria-pressed="true"] { background:var(--green); color:white; }
-      .count-token[aria-pressed="true"]::before { display:none; }
-      .counting-hint { font-size:16px; color:var(--green); }
+      .sample-dots { display:flex; gap:8px; flex-wrap:wrap; min-height:26px; }
+      .sample-dots span { width:26px; height:26px; border-radius:50%; background:var(--green); border:2px solid var(--ink); }
       .sample .tiny { margin-bottom:0; }
       .comparison-choices { display:grid; grid-template-columns:repeat(3,1fr); }
       .comparison-choices .choice { justify-content:center; padding:12px; }
@@ -126,7 +127,8 @@
       .science-note { margin:24px auto 0; max-width:730px; font-size:12px; }
       @media(max-width:760px) { .shell { padding:0 20px; } header { min-height:76px; } .brand strong { font-size:15px; } .brand small { font-size:9px; } .hero,.split,.missionlayout { grid-template-columns:1fr; gap:24px; } .hero { padding:0; } h1 { margin-top:12px; } .introcopy { max-width:none; } .hero .artpanel { max-width:360px; width:100%; margin:auto; } .fieldguide { gap:16px; } .guidecard h3 { font-size:18px; } .guidecard p { font-size:15px; } main { padding-top:24px; min-height:0; } .screenhead { margin-bottom:20px; } .display { max-width:360px; width:100%; margin:auto; } .display .trace { max-height:210px; } .missionlayout { gap:18px; } }
       @media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none !important; scroll-behavior:auto !important; } }
-      @media(max-width:600px) { .notebook-groups { grid-template-columns:1fr; gap:8px; } .sample { padding:12px; } .sample h3 { font-size:16px; min-height:2.4em; } .sample-dots { gap:6px; } .comparison-grid { gap:12px; } .comparison-choices .choice { padding:12px 5px; } footer { font-size:11px; } footer nav { gap:16px; } }
+      @media(max-width:600px) { .notebook-groups { grid-template-columns:1fr; gap:28px; } .notebook { padding:18px 12px; } .sample { padding:12px; } .sample h3 { font-size:16px; min-height:2.4em; } .sample-dots { gap:6px; } .comparison-grid { gap:12px; } .comparison-choices .choice { padding:12px 5px; } footer { font-size:11px; } footer nav { gap:16px; } }
+      @media(max-width:380px) { .entries { grid-template-columns:1fr; } }
     </style>
   </head>
   <body>
@@ -216,8 +218,8 @@
         <section id="conclusion" class="conclusion" hidden aria-labelledby="conclusion-title">
           <div class="stepbar" aria-label="Paso 3 de 3: el cuaderno"><span class="active"></span><span class="active"></span><span class="active"></span></div>
           <span class="eyebrow">03 / Tu cuaderno de detective</span><h2 id="conclusion-title" tabindex="-1">Cada pista, en su sitio.</h2><p id="notebook-summary" aria-live="polite"></p>
-          <div class="notebook-groups"><div class="notebook accepted"><h3 id="accepted-title">Guardadas</h3><div class="entries" id="accepted-entries"></div></div>
-          <div class="notebook rejected"><h3 id="rejected-title">Apartadas</h3><div class="entries" id="rejected-entries"></div></div></div>
+          <div class="notebook-groups"><div class="notebook accepted" role="group" aria-labelledby="accepted-title"><h3 id="accepted-title">Guardadas</h3><div class="entries" id="accepted-entries"></div></div>
+          <div class="notebook rejected" role="group" aria-labelledby="rejected-title"><h3 id="rejected-title">Apartadas</h3><div class="entries" id="rejected-entries"></div></div></div>
           <p>Otras partículas también dejan pistas parecidas. Compáralas con una ronda de ejemplo en la que <b>solo hay otras partículas</b>.</p>
           <button class="primary" id="investigate">Comparar las pistas →</button><div id="notebook-feedback" class="feedback" role="status" hidden></div>
         </section>
@@ -225,11 +227,10 @@
         <section id="comparison" class="conclusion" hidden aria-labelledby="comparison-title">
           <div class="stepbar" aria-label="Paso 3 de 3: comparar las pistas"><span class="active"></span><span class="active"></span><span class="active"></span></div>
           <span class="eyebrow">03 / Comparar</span><h2 id="comparison-title" tabindex="-1">Cuenta y compara.</h2>
-          <p>Toca cada círculo para contar una pista. Las dos rondas duran lo mismo y contamos solo huellas pequeñas.</p>
-          <div class="comparison-grid"><div class="sample"><h3 id="sample-title">Tus pistas</h3><b id="sample-count"></b><div class="sample-dots" id="sample-dots" role="group" aria-labelledby="sample-title"></div></div><div class="sample"><h3 id="control-title">Otras partículas</h3><b id="control-count"></b><div class="sample-dots" id="control-dots" role="group" aria-labelledby="control-title"></div></div></div>
-          <p class="counting-hint" id="counting-hint" role="status"></p>
+          <p>Cada círculo representa una pista. Las dos rondas duran lo mismo y contamos solo huellas pequeñas.</p>
+          <div class="comparison-grid"><div class="sample"><h3 id="sample-title">Tus pistas</h3><b id="sample-count"></b><div class="sample-dots" id="sample-dots" aria-hidden="true"></div></div><div class="sample"><h3 id="control-title">Otras partículas</h3><b id="control-count"></b><div class="sample-dots" id="control-dots" aria-hidden="true"></div></div></div>
           <details class="more"><summary>¿De dónde salen estas pistas?</summary><p>Son dibujos y números inventados para jugar. En la ronda de ejemplo solo hay otras partículas, sin materia oscura. El número de pistas puede cambiar de una ronda a otra.</p></details>
-          <h3>¿Tienes más, las mismas o menos pistas que en el ejemplo?</h3><div class="choices comparison-choices"><button class="choice" data-comparison="more" disabled>Más</button><button class="choice" data-comparison="same" disabled>Las mismas</button><button class="choice" data-comparison="less" disabled>Menos</button></div>
+          <h3>¿Tienes más, las mismas o menos pistas que en el ejemplo?</h3><div class="choices comparison-choices"><button class="choice" data-comparison="more">Más</button><button class="choice" data-comparison="same">Las mismas</button><button class="choice" data-comparison="less">Menos</button></div>
           <div id="comparison-feedback" class="feedback" role="status" hidden></div>
           <div id="discovery-question" hidden><h3>¿Qué le decimos al equipo?</h3><div class="choices"><button class="choice" id="announce">¡Es materia oscura!</button><button class="choice keep" id="finish-investigation">Necesitamos más pruebas.</button></div><div id="conclusion-feedback" class="feedback" role="status" hidden></div></div>
           <button class="secondary" id="back-notebook">← Volver al cuaderno</button>
@@ -259,7 +260,6 @@
       let clueIndex = 0;
       let choices = [];
       let answered = false;
-      let counted = { sample: new Map(), control: new Map() };
       let drag = null;
 
       function randomItem(items) { return items[Math.floor(Math.random() * items.length)]; }
@@ -278,7 +278,6 @@
         clueIndex = 0;
         choices = [];
         answered = false;
-        counted = { sample: new Map(), control: new Map() };
         get("comparison-feedback").hidden = true;
         get("discovery-question").hidden = true;
         get("conclusion-feedback").hidden = true;
@@ -427,48 +426,16 @@
         }
         const count = choices.filter(Boolean).length;
         for (const [group, total] of [["sample", count], ["control", controlCount]]) {
-          get(`${group}-dots`).innerHTML = total ? Array.from({ length: total }, (_, index) => `<button type="button" class="count-token" data-group="${group}" data-token="${index}" aria-pressed="false"></button>`).join("") : '<p class="tiny">Aquí no hay ninguna.</p>';
+          get(`${group}-count`).innerHTML = `${total} <span class="count-unit">${total === 1 ? "pista" : "pistas"}</span>`;
+          get(`${group}-dots`).innerHTML = "<span></span>".repeat(total);
         }
-        updateCounting();
         get("round-result").textContent = `Has guardado ${count} pistas. En el ejemplo había ${controlCount}. Otras partículas también pueden dejar pistas parecidas. ¡Sigamos investigando!`;
         showScreen("comparison");
       }
 
-      function allCounted() {
-        return counted.sample.size === choices.filter(Boolean).length && counted.control.size === controlCount;
-      }
-
-      function updateCounting() {
-        for (const [group, total] of [["sample", choices.filter(Boolean).length], ["control", controlCount]]) {
-          const amount = counted[group].size;
-          get(`${group}-count`).innerHTML = `${amount}<span class="count-unit">${amount === total ? amount === 1 ? "pista" : "pistas" : "contadas"}</span>`;
-          get(`${group}-dots`).querySelectorAll("button").forEach((button) => {
-            const index = Number(button.dataset.token);
-            const order = counted[group].get(index);
-            button.setAttribute("aria-pressed", String(Boolean(order)));
-            button.setAttribute("aria-label", `${group === "sample" ? "Tu pista" : "Pista del ejemplo"} ${index + 1}, ${order ? `contada como ${order}` : "sin contar"}`);
-            button.textContent = order || "";
-          });
-        }
-        const complete = allCounted();
-        document.querySelectorAll("[data-comparison]").forEach((button) => { button.disabled = !complete; });
-        get("counting-hint").textContent = complete ? "¡Ya están contadas! Ahora compara." : `Llevas ${counted.sample.size} de tus pistas y ${counted.control.size} del ejemplo. Toca las que faltan.`;
-      }
-
-      ["sample-dots", "control-dots"].forEach((id) => get(id).addEventListener("click", (event) => {
-        const button = event.target.closest("[data-token]");
-        if (!button) return;
-        const group = counted[button.dataset.group];
-        const index = Number(button.dataset.token);
-        if (group.has(index)) return;
-        group.set(index, group.size + 1);
-        updateCounting();
-      }));
-
       document.querySelectorAll("[data-comparison]").forEach((button) => button.addEventListener("click", () => {
-        if (!allCounted()) return;
         const correct = button.dataset.comparison === outcome;
-        get("comparison-feedback").textContent = correct ? outcome === "more" ? "¡Sí, tienes más! Otras partículas también dejan pistas y su número puede cambiar. Tener más no basta para saber si hay materia oscura." : outcome === "same" ? "¡Sí, hay las mismas! Otras partículas pueden dejar tantas pistas como las tuyas. Aún no sabemos si hay materia oscura." : "¡Sí, tienes menos! El número de pistas puede cambiar de una ronda a otra. Aún no sabemos si hay materia oscura." : "Mira cuántas pistas has contado en cada grupo e inténtalo otra vez.";
+        get("comparison-feedback").textContent = correct ? outcome === "more" ? "¡Sí, tienes más! Otras partículas también dejan pistas y su número puede cambiar. Tener más no basta para saber si hay materia oscura." : outcome === "same" ? "¡Sí, hay las mismas! Otras partículas pueden dejar tantas pistas como las tuyas. Aún no sabemos si hay materia oscura." : "¡Sí, tienes menos! El número de pistas puede cambiar de una ronda a otra. Aún no sabemos si hay materia oscura." : "Mira el número de pistas de cada grupo e inténtalo otra vez.";
         get("comparison-feedback").hidden = false;
         get("discovery-question").hidden = !correct;
       }));
