@@ -220,17 +220,17 @@
           <span class="eyebrow">03 / Tu cuaderno de detective</span><h2 id="conclusion-title" tabindex="-1">Cada pista, en su sitio.</h2><p id="notebook-summary" aria-live="polite"></p>
           <div class="notebook-groups"><div class="notebook accepted" role="group" aria-labelledby="accepted-title"><h3 id="accepted-title">Guardadas</h3><div class="entries" id="accepted-entries"></div></div>
           <div class="notebook rejected" role="group" aria-labelledby="rejected-title"><h3 id="rejected-title">Apartadas</h3><div class="entries" id="rejected-entries"></div></div></div>
-          <p>Otras partículas también dejan pistas parecidas. Compáralas con una ronda de ejemplo en la que <b>solo hay otras partículas</b>.</p>
+          <p>Ahora compara cuántas pistas has guardado con cuántas <b>esperaríamos sin una señal de materia oscura</b>.</p>
           <button class="primary" id="investigate">Comparar las pistas →</button><div id="notebook-feedback" class="feedback" role="status" hidden></div>
         </section>
 
         <section id="comparison" class="conclusion" hidden aria-labelledby="comparison-title">
           <div class="stepbar" aria-label="Paso 3 de 3: comparar las pistas"><span class="active"></span><span class="active"></span><span class="active"></span></div>
           <span class="eyebrow">03 / Comparar</span><h2 id="comparison-title" tabindex="-1">Cuenta y compara.</h2>
-          <p>Cada círculo representa una pista. Las dos rondas duran lo mismo y contamos solo huellas pequeñas.</p>
-          <div class="comparison-grid"><div class="sample"><h3 id="sample-title">Tus pistas</h3><b id="sample-count"></b><div class="sample-dots" id="sample-dots" aria-hidden="true"></div></div><div class="sample"><h3 id="control-title">Otras partículas</h3><b id="control-count"></b><div class="sample-dots" id="control-dots" aria-hidden="true"></div></div></div>
-          <details class="more"><summary>¿De dónde salen estas pistas?</summary><p>Son dibujos y números inventados para jugar. En la ronda de ejemplo solo hay otras partículas, sin materia oscura. El número de pistas puede cambiar de una ronda a otra.</p></details>
-          <h3>¿Tienes más, las mismas o menos pistas que en el ejemplo?</h3><div class="choices comparison-choices"><button class="choice" data-comparison="more">Más</button><button class="choice" data-comparison="same">Las mismas</button><button class="choice" data-comparison="less">Menos</button></div>
+          <p>Otras partículas también dejan huellas pequeñas. Incluso sin detectar materia oscura, esperaríamos encontrar algunas pistas durante el mismo tiempo.</p>
+          <div class="comparison-grid"><div class="sample"><h3 id="sample-title">Pistas guardadas</h3><b id="sample-count"></b><div class="sample-dots" id="sample-dots" aria-hidden="true"></div></div><div class="sample"><h3 id="expected-title">Pistas esperadas</h3><b id="expected-count"></b><div class="sample-dots" id="expected-dots" aria-hidden="true"></div><p class="tiny">Sin señal de materia oscura.</p></div></div>
+          <details class="more"><summary>¿Qué significa «esperadas»?</summary><p>Si repitiéramos muchas veces, esperaríamos unas 3 pistas pequeñas por partida, de media. No tienen que aparecer exactamente 3 cada vez: pueden salir más o menos por casualidad. Esta cifra es inventada para jugar, no es un dato real de TREX-DM.</p></details>
+          <h3>¿Has guardado más, las mismas o menos pistas de las esperadas?</h3><div class="choices comparison-choices"><button class="choice" data-comparison="more">Más</button><button class="choice" data-comparison="same">Las mismas</button><button class="choice" data-comparison="less">Menos</button></div>
           <div id="comparison-feedback" class="feedback" role="status" hidden></div>
           <div id="discovery-question" hidden><h3>¿Qué le decimos al equipo?</h3><div class="choices"><button class="choice" id="announce">¡Es materia oscura!</button><button class="choice keep" id="finish-investigation">Necesitamos más pruebas.</button></div><div id="conclusion-feedback" class="feedback" role="status" hidden></div></div>
           <button class="secondary" id="back-notebook">← Volver al cuaderno</button>
@@ -246,6 +246,9 @@
       "use strict";
       const get = (id) => document.getElementById(id);
       const screens = ["welcome", "mountain", "guide", "clues", "conclusion", "comparison", "finish"];
+      // Illustrative expected count for the same observation time and compact-trace selection.
+      // Fixed before each round; this is not a measured TREX-DM rate or a fitted expectation.
+      const EXPECTED_COUNT = 3;
       const templates = [
         { shape: "small", compact: true, description: "Un grupo pequeño y compacto de puntos.", keep: "¡Una pista pequeña y agrupada! La guardamos. Otras partículas también dejan huellas así: aún no sabemos qué la causó.", skip: "Es pequeña y agrupada: la guardaríamos. Aún no sabemos qué partícula la dejó." },
         { shape: "long", compact: false, description: "Una huella larga que cruza el detector.", keep: "Has guardado un camino largo. En este juego buscamos huellas pequeñas; esta la apartaríamos.", skip: "Bien observado: es un camino largo. Lo apartamos para centrarnos en las huellas pequeñas." },
@@ -254,8 +257,6 @@
       ];
       let deck = [];
       let previousCount = 0;
-      let previousOutcome = "";
-      let controlCount = 0;
       let outcome = "";
       let clueIndex = 0;
       let choices = [];
@@ -267,9 +268,7 @@
       function newRound() {
         const compactCount = randomItem([2, 3, 4].filter((count) => count !== previousCount));
         previousCount = compactCount;
-        outcome = randomItem(["more", "same", "less"].filter((value) => value !== previousOutcome));
-        previousOutcome = outcome;
-        controlCount = outcome === "same" ? compactCount : compactCount + (outcome === "more" ? -1 : 1) * randomItem([1, 2]);
+        outcome = compactCount > EXPECTED_COUNT ? "more" : compactCount === EXPECTED_COUNT ? "same" : "less";
         deck = Array.from({ length: 6 }, (_, index) => ({ ...templates[index < compactCount ? 0 : randomItem([1, 2, 3])], seed: Math.floor(Math.random() * 2147483646) + 1 }));
         for (let index = deck.length - 1; index > 0; index -= 1) {
           const other = Math.floor(Math.random() * (index + 1));
@@ -420,22 +419,22 @@
       function compareSamples() {
         const mistakes = deck.map((item, index) => item.compact !== choices[index] ? index + 1 : null).filter(Boolean);
         if (mistakes.length) {
-          get("notebook-feedback").textContent = `Revisa ${mistakes.length === 1 ? "la pista" : "las pistas"} ${mistakes.join(", ")}. Usemos la misma regla en las dos rondas: guardar solo huellas pequeñas y agrupadas. Puedes moverlas entre las listas.`;
+          get("notebook-feedback").textContent = `Revisa ${mistakes.length === 1 ? "la pista" : "las pistas"} ${mistakes.join(", ")}. Usemos la misma regla para las pistas guardadas y las esperadas: contar solo huellas pequeñas y agrupadas. Puedes moverlas entre las listas.`;
           get("notebook-feedback").hidden = false;
           return;
         }
         const count = choices.filter(Boolean).length;
-        for (const [group, total] of [["sample", count], ["control", controlCount]]) {
-          get(`${group}-count`).innerHTML = `${total} <span class="count-unit">${total === 1 ? "pista" : "pistas"}</span>`;
+        for (const [group, total] of [["sample", count], ["expected", EXPECTED_COUNT]]) {
+          get(`${group}-count`).innerHTML = `${total} <span class="count-unit">${total === 1 ? "pista" : "pistas"}${group === "expected" ? " de media" : ""}</span>`;
           get(`${group}-dots`).innerHTML = "<span></span>".repeat(total);
         }
-        get("round-result").textContent = `Has guardado ${count} pistas. En el ejemplo había ${controlCount}. Otras partículas también pueden dejar pistas parecidas. ¡Sigamos investigando!`;
+        get("round-result").textContent = `Has guardado ${count} pistas. Esperábamos ${EXPECTED_COUNT} de media sin señal de materia oscura. Pueden aparecer más o menos por casualidad. ¡Sigamos investigando!`;
         showScreen("comparison");
       }
 
       document.querySelectorAll("[data-comparison]").forEach((button) => button.addEventListener("click", () => {
         const correct = button.dataset.comparison === outcome;
-        get("comparison-feedback").textContent = correct ? outcome === "more" ? "¡Sí, tienes más! Otras partículas también dejan pistas y su número puede cambiar. Tener más no basta para saber si hay materia oscura." : outcome === "same" ? "¡Sí, hay las mismas! Otras partículas pueden dejar tantas pistas como las tuyas. Aún no sabemos si hay materia oscura." : "¡Sí, tienes menos! El número de pistas puede cambiar de una ronda a otra. Aún no sabemos si hay materia oscura." : "Mira el número de pistas de cada grupo e inténtalo otra vez.";
+        get("comparison-feedback").textContent = correct ? outcome === "more" ? "¡Sí, hay más pistas de las esperadas! Pero también pueden aparecer más por casualidad. Todavía necesitamos más pruebas para saber si alguna viene de materia oscura." : outcome === "same" ? "¡Sí, coinciden con lo esperado! Eso puede ocurrir sin detectar materia oscura. Con tan pocas pistas todavía no sabemos si hay alguna señal suya." : "¡Sí, hay menos pistas de las esperadas! También puede pasar por casualidad. Con tan pocas pistas todavía no sabemos si hay alguna señal de materia oscura." : "Compara el número de pistas guardadas con el número esperado e inténtalo otra vez.";
         get("comparison-feedback").hidden = false;
         get("discovery-question").hidden = !correct;
       }));
