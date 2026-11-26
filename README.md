@@ -2,6 +2,16 @@
 
 Educational games in Spanish about searching for axions and dark matter.
 
+## One QR to choose a game
+
+**[Open the game selection page](https://cmargalejo.github.io/iaxo-event-hunter/juegos.html)** — short Spanish descriptions help visitors choose between IAXO, TREX-DM and the simpler Junior activity for ages 7–11.
+
+[<img src="docs/qr-codes/todos-los-juegos.png" alt="QR code to choose a game" width="200" height="200">](https://cmargalejo.github.io/iaxo-event-hunter/juegos.html)
+
+**[Download the main A4 poster](docs/qr-codes/todos-los-juegos-a4.pdf)** · [Download the high-resolution QR image](docs/qr-codes/todos-los-juegos.png)
+
+Use this single QR on general activity posters or at the entrance. Use the individual game QRs below at stations dedicated to a particular game. Print the PDF in **A4, portrait, actual size (100%)** and keep the white margin around the QR.
+
 ## Play the games
 
 **Click a link or scan a QR code with your phone to play directly in your browser. No download, installation or account is needed.**
@@ -16,7 +26,9 @@ Bookmark these links to return straight to the games. They are hosted on GitHub 
 
 ## Print or download the QR codes
 
-**[Download all three A4 sheets in one PDF](docs/qr-codes/all-games-a4.pdf)** — one page per game, ready to print for activities.
+For a general poster, use the **[single QR that opens the game selection page](docs/qr-codes/todos-los-juegos-a4.pdf)**.
+
+**[Download the three individual game sheets in one PDF](docs/qr-codes/all-games-a4.pdf)** — one page per game, ready to print for dedicated stations.
 
 Each sheet includes the game's name, a large QR code and its web address. The PDFs use vector QR codes, so they stay sharp when printed. Choose **A4, portrait, actual size (100%)** in the print dialog.
 
@@ -32,6 +44,7 @@ On GitHub, use **Download raw file** if a link opens a file preview. The PNGs ar
 
 If you have downloaded or cloned the repository, open one of these files in your browser:
 
+- [`juegos.html`](juegos.html) — choose a game, with short descriptions.
 - [`index.html`](index.html) — IAXO Event Hunter.
 - [`trex-dm.html`](trex-dm.html) — TREX-DM.
 - [`trex-dm-junior.html`](trex-dm-junior.html) — TREX-DM Junior.

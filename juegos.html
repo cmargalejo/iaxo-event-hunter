@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Elige una misión: busca candidatos a axión con IAXO, explora la materia oscura con TREX-DM o juega a ser detective en la versión Junior."
+    />
+    <title>Elige tu misión · IAXO y TREX-DM</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #182b40;
+        --muted: #526275;
+        --line: #d2ddda;
+        --green: #216848;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #f3f7f6;
+        color: var(--ink);
+        font-family: "Trebuchet MS", system-ui, sans-serif;
+      }
+      .shell {
+        max-width: 1160px;
+        margin: auto;
+        padding: 0 28px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        min-height: 100px;
+        border-bottom: 1px solid var(--line);
+      }
+      .logo {
+        width: 360px;
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+      .header-note {
+        color: var(--muted);
+        font-size: 14px;
+      }
+      main {
+        padding: 44px 0 40px;
+      }
+      .eyebrow {
+        margin: 0 0 12px;
+        color: var(--green);
+        font-weight: bold;
+        font-size: 14px;
+        letter-spacing: 1.5px;
+      }
+      h1 {
+        margin: 0 0 16px;
+        font-size: clamp(36px, 5.5vw, 60px);
+        line-height: 1.08;
+        letter-spacing: -2px;
+      }
+      .intro {
+        margin: 0 0 30px;
+        max-width: 720px;
+        font-size: 18px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+      .missions {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 22px;
+      }
+      .mission {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .preview {
+        background: #182b40;
+      }
+      .preview svg {
+        display: block;
+        width: 100%;
+        height: 164px;
+      }
+      .junior .preview {
+        background: #dceede;
+      }
+      .copy {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        padding: 24px;
+      }
+      .audience {
+        margin: 0 0 14px;
+        color: var(--green);
+        font-size: 14px;
+        font-weight: bold;
+      }
+      h2 {
+        font-size: 26px;
+        line-height: 1.15;
+        letter-spacing: -0.5px;
+        margin: 0 0 8px;
+      }
+      .experiment {
+        color: var(--muted);
+        margin: 0 0 18px;
+        font-size: 14px;
+      }
+      .description {
+        font-size: 16px;
+        line-height: 1.6;
+        margin: 0 0 24px;
+        color: var(--muted);
+      }
+      .play {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 50px;
+        padding: 12px 14px;
+        margin-top: auto;
+        border: 2px solid var(--ink);
+        border-radius: 10px;
+        background: var(--ink);
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        text-align: center;
+        text-decoration: none;
+      }
+      .junior .play {
+        background: var(--green);
+        border-color: var(--green);
+      }
+      .play:hover {
+        background: white;
+        color: var(--ink);
+      }
+      .play:focus-visible {
+        outline: 3px solid #c65c20;
+        outline-offset: 4px;
+      }
+      footer {
+        border-top: 1px solid var(--line);
+        padding: 22px 0 28px;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+      @media (max-width: 800px) {
+        .shell {
+          padding: 0 20px;
+        }
+        header {
+          min-height: 84px;
+          padding: 14px 0;
+        }
+        .logo {
+          width: 330px;
+        }
+        .header-note {
+          display: none;
+        }
+        main {
+          padding-top: 30px;
+        }
+        .missions {
+          grid-template-columns: 1fr;
+          gap: 18px;
+        }
+        .mission {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) 80px;
+          gap: 0 16px;
+          padding: 20px;
+        }
+        .preview {
+          grid-column: 2;
+          grid-row: 1 / 4;
+          display: flex;
+          align-items: center;
+          align-self: start;
+          height: 80px;
+          border-radius: 12px;
+          overflow: hidden;
+        }
+        .preview svg {
+          height: 80px;
+        }
+        .copy {
+          display: contents;
+        }
+        .audience,
+        h2,
+        .experiment {
+          grid-column: 1;
+        }
+        h2 {
+          font-size: 24px;
+        }
+        .audience {
+          margin-bottom: 10px;
+        }
+        .experiment {
+          margin-bottom: 0;
+        }
+        .description {
+          grid-column: 1 / -1;
+          margin: 18px 0;
+        }
+        .play {
+          grid-column: 1 / -1;
+        }
+      }
+      @media (max-width: 380px) {
+        .shell {
+          padding: 0 16px;
+        }
+        .mission {
+          grid-template-columns: minmax(0, 1fr) 62px;
+          gap: 0 12px;
+          padding: 16px;
+        }
+        .preview,
+        .preview svg {
+          height: 62px;
+        }
+        h2 {
+          font-size: 22px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header>
+        <img
+          class="logo"
+          src="assets/capa-logo.jpg"
+          width="1299"
+          height="214"
+          alt="CAPA · Centro de Astropartículas y Física de Altas Energías · Universidad de Zaragoza"
+        />
+        <span class="header-note">Juegos en español · Sin instalación</span>
+      </header>
+      <main>
+        <p class="eyebrow">CIENCIA PARA JUGAR</p>
+        <h1>Elige tu misión.</h1>
+        <p class="intro">
+          Explora cómo buscamos axiones y materia oscura. No necesitas saber
+          física: cada juego te guía paso a paso.
+        </p>
+        <div class="missions">
+          <article class="mission junior" aria-labelledby="junior-title">
+            <div class="preview">
+              <svg viewBox="0 0 320 176" aria-hidden="true">
+                <path
+                  d="M0 116 74 38 130 95 208 17 320 127V176H0Z"
+                  fill="#85b490"
+                />
+                <path d="m208 17-28 32 24-8 16 10 13-12Z" fill="#f3f7f6" />
+                <path
+                  d="M0 144 84 94 164 136 251 87 320 127V176H0Z"
+                  fill="#51846a"
+                />
+                <path d="M120 176v-52a40 40 0 0 1 80 0v52" fill="#233e36" />
+                <rect
+                  x="139"
+                  y="115"
+                  width="42"
+                  height="40"
+                  rx="9"
+                  fill="#f3f7f6"
+                />
+                <rect
+                  x="145"
+                  y="122"
+                  width="30"
+                  height="17"
+                  rx="4"
+                  fill="#182b40"
+                />
+                <g fill="#b9f4cf">
+                  <circle cx="155" cy="129" r="2" />
+                  <circle cx="160" cy="132" r="2.5" />
+                  <circle cx="164" cy="128" r="2" />
+                </g>
+                <path d="M157 147h6" stroke="#216848" stroke-width="2" />
+              </svg>
+            </div>
+            <div class="copy">
+              <p class="audience">7–11 años · Versión sencilla</p>
+              <h2 id="junior-title">Detectives de lo invisible</h2>
+              <p class="experiment">TREX-DM Junior · Unos 5 minutos</p>
+              <p class="description">
+                Baja bajo la montaña, guarda huellas pequeñas y compara tus
+                pistas con las esperadas.
+              </p>
+              <a class="play" href="trex-dm-junior.html">Jugar a detectives</a>
+            </div>
+          </article>
+          <article class="mission" aria-labelledby="iaxo-title">
+            <div class="preview">
+              <svg viewBox="0 0 320 176" aria-hidden="true">
+                <circle cx="48" cy="87" r="21" fill="#ffbe7b" />
+                <path
+                  d="M48 54v-8m0 74v8M15 87H7m73 0h8M24 63l-6-6m54 54 6 6M72 63l6-6m-54 54-6 6"
+                  stroke="#ffbe7b"
+                  stroke-width="3"
+                />
+                <path
+                  d="M83 69h47m-47 18h47m-47 18h47"
+                  stroke="#b9f4cf"
+                  stroke-width="2"
+                  stroke-dasharray="4 5"
+                />
+                <path
+                  d="m130 58 75 10v38l-75 10Z"
+                  fill="#3e6572"
+                  stroke="#b6dce1"
+                  stroke-width="3"
+                />
+                <path
+                  d="M136 67 199 77l63 10-63 10-63 10"
+                  stroke="#b9f4cf"
+                  stroke-width="2"
+                  fill="none"
+                />
+                <path
+                  d="M166 112v22m-17 9 17-9 17 9"
+                  stroke="#b6dce1"
+                  stroke-width="3"
+                  fill="none"
+                />
+                <rect
+                  x="253"
+                  y="57"
+                  width="27"
+                  height="60"
+                  rx="5"
+                  fill="#294955"
+                  stroke="#b6dce1"
+                  stroke-width="2"
+                />
+                <circle cx="264" cy="87" r="6" fill="#b9f4cf" />
+              </svg>
+            </div>
+            <div class="copy">
+              <p class="audience">Observa y selecciona</p>
+              <h2 id="iaxo-title">¿Encontrarías un axión?</h2>
+              <p class="experiment">IAXO Event Hunter · Versión completa</p>
+              <p class="description">
+                Busca posibles señales de axiones: selecciona huellas de rayos X
+                en el foco de un telescopio.
+              </p>
+              <a class="play" href="index.html">Jugar a IAXO</a>
+            </div>
+          </article>
+          <article class="mission" aria-labelledby="trex-title">
+            <div class="preview">
+              <svg viewBox="0 0 320 176" aria-hidden="true">
+                <rect
+                  x="49"
+                  y="35"
+                  width="222"
+                  height="106"
+                  rx="24"
+                  fill="#294955"
+                  stroke="#b6dce1"
+                  stroke-width="3"
+                />
+                <path
+                  d="M71 48v80m89-84v88m89-84v80"
+                  stroke="#b6dce1"
+                  stroke-width="3"
+                />
+                <path
+                  d="M119 68H82m7-5-7 5 7 5m30 35H82m7-5-7 5 7 5"
+                  stroke="#91b7bc"
+                  stroke-width="2"
+                  fill="none"
+                />
+                <g fill="#b9f4cf">
+                  <circle cx="102" cy="82" r="3" />
+                  <circle cx="107" cy="87" r="3" />
+                  <circle cx="100" cy="90" r="2" />
+                  <circle cx="111" cy="81" r="2" />
+                  <circle cx="106" cy="94" r="2" />
+                </g>
+                <path
+                  d="M78 82h-5m5 8h-5M271 88h9l4-12 5 24 5-12h14"
+                  stroke="#b9f4cf"
+                  stroke-width="2"
+                  fill="none"
+                />
+              </svg>
+            </div>
+            <div class="copy">
+              <p class="audience">Compara y decide</p>
+              <h2 id="trex-title">Tras la materia oscura</h2>
+              <p class="experiment">TREX-DM · Versión completa</p>
+              <p class="description">
+                Clasifica señales de un detector de gas y decide si bastan para
+                anunciar un descubrimiento.
+              </p>
+              <a class="play" href="trex-dm.html">Jugar a TREX-DM</a>
+            </div>
+          </article>
+        </div>
+      </main>
+      <footer>
+        Elige un juego y empieza. Todos funcionan en el navegador, sin instalar
+        nada ni crear una cuenta.
+      </footer>
+    </div>
+  </body>
+</html>
