@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Elige una misión: busca candidatos a axión con IAXO, explora la materia oscura con TREX-DM o juega a ser detective en la versión Junior."
+      content="Elige una misión: encuentra masas invisibles con sondas, busca candidatos a axión con IAXO o explora la materia oscura con TREX-DM y su versión Junior."
     />
-    <title>Elige tu misión · IAXO y TREX-DM</title>
+    <title>Elige tu misión · Juegos de lo invisible</title>
     <style>
       :root {
         color-scheme: light;
@@ -73,7 +73,7 @@
       }
       .missions {
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 22px;
       }
       .mission {
@@ -263,6 +263,65 @@
           física: cada juego te guía paso a paso.
         </p>
         <div class="missions">
+          <article class="mission" aria-labelledby="gravity-title">
+            <div class="preview">
+              <svg viewBox="0 0 320 176" aria-hidden="true">
+                <g fill="#8faecb">
+                  <circle cx="31" cy="26" r="2" />
+                  <circle cx="289" cy="47" r="2" />
+                  <circle cx="255" cy="146" r="1.5" />
+                  <circle cx="63" cy="149" r="2" />
+                </g>
+                <circle
+                  cx="178"
+                  cy="84"
+                  r="39"
+                  fill="none"
+                  stroke="#66849d"
+                  stroke-width="2"
+                  stroke-dasharray="4 7"
+                />
+                <path
+                  d="M28 67C112 60 121 159 207 119S247 25 182 37"
+                  fill="none"
+                  stroke="#8cf4cf"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M115 165C120 111 222 111 210 69S134 51 129 88"
+                  fill="none"
+                  stroke="#9ebcff"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                />
+                <path d="m22 57 22 10-22 10 5-10Z" fill="#8cf4cf" />
+                <circle cx="182" cy="37" r="5" fill="#8cf4cf" />
+                <text
+                  x="178"
+                  y="96"
+                  text-anchor="middle"
+                  font-family="sans-serif"
+                  font-size="36"
+                  fill="#ffbe86"
+                >
+                  ?
+                </text>
+              </svg>
+            </div>
+            <div class="copy">
+              <p class="audience">Lanza, observa y descubre</p>
+              <h2 id="gravity-title">¿Dónde está lo invisible?</h2>
+              <p class="experiment">Gravedad oculta · Rompecabezas</p>
+              <p class="description">
+                Lanza sondas, sigue sus curvas y marca la masa escondida. Tres
+                sectores para experimentar, sin reloj ni límite de tiros.
+              </p>
+              <a class="play" href="gravedad-oculta.html"
+                >Jugar con la gravedad</a
+              >
+            </div>
+          </article>
           <article class="mission junior" aria-labelledby="junior-title">
             <div class="preview">
               <svg viewBox="0 0 320 176" aria-hidden="true">

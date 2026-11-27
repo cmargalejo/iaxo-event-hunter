@@ -1,10 +1,10 @@
-# IAXO Event Hunter & TREX-DM
+# Games of the invisible · IAXO, TREX-DM & gravity
 
 Educational games in Spanish about searching for axions and dark matter.
 
 ## One QR to choose a game
 
-**[Open the game selection page](https://cmargalejo.github.io/iaxo-event-hunter/juegos.html)** — short Spanish descriptions help visitors choose between IAXO, TREX-DM and the simpler Junior activity for ages 7–11.
+**[Open the game selection page](https://cmargalejo.github.io/iaxo-event-hunter/juegos.html)** — short Spanish descriptions help visitors choose between the invisible-mass puzzle, IAXO, TREX-DM and the simpler Junior activity for ages 7–11.
 
 [<img src="docs/qr-codes/todos-los-juegos.png" alt="QR code to choose a game" width="200" height="200">](https://cmargalejo.github.io/iaxo-event-hunter/juegos.html)
 
@@ -18,11 +18,14 @@ Use this single QR on general activity posters or at the entrance. Use the indiv
 
 | Game | Play online | QR code | What you will do |
 | --- | --- | --- | --- |
+| **Gravedad oculta · ¿Dónde está lo invisible?** | **[Play the invisible-mass puzzle](https://cmargalejo.github.io/iaxo-event-hunter/gravedad-oculta.html)** | [Use the main QR](docs/qr-codes/todos-los-juegos.png) | Launch probes, follow their curved trails and mark hidden masses. Three sectors, unlimited attempts and stars for accuracy. |
 | **IAXO Event Hunter** | **[Play IAXO Event Hunter](https://cmargalejo.github.io/iaxo-event-hunter/)** | [<img src="docs/qr-codes/iaxo-event-hunter.png" alt="QR code for IAXO Event Hunter" width="160" height="160">](https://cmargalejo.github.io/iaxo-event-hunter/) | Identify events that look like X-rays, select candidates by position and explore whether they could be explained by background. |
 | **TREX-DM · Cazadores de WIMPs** | **[Play TREX-DM](https://cmargalejo.github.io/iaxo-event-hunter/trex-dm.html)** | [<img src="docs/qr-codes/trex-dm.png" alt="QR code for TREX-DM" width="160" height="160">](https://cmargalejo.github.io/iaxo-event-hunter/trex-dm.html) | Learn how a gas detector works, classify event traces and interpret possible dark-matter candidates. |
 | **TREX-DM Junior · Detectives de lo invisible** | **[Play TREX-DM Junior](https://cmargalejo.github.io/iaxo-event-hunter/trex-dm-junior.html)** | [<img src="docs/qr-codes/trex-dm-junior.png" alt="QR code for TREX-DM Junior" width="160" height="160">](https://cmargalejo.github.io/iaxo-event-hunter/trex-dm-junior.html) | A short activity for ages 7–11: put the detector under a mountain, collect clues and compare counts. |
 
 Bookmark these links to return straight to the games. They are hosted on GitHub Pages; this repository contains their source code.
+
+The main QR includes new games automatically through the selection page. Existing posters do not need to be reprinted for Gravedad oculta.
 
 ## Print or download the QR codes
 
@@ -45,13 +48,15 @@ On GitHub, use **Download raw file** if a link opens a file preview. The PNGs ar
 If you have downloaded or cloned the repository, open one of these files in your browser:
 
 - [`juegos.html`](juegos.html) — choose a game, with short descriptions.
+- [`gravedad-oculta.html`](gravedad-oculta.html) — invisible-mass gravity puzzle.
 - [`index.html`](index.html) — IAXO Event Hunter.
 - [`trex-dm.html`](trex-dm.html) — TREX-DM.
 - [`trex-dm-junior.html`](trex-dm-junior.html) — TREX-DM Junior.
 
-The games are self-contained HTML files and do not require a build step.
+No build step is required. The three detector games are self-contained HTML files; the gravity puzzle also needs the two `assets/gravity-*.js` files from this repository.
 
 ## Development notes
 
 - [Technical review and checks](REVISION_TECNICA.md).
 - [TREX-DM Junior activity and checks](JUNIOR.md).
+- [Invisible-mass puzzle, controls and checks](GRAVEDAD.md).

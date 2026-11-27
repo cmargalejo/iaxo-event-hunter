@@ -4,6 +4,7 @@
   "scripts": {
     "check": "node tests/check.cjs",
     "test": "node tests/game.cjs && node tests/trex.cjs",
+    "test:gravity": "node tests/gravity-core.cjs && node tests/gravity-browser.cjs",
     "format": "prettier --write index.html trex-dm.html tests/*.cjs package.json REVISION_TECNICA.md"
   },
   "devDependencies": {

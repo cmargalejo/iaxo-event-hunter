@@ -1,0 +1,789 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Lanza sondas, observa cómo se curvan y encuentra la masa invisible. Un rompecabezas de gravedad para jugar y experimentar."
+    />
+    <title>Gravedad oculta · Encuentra lo invisible</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #081321;
+        --panel: #102338;
+        --line: #2a4259;
+        --ink: #edf5ff;
+        --muted: #b4c5d7;
+        --mint: #8cf4cf;
+        --orange: #ffbe86;
+        --blue: #9ebcff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Trebuchet MS", system-ui, sans-serif;
+      }
+      button,
+      input {
+        font: inherit;
+      }
+      button,
+      a,
+      input {
+        -webkit-tap-highlight-color: transparent;
+      }
+      button {
+        cursor: pointer;
+        touch-action: manipulation;
+      }
+      button:disabled {
+        opacity: 0.42;
+        cursor: default;
+      }
+      button:focus-visible,
+      a:focus-visible,
+      input:focus-visible,
+      canvas:focus-visible {
+        outline: 3px solid var(--orange);
+        outline-offset: 4px;
+      }
+      a {
+        color: var(--muted);
+        text-underline-offset: 4px;
+      }
+      .shell {
+        max-width: 1200px;
+        margin: auto;
+        padding: 0 24px;
+      }
+      header {
+        min-height: 76px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        border-bottom: 1px solid var(--line);
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: bold;
+        font-size: 19px;
+      }
+      .brand svg {
+        width: 32px;
+        height: 32px;
+      }
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        font-size: 14px;
+      }
+      .quiet {
+        background: transparent;
+        color: var(--muted);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        min-height: 44px;
+        padding: 9px 12px;
+      }
+      h1,
+      h2,
+      p {
+        margin-top: 0;
+      }
+      h1 {
+        font-size: clamp(38px, 6vw, 70px);
+        line-height: 1.02;
+        letter-spacing: -2px;
+        margin-bottom: 22px;
+      }
+      h1 span {
+        color: var(--mint);
+      }
+      h2 {
+        font-size: 25px;
+        line-height: 1.15;
+        margin-bottom: 12px;
+      }
+      p {
+        color: var(--muted);
+        line-height: 1.55;
+      }
+      .eyebrow {
+        color: var(--mint);
+        font-size: 14px;
+        font-weight: bold;
+        letter-spacing: 1.4px;
+        margin-bottom: 14px;
+      }
+      .welcome {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        align-items: center;
+        gap: 48px;
+        min-height: 620px;
+        padding: 48px 0;
+      }
+      .welcome p {
+        font-size: 19px;
+        max-width: 560px;
+      }
+      .welcome .small {
+        font-size: 14px;
+        margin: 18px 0 0;
+      }
+      .welcome-art {
+        width: 100%;
+        max-height: 470px;
+      }
+      .primary,
+      .secondary {
+        min-height: 50px;
+        border-radius: 12px;
+        padding: 13px 18px;
+        font-size: 16px;
+        font-weight: bold;
+        border: 1px solid var(--mint);
+      }
+      .primary {
+        background: var(--mint);
+        color: #102338;
+      }
+      .primary:hover:enabled {
+        background: #c0ffe8;
+      }
+      .secondary {
+        background: transparent;
+        color: var(--ink);
+        border-color: var(--line);
+      }
+      .welcome .primary {
+        min-width: 200px;
+        font-size: 18px;
+      }
+      .round-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 22px 0 16px;
+      }
+      .round-head h2 {
+        margin: 4px 0 0;
+        font-size: 24px;
+      }
+      .round-head .eyebrow {
+        font-size: 12px;
+        margin: 0;
+      }
+      .shot-count {
+        color: var(--muted);
+        font-size: 15px;
+        white-space: nowrap;
+      }
+      .shot-count b {
+        color: var(--mint);
+        font-size: 26px;
+        margin-right: 5px;
+      }
+      .play-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 280px;
+        gap: 24px;
+        align-items: start;
+      }
+      .arena {
+        width: 100%;
+        max-width: 760px;
+        position: relative;
+        border: 1px solid #34506a;
+        border-radius: 22px;
+        overflow: hidden;
+        background: #0b1a2b;
+      }
+      canvas {
+        display: block;
+        width: 100%;
+        aspect-ratio: 10 / 9;
+        touch-action: none;
+      }
+      .map-label {
+        position: absolute;
+        top: 14px;
+        left: 16px;
+        pointer-events: none;
+        font-size: 12px;
+        letter-spacing: 1px;
+        color: #a8bed4;
+      }
+      .mode-note {
+        min-height: 47px;
+        margin: 10px 2px 12px;
+        font-size: 15px;
+      }
+      .mode-switch {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 20px;
+      }
+      .mode-switch button {
+        min-height: 48px;
+        padding: 10px 8px;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        color: var(--muted);
+        border-radius: 11px;
+        font-size: 15px;
+        font-weight: bold;
+      }
+      .mode-switch button[aria-pressed="true"] {
+        border-color: var(--mint);
+        color: var(--mint);
+      }
+      .mode-switch button.mark[aria-pressed="true"] {
+        border-color: var(--orange);
+        color: var(--orange);
+      }
+      .control-label {
+        color: var(--muted);
+        font-size: 14px;
+        display: block;
+        margin: 0 0 10px;
+      }
+      .ports {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+        margin-bottom: 18px;
+      }
+      .ports button {
+        min-height: 44px;
+        background: transparent;
+        color: var(--muted);
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        padding: 8px 2px;
+        font-size: 14px;
+      }
+      .ports button[aria-pressed="true"] {
+        color: var(--mint);
+        border-color: var(--mint);
+        background: #183b40;
+      }
+      .full {
+        width: 100%;
+      }
+      details {
+        color: var(--muted);
+        font-size: 14px;
+      }
+      summary {
+        cursor: pointer;
+        padding: 14px 0;
+      }
+      details p {
+        font-size: 14px;
+      }
+      .adjust {
+        margin-top: 6px;
+      }
+      .adjust label {
+        display: block;
+        margin: 10px 0 4px;
+      }
+      input[type="range"] {
+        width: 100%;
+        min-height: 36px;
+        accent-color: var(--mint);
+      }
+      .minor-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+      }
+      .minor-actions button {
+        flex: 1;
+        font-size: 13px;
+      }
+      .hint {
+        margin: 18px 0 0;
+        font-size: 14px;
+      }
+      .mark-copy {
+        font-size: 17px;
+        color: var(--orange);
+      }
+      #guess-count {
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .result {
+        padding: 20px;
+        border-radius: 16px;
+        border: 1px solid #5a7291;
+        background: var(--panel);
+      }
+      .stars {
+        color: var(--orange);
+        font-size: 33px;
+        letter-spacing: 5px;
+        margin: 12px 0;
+      }
+      .stars .empty-star {
+        color: #53667b;
+      }
+      .result p {
+        font-size: 15px;
+      }
+      .result .secondary {
+        margin-top: 10px;
+      }
+      .legend {
+        display: flex;
+        gap: 20px;
+        font-size: 14px;
+        color: var(--muted);
+        margin-top: 12px;
+      }
+      .legend span::before {
+        content: "";
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--blue);
+        margin-right: 7px;
+      }
+      .legend span:last-child::before {
+        background: var(--orange);
+      }
+      .finish {
+        text-align: center;
+        max-width: 680px;
+        margin: 60px auto;
+        padding: 30px;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: var(--panel);
+      }
+      .finish h2 {
+        font-size: 40px;
+      }
+      .total {
+        font-size: 70px;
+        color: var(--orange);
+        font-weight: bold;
+        margin: 18px 0 8px;
+      }
+      .total small {
+        color: var(--muted);
+        font-size: 26px;
+      }
+      .finish .primary {
+        margin: 15px 0;
+      }
+      footer {
+        padding: 24px 0;
+        margin-top: 22px;
+        border-top: 1px solid var(--line);
+      }
+      footer details {
+        max-width: 760px;
+      }
+      @media (min-width: 900px) and (min-height: 700px) {
+        .arena {
+          max-width: calc((100svh - 220px) * 10 / 9);
+        }
+      }
+      @media (max-width: 800px) {
+        .shell {
+          padding: 0 16px;
+        }
+        header {
+          min-height: 66px;
+        }
+        .brand {
+          font-size: 16px;
+          gap: 8px;
+        }
+        .brand svg {
+          width: 25px;
+          height: 25px;
+        }
+        .header-actions {
+          gap: 10px;
+          font-size: 13px;
+        }
+        .header-actions .quiet {
+          font-size: 12px;
+          padding: 8px;
+        }
+        .welcome {
+          grid-template-columns: 1fr;
+          gap: 22px;
+          min-height: 0;
+          padding: 32px 0;
+        }
+        .welcome-art {
+          max-height: 250px;
+          grid-row: 1;
+        }
+        .welcome p {
+          font-size: 17px;
+        }
+        .play-layout {
+          grid-template-columns: 1fr;
+          gap: 0;
+        }
+        .round-head {
+          padding: 18px 0 12px;
+        }
+        .round-head h2 {
+          font-size: 21px;
+        }
+        .mode-switch {
+          margin-bottom: 14px;
+        }
+        .arena {
+          border-radius: 16px;
+        }
+        .mode-note {
+          min-height: 40px;
+          margin-bottom: 10px;
+          font-size: 14px;
+        }
+        .minor-actions {
+          margin-top: 10px;
+        }
+        .hint {
+          margin-top: 12px;
+        }
+        .result {
+          margin-top: 8px;
+        }
+        footer {
+          margin-top: 18px;
+          padding: 16px 0;
+        }
+        .finish {
+          margin: 30px auto;
+          padding: 24px 18px;
+        }
+        .finish h2 {
+          font-size: 32px;
+        }
+      }
+      @media (max-width: 370px) {
+        .brand span {
+          max-width: 86px;
+          line-height: 1.15;
+        }
+        .header-actions a {
+          max-width: 50px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          scroll-behavior: auto !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header>
+        <div class="brand">
+          <svg viewBox="0 0 40 40" aria-hidden="true">
+            <circle cx="20" cy="20" r="7" fill="#8cf4cf" />
+            <ellipse
+              cx="20"
+              cy="20"
+              rx="18"
+              ry="10"
+              transform="rotate(-35 20 20)"
+              fill="none"
+              stroke="#8cf4cf"
+              stroke-width="2"
+            /></svg
+          ><span>Gravedad oculta</span>
+        </div>
+        <div class="header-actions">
+          <a href="juegos.html">Elegir juego</a
+          ><button id="sound" class="quiet" type="button" aria-pressed="false">
+            Sonido: no
+          </button>
+        </div>
+      </header>
+      <main>
+        <section id="welcome" class="welcome" aria-labelledby="welcome-title">
+          <div>
+            <p class="eyebrow">UN MISTERIO EN TRES SECTORES</p>
+            <h1 id="welcome-title">
+              ¿Dónde está<br /><span>lo invisible?</span>
+            </h1>
+            <p>
+              Algo tira de tus sondas. Lánzalas, sigue sus curvas y encuentra la
+              masa escondida.
+            </p>
+            <button class="primary" id="start" type="button">Investigar</button>
+            <p class="small">Sin reloj. Prueba todas las veces que quieras.</p>
+            <p id="welcome-best" class="small" hidden></p>
+          </div>
+          <svg class="welcome-art" viewBox="0 0 480 440" aria-hidden="true">
+            <rect
+              x="10"
+              y="10"
+              width="460"
+              height="420"
+              rx="38"
+              fill="#102338"
+            />
+            <g fill="#8faecb">
+              <circle cx="57" cy="62" r="2" />
+              <circle cx="402" cy="86" r="2" />
+              <circle cx="365" cy="340" r="1.8" />
+              <circle cx="88" cy="359" r="2" />
+              <circle cx="317" cy="48" r="1.5" />
+              <circle cx="425" cy="244" r="1.5" />
+            </g>
+            <circle
+              cx="272"
+              cy="219"
+              r="85"
+              fill="none"
+              stroke="#355474"
+              stroke-width="2"
+              stroke-dasharray="6 10"
+            />
+            <path
+              d="M40 180C164 178 194 333 309 281S375 111 253 137"
+              fill="none"
+              stroke="#8cf4cf"
+              stroke-width="5"
+              stroke-linecap="round"
+            />
+            <path
+              d="M162 398C171 289 349 284 321 190S184 160 181 235"
+              fill="none"
+              stroke="#9ebcff"
+              stroke-width="4"
+              stroke-linecap="round"
+            />
+            <path d="m35 169 25 12-25 11 5-11Z" fill="#8cf4cf" />
+            <circle cx="253" cy="137" r="7" fill="#8cf4cf" />
+            <circle cx="181" cy="235" r="6" fill="#9ebcff" />
+            <text
+              x="272"
+              y="235"
+              font-family="sans-serif"
+              font-size="54"
+              text-anchor="middle"
+              fill="#ffbe86"
+            >
+              ?
+            </text>
+          </svg>
+        </section>
+        <section id="game" hidden aria-labelledby="level-name">
+          <div class="round-head">
+            <div>
+              <p class="eyebrow" id="sector-label">SECTOR 1 DE 3</p>
+              <h2 id="level-name" tabindex="-1"></h2>
+            </div>
+            <div class="shot-count">
+              <b id="shot-count">0</b> <span id="shot-label">sondas</span>
+            </div>
+          </div>
+          <div class="play-layout">
+            <div>
+              <div class="arena">
+                <span class="map-label" id="map-label">UNA MASA OCULTA</span
+                ><canvas
+                  id="map"
+                  width="1000"
+                  height="900"
+                  tabindex="0"
+                  aria-label="Mapa de gravedad. Arrastra para apuntar y suelta para lanzar. También puedes usar los controles que hay debajo."
+                  aria-describedby="map-instruction"
+                ></canvas>
+              </div>
+              <p class="mode-note" id="map-instruction" role="status"></p>
+              <div class="legend" id="legend" hidden>
+                <span id="mass-legend">Masa oculta</span
+                ><span id="guess-legend">Tu marca</span>
+              </div>
+            </div>
+            <aside aria-label="Controles de la misión">
+              <div id="controls">
+                <div
+                  class="mode-switch"
+                  role="group"
+                  aria-label="Qué quieres hacer"
+                >
+                  <button id="aim-mode" type="button" aria-pressed="true">
+                    Lanzar sondas</button
+                  ><button
+                    id="mark-mode"
+                    type="button"
+                    class="mark"
+                    aria-pressed="false"
+                    disabled
+                  >
+                    Marcar masa
+                  </button>
+                </div>
+                <div id="aim-controls">
+                  <span class="control-label">Punto de salida</span>
+                  <div class="ports" role="group" aria-label="Punto de salida">
+                    <button type="button" data-port="0" aria-pressed="true">
+                      Izquierda</button
+                    ><button type="button" data-port="1" aria-pressed="false">
+                      Abajo</button
+                    ><button type="button" data-port="2" aria-pressed="false">
+                      Derecha
+                    </button>
+                  </div>
+                  <button id="launch" class="primary full" type="button">
+                    Lanzar sonda
+                  </button>
+                  <details class="adjust">
+                    <summary>Ajustar el tiro con controles</summary>
+                    <label for="angle"
+                      >Dirección <output id="angle-value">0°</output></label
+                    ><input
+                      id="angle"
+                      type="range"
+                      min="-70"
+                      max="70"
+                      step="1"
+                      value="0"
+                    /><label for="power"
+                      >Potencia <output id="power-value">45%</output></label
+                    ><input
+                      id="power"
+                      type="range"
+                      min="0"
+                      max="100"
+                      value="45"
+                    />
+                    <p>
+                      En el mapa: flechas para apuntar y Espacio para lanzar.
+                    </p>
+                  </details>
+                  <div class="minor-actions">
+                    <button id="clear" type="button" class="quiet" disabled>
+                      Limpiar rastros</button
+                    ><button id="new-map" type="button" class="quiet">
+                      Nuevo mapa
+                    </button>
+                  </div>
+                </div>
+                <div id="mark-controls" hidden>
+                  <p class="mark-copy" id="mark-prompt"></p>
+                  <p id="guess-count"></p>
+                  <button
+                    id="check"
+                    class="primary full"
+                    type="button"
+                    disabled
+                  >
+                    Comprobar
+                  </button>
+                  <div class="minor-actions">
+                    <button
+                      id="clear-marks"
+                      class="quiet"
+                      type="button"
+                      disabled
+                    >
+                      Borrar marcas
+                    </button>
+                  </div>
+                  <details>
+                    <summary>Marcar con el teclado</summary>
+                    <p>
+                      Enfoca el mapa. Mueve la cruz con las flechas y pulsa
+                      Enter para colocar una marca. Usa Mayús para moverla con
+                      más precisión.
+                    </p>
+                  </details>
+                </div>
+                <p class="hint" id="level-hint"></p>
+              </div>
+              <section
+                id="result"
+                class="result"
+                hidden
+                aria-labelledby="result-title"
+              >
+                <p class="eyebrow">MISTERIO REVELADO</p>
+                <h2 id="result-title" tabindex="-1"></h2>
+                <div class="stars" id="stars" role="img"></div>
+                <p id="result-copy"></p>
+                <button id="next" class="primary full" type="button">
+                  Siguiente sector</button
+                ><button id="retry" class="secondary full" type="button">
+                  Reintentar con otro mapa
+                </button>
+              </section>
+            </aside>
+          </div>
+        </section>
+        <section
+          id="finish"
+          class="finish"
+          hidden
+          aria-labelledby="finish-title"
+        >
+          <p class="eyebrow">EXPEDICIÓN COMPLETADA</p>
+          <h2 id="finish-title" tabindex="-1">¡Has seguido lo invisible!</h2>
+          <div class="total">
+            <span id="total-score">0</span><small> / 9 estrellas</small>
+          </div>
+          <p id="best-score"></p>
+          <p>
+            Has buscado masa por cómo cambia las trayectorias. También podemos
+            investigar lo que no vemos por sus efectos sobre lo que sí vemos.
+          </p>
+          <button id="play-again" type="button" class="primary">
+            Otra expedición
+          </button>
+          <p><a href="juegos.html">Explorar los otros juegos</a></p>
+        </section>
+      </main>
+      <footer>
+        <details>
+          <summary>¿Qué tiene que ver con la materia oscura?</summary>
+          <p>
+            La gravedad permite investigar materia que no vemos por sus efectos
+            sobre estrellas, galaxias y luz. Aquí juegas con sondas y
+            concentraciones de masa en un modelo simplificado. Encontrar una
+            masa oculta en este mapa no es detectar una partícula de materia
+            oscura.
+          </p>
+          <p>
+            Para conseguir tres estrellas, marca muy cerca de cada masa usando
+            cuatro sondas o menos. Puedes seguir investigando sin límite de
+            tiros.
+          </p>
+        </details>
+      </footer>
+    </div>
+    <script src="assets/gravity-core.js"></script>
+    <script src="assets/gravity-game.js"></script>
+  </body>
+</html>
