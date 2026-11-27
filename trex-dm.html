@@ -48,10 +48,19 @@
       .game-nav a {
         display: inline-flex;
         align-items: center;
-        min-height: 44px;
-        color: var(--accent);
+        justify-content: center;
+        min-height: 48px;
+        padding: 12px 20px;
+        border: 2px solid var(--accent);
+        border-radius: 12px;
+        background: var(--accent);
+        color: #06251e;
         font-size: 16px;
-        text-underline-offset: 4px;
+        font-weight: 750;
+        text-decoration: none;
+      }
+      .game-nav a:hover {
+        filter: brightness(1.1);
       }
       .brand {
         display: flex;
