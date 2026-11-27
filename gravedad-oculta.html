@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Lanza sondas, observa cómo se curvan y encuentra la masa invisible. Un rompecabezas de gravedad para jugar y experimentar."
+      content="Lanza sondas, localiza las masas invisibles y estima cuánto atraen. Prueba tus ideas comparando las trayectorias."
     />
     <title>Gravedad oculta · Encuentra lo invisible</title>
     <style>
@@ -331,6 +331,65 @@
         color: var(--muted);
         font-size: 14px;
       }
+      .mass-choice {
+        border: 0;
+        padding: 0;
+        margin: 0 0 16px;
+        min-width: 0;
+      }
+      .mass-choice legend {
+        color: var(--orange);
+        font-size: 14px;
+        margin-bottom: 8px;
+      }
+      .mass-options {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+      .mass-options button {
+        min-height: 46px;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        background: var(--panel);
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .mass-options button[aria-pressed="true"] {
+        color: var(--orange);
+        border-color: var(--orange);
+        background: #442f29;
+      }
+      #predict {
+        margin-bottom: 12px;
+        font-size: 15px;
+      }
+      #predict[aria-pressed="true"] {
+        color: var(--orange);
+        border-color: var(--orange);
+      }
+      .prediction-note {
+        font-size: 14px;
+        color: var(--orange);
+      }
+      #mass-results {
+        list-style: none;
+        margin: 0 0 18px;
+        padding: 0;
+      }
+      #mass-results li {
+        border-top: 1px solid var(--line);
+        padding: 12px 0 0;
+        margin: 12px 0 0;
+        font-size: 14px;
+        line-height: 1.5;
+        color: var(--muted);
+      }
+      #mass-results strong {
+        display: block;
+        color: var(--ink);
+        margin-bottom: 4px;
+      }
       .result {
         padding: 20px;
         border-radius: 16px;
@@ -536,8 +595,8 @@
               ¿Dónde está<br /><span>lo invisible?</span>
             </h1>
             <p>
-              Algo tira de tus sondas. Lánzalas, sigue sus curvas y encuentra la
-              masa escondida.
+              Algo tira de tus sondas. Lánzalas, sigue sus curvas y descubre
+              dónde está la masa escondida y cuánta hay.
             </p>
             <button class="primary" id="start" type="button">Investigar</button>
             <p class="small">Sin reloj. Prueba todas las veces que quieras.</p>
@@ -647,7 +706,9 @@
                   </button>
                 </div>
                 <div id="aim-controls">
-                  <span class="control-label">Punto de salida</span>
+                  <span class="control-label"
+                    >Salida · También puedes tocar las flechas del mapa</span
+                  >
                   <div class="ports" role="group" aria-label="Punto de salida">
                     <button type="button" data-port="0" aria-pressed="true">
                       Izquierda</button
@@ -695,6 +756,30 @@
                 <div id="mark-controls" hidden>
                   <p class="mark-copy" id="mark-prompt"></p>
                   <p id="guess-count"></p>
+                  <div id="mass-choices"></div>
+                  <button
+                    id="predict"
+                    class="secondary full"
+                    type="button"
+                    aria-pressed="false"
+                    disabled
+                  >
+                    Probar mi idea
+                  </button>
+                  <p id="prediction-note" class="prediction-note" hidden>
+                    Las líneas naranjas a trazos son tu predicción. Mueve las
+                    marcas o cambia la masa hasta que se parezcan a los rastros
+                    de las sondas.
+                  </p>
+                  <details class="mass-help">
+                    <summary>¿Cómo estimo cuánta masa hay?</summary>
+                    <p>
+                      Con el mismo tiro y la misma distancia, más masa tira más
+                      de la sonda. Pero pasar más cerca o ir más despacio
+                      también cambia la curva. Prueba tu idea: comparamos usando
+                      los mismos tiros que ya lanzaste.
+                    </p>
+                  </details>
                   <button
                     id="check"
                     class="primary full"
@@ -734,6 +819,7 @@
                 <h2 id="result-title" tabindex="-1"></h2>
                 <div class="stars" id="stars" role="img"></div>
                 <p id="result-copy"></p>
+                <ul id="mass-results" aria-label="Resultado de cada marca"></ul>
                 <button id="next" class="primary full" type="button">
                   Siguiente sector</button
                 ><button id="retry" class="secondary full" type="button">
@@ -776,14 +862,14 @@
             oscura.
           </p>
           <p>
-            Para conseguir tres estrellas, marca muy cerca de cada masa usando
-            cuatro sondas o menos. Puedes seguir investigando sin límite de
-            tiros.
+            Para conseguir tres estrellas, acierta la posición y la cantidad de
+            cada masa usando cuatro sondas o menos. Probar tu idea no consume
+            sondas. Puedes seguir investigando sin límite de tiros.
           </p>
         </details>
       </footer>
     </div>
-    <script src="assets/gravity-core.js"></script>
-    <script src="assets/gravity-game.js"></script>
+    <script src="assets/gravity-core.js?v=mass-2"></script>
+    <script src="assets/gravity-game.js?v=mass-2"></script>
   </body>
 </html>

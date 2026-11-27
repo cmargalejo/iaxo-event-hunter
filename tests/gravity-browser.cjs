@@ -58,6 +58,26 @@ async function main() {
     });
     await page.locator("#start").click();
     assert.equal(await page.locator("#mark-mode").isDisabled(), true);
+    for (const port of [2, 1, 0]) {
+      await mark(page, C.PORTS[port]);
+      assert.equal(
+        await page
+          .locator(`[data-port='${port}']`)
+          .getAttribute("aria-pressed"),
+        "true",
+      );
+      assert.equal(
+        await page.locator("#shot-count").textContent(),
+        "0",
+        "Tapping a map arrow only selects a port",
+      );
+      assert.equal(await page.locator("#angle").inputValue(), "0");
+      assert.equal(
+        await page.locator("#power").inputValue(),
+        "45",
+        "Tapping an arrow preserves launch power",
+      );
+    }
     await page.locator("#map").focus();
     await page.keyboard.press("ArrowUp");
     assert.equal(await page.locator("#power").inputValue(), "50");
@@ -76,7 +96,10 @@ async function main() {
     await page.locator("#mark-mode").click();
     await page.locator("#map").focus();
     await page.keyboard.press("Enter");
+    assert.equal(await page.locator("#check").isDisabled(), true);
+    await page.locator('[data-guess="0"][data-mass="medium"]').click();
     assert.equal(await page.locator("#check").isEnabled(), true);
+    await page.locator("#map").focus();
     await page.keyboard.press("ArrowRight");
     await page.keyboard.press("Enter");
     await page.locator("#clear-marks").click();
@@ -98,9 +121,81 @@ async function main() {
           await page.mouse.move(to.x, to.y, { steps: 8 });
           await page.mouse.up();
         } else await mark(page, masses[index]);
+        assert.equal(
+          await page.locator("#check").isDisabled(),
+          true,
+          "Each marker needs an explicit mass estimate",
+        );
+        await page
+          .locator(
+            `[data-guess="${index}"][data-mass="${masses[index].massClass}"]`,
+          )
+          .click();
         if (level === 2 && index === 0)
           assert.equal(await page.locator("#check").isDisabled(), true);
       }
+      const before = await page.locator("#shot-count").textContent();
+      await page.locator("#predict").click();
+      assert.equal(
+        await page.locator("#predict").getAttribute("aria-pressed"),
+        "true",
+      );
+      assert.equal(await page.locator("#prediction-note").isVisible(), true);
+      assert.equal(
+        await page.locator("#result").isHidden(),
+        true,
+        "Trying an idea does not reveal the answer",
+      );
+      assert.equal(
+        await page.locator("#shot-count").textContent(),
+        before,
+        "Predictions do not cost probes",
+      );
+      if (level === 0) {
+        const correctImage = await page
+          .locator("#map")
+          .evaluate((map) => map.toDataURL());
+        const wrong = C.MASS_TYPES.find(
+          (type) => type.id !== masses[0].massClass,
+        ).id;
+        await page.locator(`[data-guess="0"][data-mass="${wrong}"]`).click();
+        const changedImage = await page
+          .locator("#map")
+          .evaluate((map) => map.toDataURL());
+        assert.notEqual(
+          changedImage,
+          correctImage,
+          "Changing the mass redraws the predicted trails",
+        );
+        await page
+          .locator(`[data-guess="0"][data-mass="${masses[0].massClass}"]`)
+          .click();
+        const from = await mapPoint(page, masses[0]);
+        const to = await mapPoint(page, {
+          x: masses[0].x + 30,
+          y: masses[0].y + 20,
+        });
+        await page.mouse.move(from.x, from.y);
+        await page.mouse.down();
+        await page.mouse.move(to.x, to.y, { steps: 4 });
+        await page.mouse.up();
+        assert.equal(
+          await page
+            .locator(`[data-guess="0"][data-mass="${masses[0].massClass}"]`)
+            .getAttribute("aria-pressed"),
+          "true",
+          "Moving a marker keeps its mass estimate",
+        );
+        assert.equal(
+          await page.locator("#predict").getAttribute("aria-pressed"),
+          "true",
+        );
+      }
+      if (level === 2)
+        await page.screenshot({
+          path: path.join(out, "mass-prediction-desktop.png"),
+          fullPage: true,
+        });
       await page.locator("#check").click();
       assert.equal(
         await page.locator("#stars").getAttribute("aria-label"),
@@ -127,7 +222,36 @@ async function main() {
       "Clearing trails preserves shot count",
     );
     await page.locator("#mark-mode").click();
+    const original = C.makeRound(0, Math.floor(seeds[0] * 4294967296))
+      .masses[0];
+    await mark(page, original);
+    const wrongType = C.MASS_TYPES.find(
+      (type) => type.id !== original.massClass,
+    ).id;
+    await page.locator(`[data-guess="0"][data-mass="${wrongType}"]`).click();
+    assert.equal(
+      await page.locator("#predict").isDisabled(),
+      true,
+      "Cleared trails cannot be compared",
+    );
+    await page.locator("#check").click();
+    assert.equal(
+      await page.locator("#stars").getAttribute("aria-label"),
+      "2 de 3 estrellas",
+    );
+    assert.match(
+      await page.locator("#result-title").textContent(),
+      /posición era buena/,
+    );
+    assert.match(
+      await page.locator("#mass-results").textContent(),
+      /elegiste|estimación/,
+    );
+    await page.locator("#retry").click();
+    await page.locator("#launch").click();
+    await page.locator("#mark-mode").click();
     await mark(page, { x: 30, y: 30 });
+    await page.locator('[data-guess="0"][data-mass="small"]').click();
     await page.locator("#check").click();
     assert.equal(
       await page.locator("#stars").getAttribute("aria-label"),
@@ -139,7 +263,7 @@ async function main() {
     assert.equal(await page.locator("#mark-mode").isDisabled(), true);
 
     // Dragging launches; canceling a drag never launches.
-    const from = await mapPoint(page, { x: 200, y: 300 });
+    const from = await mapPoint(page, C.PORTS[2]);
     const to = await mapPoint(page, { x: 750, y: 600 });
     await page.mouse.move(from.x, from.y);
     await page.mouse.down();
@@ -152,6 +276,11 @@ async function main() {
     await page.mouse.move(to.x, to.y, { steps: 8 });
     await page.mouse.up();
     assert.equal(await page.locator("#shot-count").textContent(), "1");
+    assert.equal(
+      await page.locator('[data-port="2"]').getAttribute("aria-pressed"),
+      "true",
+      "Dragging a map arrow launches from that port",
+    );
     await noOverflow(page);
     assert.deepEqual(errors, []);
     await context.close();
@@ -164,6 +293,7 @@ async function main() {
     assert.equal(await animated.page.locator("#launch").isDisabled(), true);
     await animated.page.locator("#mark-mode").click();
     await mark(animated.page, { x: 500, y: 450 });
+    await animated.page.locator('[data-guess="0"][data-mass="medium"]').click();
     assert.equal(await animated.page.locator("#check").isDisabled(), true);
     await animated.page.waitForFunction(
       () => !document.getElementById("check").disabled,
@@ -187,7 +317,15 @@ async function main() {
         fullPage: true,
       });
       await p.locator("#start").tap();
-      const a = await mapPoint(p, { x: 140, y: 400 });
+      for (const port of [2, 1, 0]) {
+        await mark(p, C.PORTS[port], true);
+        assert.equal(
+          await p.locator(`[data-port='${port}']`).getAttribute("aria-pressed"),
+          "true",
+        );
+        assert.equal(await p.locator("#shot-count").textContent(), "0");
+      }
+      const a = await mapPoint(p, C.PORTS[0]);
       const b = await mapPoint(p, { x: 760, y: 570 });
       const cdp = await mobile.context.newCDPSession(p);
       await cdp.send("Input.dispatchTouchEvent", {
@@ -219,7 +357,35 @@ async function main() {
       const actual = C.makeRound(0, Math.floor(seeds[0] * 4294967296))
         .masses[0];
       await mark(p, actual, true);
+      assert.equal(await p.locator("#check").isDisabled(), true);
+      await p
+        .locator(`[data-guess="0"][data-mass="${actual.massClass}"]`)
+        .tap();
       assert.equal(await p.locator("#check").isEnabled(), true);
+      await p.locator("#predict").tap();
+      await p.screenshot({
+        path: path.join(out, `mass-prediction-${width}.png`),
+        fullPage: true,
+      });
+      await noOverflow(p);
+      // A map arrow returns to launch mode without losing the hypothesis.
+      await mark(p, C.PORTS[2], true);
+      assert.equal(
+        await p.locator("#aim-mode").getAttribute("aria-pressed"),
+        "true",
+      );
+      assert.equal(await p.locator("#shot-count").textContent(), "2");
+      await p.locator("#mark-mode").tap();
+      assert.equal(
+        await p
+          .locator(`[data-guess="0"][data-mass="${actual.massClass}"]`)
+          .getAttribute("aria-pressed"),
+        "true",
+      );
+      assert.equal(
+        await p.locator("#predict").getAttribute("aria-pressed"),
+        "false",
+      );
       await p.locator("#check").tap();
       assert.equal(
         await p.locator("#stars").getAttribute("aria-label"),

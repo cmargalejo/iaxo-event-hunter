@@ -8,6 +8,11 @@
   const WIDTH = 1000;
   const HEIGHT = 900;
   const SOFTENING = 65;
+  const MASS_TYPES = [
+    { id: "small", label: "Poca", mu: 1800000 },
+    { id: "medium", label: "Media", mu: 3600000 },
+    { id: "large", label: "Mucha", mu: 7200000 },
+  ];
   const PORTS = [
     { x: 42, y: 450, angle: 0, label: "Izquierda" },
     { x: 500, y: 858, angle: -Math.PI / 2, label: "Abajo" },
@@ -17,17 +22,17 @@
     {
       name: "Una presencia",
       count: 1,
-      hint: "Hay una masa escondida. Sigue la curva de tus sondas.",
+      hint: "Busca dónde está y cuánta masa hay. Con el mismo tiro y distancia, más masa atrae más.",
     },
     {
       name: "Un nuevo misterio",
       count: 1,
-      hint: "Cambia de punto de salida para mirar desde otro lado.",
+      hint: "La masa puede ser distinta. Toca otra flecha del mapa para investigar desde otro lado.",
     },
     {
       name: "Dos presencias",
       count: 2,
-      hint: "Esta vez hay dos masas. Busca dos centros de atracción.",
+      hint: "Hay dos masas de distinta cantidad. Localiza cada una y estima cuánta masa tiene.",
     },
   ];
   function rng(seed) {
@@ -47,10 +52,6 @@
         candidate = {
           x: (level === 0 ? 400 : 280) + random() * (level === 0 ? 220 : 440),
           y: (level === 0 ? 290 : 200) + random() * (level === 0 ? 320 : 500),
-          mu:
-            count === 2
-              ? 2300000 + random() * 900000
-              : 3300000 + random() * 900000,
         };
         if (
           masses.every(
@@ -64,8 +65,13 @@
         candidate = {
           x: masses[0].x < 500 ? 720 : 280,
           y: masses[0].y < 450 ? 690 : 210,
-          mu: 2600000,
         };
+      const choices = MASS_TYPES.filter(
+        (type) => !masses.some((m) => m.massClass === type.id),
+      );
+      const type = choices[Math.floor(random() * choices.length)];
+      candidate.massClass = type.id;
+      candidate.mu = type.mu;
       masses.push(candidate);
     }
     return { level, masses };
@@ -113,7 +119,12 @@
     return { points, seconds: (points.length - 1) * dt };
   }
   function evaluate(masses, guesses, shots) {
-    if (guesses.length !== masses.length || shots < 1) return null;
+    if (
+      guesses.length !== masses.length ||
+      shots < 1 ||
+      guesses.some((g) => !MASS_TYPES.some((type) => type.id === g.massClass))
+    )
+      return null;
     const distance = (m, g) => Math.hypot(m.x - g.x, m.y - g.y);
     let order = masses.map((_, i) => i);
     if (
@@ -125,10 +136,12 @@
     const pairs = masses.map((mass, i) => ({
       mass,
       guess: guesses[order[i]],
+      guessIndex: order[i],
       distance: distance(mass, guesses[order[i]]),
+      massCorrect: mass.massClass === guesses[order[i]].massClass,
     }));
     const error = Math.max(...pairs.map((pair) => pair.distance));
-    const stars =
+    const positionStars =
       error <= 65
         ? shots <= 4
           ? 3
@@ -138,12 +151,34 @@
           : error <= 200
             ? 1
             : 0;
-    return { pairs, error, stars, found: error <= 65 };
+    const massCorrect = pairs.every((pair) => pair.massCorrect);
+    const stars = Math.max(0, positionStars - (massCorrect ? 0 : 1));
+    return {
+      pairs,
+      error,
+      stars,
+      massCorrect,
+      found: error <= 65,
+      solved: error <= 65 && massCorrect,
+    };
+  }
+  // Predict only from the player's hypothesis and the recorded launch conditions.
+  function predict(launches, guesses) {
+    if (!guesses.length) return [];
+    const masses = guesses.map((guess) => {
+      const type = MASS_TYPES.find((item) => item.id === guess.massClass);
+      return type ? { x: guess.x, y: guess.y, mu: type.mu } : null;
+    });
+    if (masses.some((mass) => !mass)) return [];
+    return launches.map((launch) =>
+      simulate(launch.origin, launch.angle, launch.power, masses),
+    );
   }
   return {
     WIDTH,
     HEIGHT,
     SOFTENING,
+    MASS_TYPES,
     PORTS,
     LEVELS,
     rng,
@@ -152,5 +187,6 @@
     step,
     simulate,
     evaluate,
+    predict,
   };
 });

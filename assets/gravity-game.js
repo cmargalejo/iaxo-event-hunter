@@ -19,6 +19,8 @@
   let shots = 0;
   let traces = [];
   let guesses = [];
+  let preview = false;
+  let predictions = [];
   let mode = "aim";
   let result = null;
   let scores = [];
@@ -33,7 +35,7 @@
   let best = 0;
   try {
     best = clamp(
-      Number(localStorage.getItem("gravity-puzzle-best")) || 0,
+      Number(localStorage.getItem("gravity-puzzle-best-mass-v2")) || 0,
       0,
       9,
     );
@@ -73,10 +75,72 @@
     return traces.filter((trace) => now < trace.start + trace.duration).length;
   }
 
+  function hypothesisReady() {
+    return (
+      guesses.length === C.LEVELS[level].count &&
+      guesses.every((g) => C.MASS_TYPES.some((type) => type.id === g.massClass))
+    );
+  }
+
+  function updatePredictions() {
+    predictions =
+      preview && hypothesisReady() ? C.predict(traces, guesses) : [];
+  }
+
+  function syncMassChoices() {
+    const holder = $("mass-choices");
+    // Retain controls while dragging and animating, so keyboard focus is stable.
+    if (holder.children.length !== guesses.length) {
+      holder.replaceChildren(
+        ...guesses.map((guess, index) => {
+          const fieldset = document.createElement("fieldset");
+          fieldset.className = "mass-choice";
+          const legend = document.createElement("legend");
+          legend.textContent = `Marca ${index + 1}: ¿cuánta masa?`;
+          const options = document.createElement("div");
+          options.className = "mass-options";
+          C.MASS_TYPES.forEach((type) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.dataset.guess = index;
+            button.dataset.mass = type.id;
+            button.textContent = type.label;
+            button.setAttribute(
+              "aria-label",
+              `${type.label} masa en la marca ${index + 1}`,
+            );
+            button.addEventListener("click", () => {
+              if (result) return;
+              guesses[index].massClass = type.id;
+              updatePredictions();
+              syncControls();
+              draw();
+            });
+            options.append(button);
+          });
+          fieldset.append(legend, options);
+          return fieldset;
+        }),
+      );
+    }
+    holder
+      .querySelectorAll("[data-mass]")
+      .forEach((button) =>
+        button.setAttribute(
+          "aria-pressed",
+          String(
+            guesses[Number(button.dataset.guess)].massClass ===
+              button.dataset.mass,
+          ),
+        ),
+      );
+  }
+
   function syncControls() {
     if (!round) return;
     const count = C.LEVELS[level].count;
     const active = activeCount();
+    const ready = hypothesisReady();
     $("shot-count").textContent = shots;
     $("shot-label").textContent = shots === 1 ? "sonda" : "sondas";
     $("mass-legend").textContent =
@@ -95,15 +159,22 @@
     $("launch").disabled = active >= 3;
     $("launch").textContent = active >= 3 ? "Sondas en vuelo…" : "Lanzar sonda";
     $("clear").disabled = traces.length === 0;
-    $("check").disabled = guesses.length !== count || active > 0;
+    $("check").disabled = !ready || active > 0;
     $("check").textContent = active > 0 ? "Espera a las sondas…" : "Comprobar";
+    $("predict").disabled = !ready || active > 0 || !traces.length;
+    $("predict").setAttribute("aria-pressed", String(preview));
+    $("predict").textContent = preview
+      ? "Ocultar mi predicción"
+      : "Probar mi idea";
+    $("prediction-note").hidden = !preview;
+    syncMassChoices();
     $("clear-marks").disabled = guesses.length === 0;
     $("guess-count").textContent =
       `${guesses.length} de ${count} ${count === 1 ? "marca colocada" : "marcas colocadas"}`;
     $("mark-prompt").textContent =
       count === 1
-        ? "¿Dónde está la masa? Toca el mapa para marcarla."
-        : "¿Dónde están las dos masas? Pon una marca para cada una.";
+        ? "Marca dónde está y elige cuánta masa crees que hay."
+        : "Pon dos marcas y elige cuánta masa hay en cada una.";
     document
       .querySelectorAll("[data-port]")
       .forEach((button) =>
@@ -119,15 +190,16 @@
           ? "Azul: la masa oculta. Naranja: tu marca."
           : "Azul: las masas ocultas. Naranja: tus marcas.";
     } else if (mode === "mark") {
-      instruction =
-        guesses.length === count
-          ? "Puedes arrastrar tus marcas para ajustarlas. Después, comprueba."
+      instruction = preview
+        ? "Naranja a trazos: tu predicción. Ajusta posición y masa para seguir las pistas."
+        : guesses.length === count
+          ? "Elige la cantidad de masa en cada marca. Puedes probar tu idea antes de comprobar."
           : "Toca el mapa para poner tu marca. Las curvas son tus pistas.";
     } else {
       instruction =
         shots === 0
-          ? "Arrastra en el mapa para apuntar y suelta para lanzar."
-          : "Sigue la curva. Prueba otra dirección o cambia de punto de salida.";
+          ? "Toca una flecha para elegir la salida. Arrastra y suelta para lanzar."
+          : "Sigue la curva. Toca otra flecha para cambiar de salida.";
     }
     if ($("map-instruction").textContent !== instruction)
       $("map-instruction").textContent = instruction;
@@ -135,7 +207,7 @@
       ? "Mapa revelado: se muestran las masas y tus marcas."
       : mode === "mark"
         ? "Mapa para marcar las masas. Flechas para mover la cruz y Enter para colocar una marca."
-        : "Mapa para lanzar sondas. Arrastra y suelta, o usa las flechas y Espacio.";
+        : "Mapa para lanzar sondas. Toca una flecha para elegir salida. Arrastra y suelta, o usa las flechas del teclado y Espacio.";
     if (canvas.getAttribute("aria-label") !== label)
       canvas.setAttribute("aria-label", label);
   }
@@ -197,7 +269,10 @@
         halo.addColorStop(1, "#9ebcff00");
         circle(m.x, m.y, 105, halo);
         circle(m.x, m.y, 65, null, "#9ebcff77", 2);
-        circle(m.x, m.y, 24, "#9ebcff33", "#9ebcff", 3);
+        const massIndex = C.MASS_TYPES.findIndex(
+          (type) => type.id === m.massClass,
+        );
+        circle(m.x, m.y, 18 + massIndex * 9, "#9ebcff33", "#9ebcff", 3);
         circle(m.x, m.y, 8, "#c9d9ff");
         ctx.setLineDash([7, 8]);
         ctx.beginPath();
@@ -232,6 +307,20 @@
         circle(head.x, head.y, 14, `${trace.color}22`);
         circle(head.x, head.y, 6, trace.color);
       } else circle(head.x, head.y, 3, trace.color);
+    }
+
+    if (preview && !result && mode === "mark") {
+      ctx.setLineDash([13, 11]);
+      ctx.strokeStyle = "#ffbe86";
+      ctx.lineWidth = 4;
+      for (const prediction of predictions) {
+        ctx.beginPath();
+        prediction.points.forEach((p, index) =>
+          index ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y),
+        );
+        ctx.stroke();
+      }
+      ctx.setLineDash([]);
     }
 
     C.PORTS.forEach((source, i) => {
@@ -282,7 +371,7 @@
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillStyle = "#ffce9c";
-      ctx.fillText(guesses.length > 1 ? String(i + 1) : "?", guess.x, guess.y);
+      ctx.fillText(String(i + 1), guess.x, guess.y);
     });
     if (
       mode === "mark" &&
@@ -320,6 +409,9 @@
     );
     traces.push({
       ...trajectory,
+      origin: { ...C.PORTS[port] },
+      angle: C.PORTS[port].angle + (angle * Math.PI) / 180,
+      power,
       color: colors[shots % colors.length],
       start: performance.now(),
       duration: reducedMotion.matches
@@ -350,6 +442,8 @@
     shots = 0;
     traces = [];
     guesses = [];
+    preview = false;
+    predictions = [];
     result = null;
     mode = "aim";
     port = 0;
@@ -377,6 +471,10 @@
     if (!round || result || (next === "mark" && !shots)) return;
     cancelDrag();
     mode = next;
+    if (mode === "aim") {
+      preview = false;
+      predictions = [];
+    }
     syncControls();
     draw();
   }
@@ -405,6 +503,27 @@
     draw();
   }
 
+  function selectPort(index) {
+    if (result) return;
+    mode = "aim";
+    preview = false;
+    predictions = [];
+    port = index;
+    angle = 0;
+    syncControls();
+    draw();
+  }
+
+  function portAt(p) {
+    const radius = Math.max(
+      32,
+      (32 * C.WIDTH) / canvas.getBoundingClientRect().width,
+    );
+    return C.PORTS.findIndex(
+      (source) => Math.hypot(source.x - p.x, source.y - p.y) <= radius,
+    );
+  }
+
   function putGuess(p, index = -1) {
     const guess = {
       x: clamp(p.x, 20, C.WIDTH - 20),
@@ -426,12 +545,13 @@
       )
     )
       return -1;
-    if (index >= 0) guesses[index] = guess;
+    if (index >= 0) guesses[index] = { ...guesses[index], ...guess };
     else {
       index = guesses.length;
       guesses.push(guess);
     }
     cursor = { ...guess };
+    updatePredictions();
     syncControls();
     draw();
     return index;
@@ -443,6 +563,8 @@
     event.preventDefault();
     canvas.focus({ preventScroll: true });
     const p = point(event);
+    const hitPort = portAt(p);
+    if (hitPort >= 0) selectPort(hitPort);
     const radius = (28 * C.WIDTH) / canvas.getBoundingClientRect().width;
     const nearby = guesses.findIndex(
       (g) => Math.hypot(g.x - p.x, g.y - p.y) < radius,
@@ -453,9 +575,10 @@
       y: event.clientY,
       moved: false,
       index: nearby,
+      fromPort: hitPort >= 0,
     };
     canvas.setPointerCapture(event.pointerId);
-    if (mode === "aim") aimAt(p);
+    if (mode === "aim" && !drag.fromPort) aimAt(p);
     else {
       cursor = p;
       draw();
@@ -465,7 +588,7 @@
     if (!drag || event.pointerId !== drag.id) return;
     if (Math.hypot(event.clientX - drag.x, event.clientY - drag.y) >= 8)
       drag.moved = true;
-    if (mode === "aim") aimAt(point(event));
+    if (mode === "aim" && (!drag.fromPort || drag.moved)) aimAt(point(event));
     else if (drag.moved && drag.index >= 0) putGuess(point(event), drag.index);
   });
   canvas.addEventListener("pointerup", (event) => {
@@ -473,6 +596,7 @@
     const ended = drag;
     cancelDrag();
     if (mode === "aim") {
+      if (ended.fromPort && !ended.moved) return;
       aimAt(point(event));
       if (ended.moved) launch();
     } else putGuess(point(event), ended.index);
@@ -546,10 +670,7 @@
   $("mark-mode").addEventListener("click", () => setMode("mark"));
   document.querySelectorAll("[data-port]").forEach((button) =>
     button.addEventListener("click", () => {
-      port = Number(button.dataset.port);
-      angle = 0;
-      syncControls();
-      draw();
+      selectPort(Number(button.dataset.port));
     }),
   );
   ["angle", "power"].forEach((id) =>
@@ -562,6 +683,8 @@
   );
   $("clear").addEventListener("click", () => {
     traces = [];
+    preview = false;
+    predictions = [];
     if (frame) cancelAnimationFrame(frame);
     frame = 0;
     syncControls();
@@ -569,8 +692,18 @@
   });
   $("clear-marks").addEventListener("click", () => {
     guesses = [];
+    preview = false;
+    predictions = [];
     syncControls();
     draw();
+  });
+  $("predict").addEventListener("click", () => {
+    if (result || !hypothesisReady() || activeCount() || !traces.length) return;
+    preview = !preview;
+    updatePredictions();
+    syncControls();
+    draw();
+    if (preview) canvas.scrollIntoView({ block: "nearest" });
   });
   $("sound").addEventListener("click", () => {
     sound = !sound;
@@ -589,13 +722,15 @@
     $("controls").hidden = true;
     $("result").hidden = false;
     $("legend").hidden = false;
-    $("result-title").textContent = result.found
+    $("result-title").textContent = result.solved
       ? round.masses.length === 1
         ? "¡La encontraste!"
         : "¡Las encontraste!"
-      : result.error <= 130
-        ? "¡Estabas cerca!"
-        : "El misterio sigue…";
+      : result.found
+        ? "¡La posición era buena!"
+        : result.error <= 130
+          ? "¡Estabas cerca!"
+          : "El misterio sigue…";
     $("stars").replaceChildren(
       ...[0, 1, 2].map((index) => {
         const star = document.createElement("span");
@@ -606,19 +741,41 @@
       }),
     );
     $("stars").setAttribute("aria-label", `${result.stars} de 3 estrellas`);
-    $("result-copy").textContent = result.found
+    $("result-copy").textContent = result.solved
       ? shots <= 4
-        ? "¡Buen ojo! Has localizado la masa con cuatro sondas o menos."
+        ? "¡Buen ojo! Has acertado la posición y la cantidad de masa con cuatro sondas o menos."
         : "Has seguido bien las pistas. Prueba a resolver otro mapa con cuatro sondas o menos para conseguir tres estrellas."
-      : "Mira hacia dónde se doblan los rastros: la masa tira de las sondas. Lanzar desde distintos lados te ayuda a encontrarla.";
-    if (result.found && round.masses.length === 2 && shots <= 4)
-      $("result-copy").textContent =
-        "¡Buen ojo! Has localizado las dos masas con cuatro sondas o menos.";
+      : result.found
+        ? "Has encontrado dónde está, pero la cantidad de masa era distinta. En otro mapa, prueba distintas cantidades y compara las trayectorias."
+        : "Mira hacia dónde se doblan los rastros. Prueba a ajustar la posición y la masa hasta que tu predicción siga las curvas.";
+    $("mass-results").replaceChildren(
+      ...[...result.pairs]
+        .sort((a, b) => a.guessIndex - b.guessIndex)
+        .map((pair) => {
+          const item = document.createElement("li");
+          const title = document.createElement("strong");
+          title.textContent = `Marca ${pair.guessIndex + 1} · ${pair.distance <= 65 ? "posición acertada" : pair.distance <= 130 ? "posición cercana" : "posición por ajustar"}`;
+          const actual = C.MASS_TYPES.find(
+            (type) => type.id === pair.mass.massClass,
+          ).label.toLowerCase();
+          const chosen = C.MASS_TYPES.find(
+            (type) => type.id === pair.guess.massClass,
+          ).label.toLowerCase();
+          const detail = document.createElement("span");
+          detail.textContent = pair.massCorrect
+            ? `Masa: ${actual}. ¡Acertaste!`
+            : `Masa real: ${actual}. Tu estimación: ${chosen}.`;
+          item.append(title, detail);
+          return item;
+        }),
+    );
+    preview = false;
+    predictions = [];
     $("next").textContent =
       level === 2 ? "Ver mi expedición" : "Siguiente sector";
     syncControls();
     draw();
-    tone(result.found ? 740 : 330, 0.22);
+    tone(result.solved ? 740 : 330, 0.22);
     $("result-title").focus({ preventScroll: true });
     $("result").scrollIntoView({ block: "nearest" });
   });
@@ -633,7 +790,7 @@
     const total = scores.reduce((sum, score) => sum + score, 0);
     best = Math.max(best, total);
     try {
-      localStorage.setItem("gravity-puzzle-best", String(best));
+      localStorage.setItem("gravity-puzzle-best-mass-v2", String(best));
     } catch (_) {
       /* Optional. */
     }
