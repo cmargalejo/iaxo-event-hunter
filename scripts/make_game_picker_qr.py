@@ -78,7 +78,7 @@ def main():
         {"kind": fitz.LINK_URI, "from": fitz.Rect(left, top, left + side, top + side), "uri": URL}
     )
 
-    centered(page, "Axiones · Materia oscura · Versión Junior", 247, 13, bold=True)
+    centered(page, "Gravedad · Axiones · Materia oscura · Junior", 247, 13, bold=True)
     centered(page, "En español. Sin instalar nada ni crear una cuenta.", 257, 11)
     centered(page, "También puedes entrar desde este enlace:", 272, 9)
     centered(page, URL, 280, 9)
@@ -88,7 +88,7 @@ def main():
     doc.set_metadata(
         {
             "title": "Elige tu misión · Un QR para todos los juegos",
-            "subject": "Cartel A4 para acceder a IAXO, TREX-DM y TREX-DM Junior",
+            "subject": "Cartel A4 para acceder a Sondas y gravedad, IAXO, TREX-DM y Detectives de partículas",
             "creator": "IAXO Event Hunter & TREX-DM",
         }
     )

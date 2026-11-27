@@ -9,9 +9,9 @@
   const HEIGHT = 900;
   const SOFTENING = 65;
   const MASS_TYPES = [
-    { id: "small", label: "Poca", mu: 1800000 },
-    { id: "medium", label: "Media", mu: 3600000 },
-    { id: "large", label: "Mucha", mu: 7200000 },
+    { id: "small", label: "Poca", units: 1, mu: 1800000 },
+    { id: "medium", label: "Media", units: 2, mu: 3600000 },
+    { id: "large", label: "Mucha", units: 4, mu: 7200000 },
   ];
   const PORTS = [
     { x: 42, y: 450, angle: 0, label: "Izquierda" },

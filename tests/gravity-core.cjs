@@ -1,5 +1,15 @@
 const assert = require("node:assert/strict");
 const C = require("../assets/gravity-core.js");
+assert.deepEqual(
+  C.MASS_TYPES.map((type) => type.units),
+  [1, 2, 4],
+);
+for (const type of C.MASS_TYPES)
+  assert.equal(
+    type.mu,
+    type.units * C.MASS_TYPES[0].mu,
+    "Displayed mass units agree with the actual gravitational strength",
+  );
 
 const straight = C.simulate(C.PORTS[0], 0, 45, []);
 assert.ok(

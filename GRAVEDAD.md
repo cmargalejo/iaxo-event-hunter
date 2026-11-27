@@ -1,4 +1,4 @@
-# Gravedad oculta
+# Sondas y gravedad
 
 [Play online](https://cmargalejo.github.io/iaxo-event-hunter/gravedad-oculta.html) · [Choose a game](https://cmargalejo.github.io/iaxo-event-hunter/juegos.html)
 
@@ -6,9 +6,10 @@ A Spanish gravity puzzle: launch probes, infer the location and amount of invisi
 
 ## Controls
 
+- Before the first sector, a reference panel compares known masses of **1, 2 and 4 game units** (poca, media and mucha). Select each option to highlight its trajectory. All three use the same launch origin, direction, speed and mass position, calculated with the actual game engine. This fixed example is independent of the hidden map and does not consume probes. **Ver referencia: masas 1, 2 y 4** reopens it during play without changing guesses or progress.
 - Drag anywhere on the map to aim from the selected launch point, then release to launch. A tap adjusts the aim without launching. The dashed line shows only the initial direction.
 - Tap a map arrow to select the left, bottom or right launch point without firing or changing power. Drag from an arrow to select it, aim and launch in one gesture. The buttons below the map remain available for keyboard access. Selecting an arrow in marker mode returns to launch mode while preserving all guesses.
-- After launching a probe, choose **Marcar masa** (or **Marcar masas**), tap to place markers, and drag to adjust them. Choose **Poca**, **Media** or **Mucha** mass independently for each numbered marker. Moving a marker preserves its estimate. **Comprobar** requires every estimate and reveals the masses after all probes have finished.
+- After launching a probe, choose **Marcar masa** (or **Marcar masas**), tap to place markers, and drag to adjust them. Choose **1 (poca)**, **2 (media)** or **4 (mucha)** game units independently for each numbered marker. The same values appear in the reference and the results. Moving a marker preserves its estimate. **Comprobar** requires every estimate and reveals the masses after all probes have finished.
 - **Probar mi idea** overlays dashed orange predictions using the guessed positions and masses with the exact launch points, directions and powers of the retained probes. It never uses the hidden masses or reveals the solution, and does not consume shots. Adjusting a marker or its mass updates the predictions. Clearing marks, clearing trails or returning to launch mode clears the overlay.
 - Keyboard: focus the map; arrows adjust direction/power in launch mode and Space launches. In marker mode, arrows move a crosshair and Enter places a marker; Shift makes smaller movements.
 - **Limpiar rastros** removes trails without resetting the launch count. Up to 12 trails remain visible and three probes can fly together. Retry creates a fresh map so the revealed answer cannot be reused.

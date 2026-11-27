@@ -47,6 +47,10 @@ async function setup(browser, options = {}) {
   await page.goto(gameURL);
   return { context, page, errors };
 }
+async function startGame(page, touch = false) {
+  await page.locator("#start")[touch ? "tap" : "click"]();
+  await page.locator("#reference-close")[touch ? "tap" : "click"]();
+}
 
 async function main() {
   const browser = await chromium.launch({ headless: true });
@@ -57,6 +61,49 @@ async function main() {
       fullPage: true,
     });
     await page.locator("#start").click();
+    assert.equal(
+      await page
+        .locator("#mass-reference")
+        .evaluate((dialog) => dialog.matches(":modal")),
+      true,
+    );
+    assert.equal(await page.locator("#reference-number").textContent(), "1");
+    for (const type of C.MASS_TYPES) {
+      await page.locator(`[data-reference="${type.id}"]`).click();
+      assert.equal(
+        await page.locator("#reference-number").textContent(),
+        String(type.units),
+      );
+      const trajectory = C.simulate(C.PORTS[0], 0, 45, [
+        { x: 500, y: 280, mu: type.mu },
+      ]);
+      const expected = trajectory.points
+        .map((p, i) => `${i ? "L" : "M"}${p.x.toFixed(2)},${p.y.toFixed(2)}`)
+        .join(" ");
+      assert.equal(
+        await page
+          .locator(`[data-reference-path="${type.id}"]`)
+          .getAttribute("d"),
+        expected,
+        "Reference examples use the game physics and identical launch conditions",
+      );
+      assert.equal(
+        await page
+          .locator(`[data-reference-path="${type.id}"]`)
+          .getAttribute("opacity"),
+        "1",
+      );
+      assert.equal(
+        await page.locator("#shot-count").textContent(),
+        "0",
+        "Reference comparisons are free",
+      );
+    }
+    await page.screenshot({
+      path: path.join(out, "mass-reference-desktop.png"),
+      fullPage: false,
+    });
+    await page.locator("#reference-close").click();
     assert.equal(await page.locator("#mark-mode").isDisabled(), true);
     for (const port of [2, 1, 0]) {
       await mark(page, C.PORTS[port]);
@@ -99,6 +146,31 @@ async function main() {
     assert.equal(await page.locator("#check").isDisabled(), true);
     await page.locator('[data-guess="0"][data-mass="medium"]').click();
     assert.equal(await page.locator("#check").isEnabled(), true);
+    const shotsBeforeReference = await page
+      .locator("#shot-count")
+      .textContent();
+    await page.locator("#open-reference").click();
+    await page.locator('[data-reference="large"]').click();
+    await page.keyboard.press("Escape");
+    assert.equal(await page.locator("#mass-reference").isHidden(), true);
+    assert.equal(
+      await page
+        .locator("#open-reference")
+        .evaluate((button) => button === document.activeElement),
+      true,
+      "Closing the reference restores keyboard focus",
+    );
+    assert.equal(
+      await page
+        .locator('[data-guess="0"][data-mass="medium"]')
+        .getAttribute("aria-pressed"),
+      "true",
+      "Reference choices never change the player's estimates",
+    );
+    assert.equal(
+      await page.locator("#shot-count").textContent(),
+      shotsBeforeReference,
+    );
     await page.locator("#map").focus();
     await page.keyboard.press("ArrowRight");
     await page.keyboard.press("Enter");
@@ -213,7 +285,7 @@ async function main() {
     assert.equal(await page.locator("#total-score").textContent(), "9");
     await page.reload();
     assert.match(await page.locator("#welcome-best").textContent(), /9 de 9/);
-    await page.locator("#start").click();
+    await startGame(page);
     await page.locator("#launch").click();
     await page.locator("#clear").click();
     assert.equal(
@@ -287,7 +359,7 @@ async function main() {
 
     // Real animation and launch throttling, independent of reduced-motion tests.
     const animated = await setup(browser, { reducedMotion: "no-preference" });
-    await animated.page.locator("#start").click();
+    await startGame(animated.page);
     for (let i = 0; i < 3; i += 1)
       await animated.page.locator("#launch").click();
     assert.equal(await animated.page.locator("#launch").isDisabled(), true);
@@ -317,6 +389,23 @@ async function main() {
         fullPage: true,
       });
       await p.locator("#start").tap();
+      await p.locator('[data-reference="large"]').tap();
+      const dialogBox = await p.locator("#mass-reference").boundingBox();
+      assert.ok(dialogBox.x >= 0 && dialogBox.x + dialogBox.width <= width + 1);
+      assert.equal(
+        await p
+          .locator("#mass-reference")
+          .evaluate((dialog) => dialog.scrollWidth <= dialog.clientWidth + 1),
+        true,
+      );
+      await p.locator("#mass-reference").evaluate((dialog) => {
+        dialog.scrollTop = 0;
+      });
+      await p.screenshot({
+        path: path.join(out, `mass-reference-${width}.png`),
+        fullPage: false,
+      });
+      await p.locator("#reference-close").tap();
       for (const port of [2, 1, 0]) {
         await mark(p, C.PORTS[port], true);
         assert.equal(
@@ -402,10 +491,30 @@ async function main() {
       await p.goto(pathToFileURL(path.join(root, "juegos.html")).href);
       assert.equal(await p.locator(".mission").count(), 4);
       await noOverflow(p);
+      assert.equal(
+        await p.locator("#gravity-title").textContent(),
+        "Sondas y gravedad",
+      );
+      assert.equal(
+        await p.locator("#junior-title").textContent(),
+        "Detectives de partículas",
+      );
+      await p.screenshot({
+        path: path.join(out, `renamed-picker-${width}.png`),
+        fullPage: true,
+      });
       await p.locator('a[href="gravedad-oculta.html"]').tap();
       await p.waitForURL(gameURL);
       await p.locator("#start").waitFor({ state: "visible" });
       assert.equal(await p.locator("#start").isVisible(), true);
+      assert.match(await p.title(), /Sondas y gravedad/);
+      await p.goto(pathToFileURL(path.join(root, "trex-dm-junior.html")).href);
+      assert.match(await p.title(), /Detectives de partículas/);
+      await noOverflow(p);
+      await p.screenshot({
+        path: path.join(out, `renamed-junior-${width}.png`),
+        fullPage: true,
+      });
       assert.deepEqual(mobile.errors, []);
       await mobile.context.close();
     }

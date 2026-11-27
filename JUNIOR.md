@@ -1,4 +1,4 @@
-# TREX-DM Junior: Detectives de lo invisible
+# TREX-DM Junior: Detectives de partículas
 
 Open `trex-dm-junior.html` in a browser. It is a separate, self-contained Spanish activity for ages 7–11, designed for roughly five minutes with an optional adult helper. It works offline and needs no build, account, external assets or server.
 

@@ -7,7 +7,7 @@
       name="description"
       content="Lanza sondas, localiza las masas invisibles y estima cuánto atraen. Prueba tus ideas comparando las trayectorias."
     />
-    <title>Gravedad oculta · Encuentra lo invisible</title>
+    <title>Sondas y gravedad · Localiza y mide masas ocultas</title>
     <style>
       :root {
         color-scheme: dark;
@@ -354,6 +354,96 @@
         background: var(--panel);
         color: var(--muted);
         font-size: 14px;
+        padding: 8px 4px;
+        display: grid;
+        gap: 3px;
+      }
+      .mass-options b {
+        font-size: 21px;
+        color: var(--ink);
+      }
+      .mass-options button[aria-pressed="true"] b {
+        color: var(--orange);
+      }
+      .reference-open {
+        margin-bottom: 14px;
+        font-size: 14px;
+        color: var(--mint);
+        border-color: #44685f;
+      }
+      #mass-reference {
+        width: min(640px, calc(100% - 24px));
+        max-height: calc(100svh - 24px);
+        padding: 24px;
+        border: 1px solid #5a7291;
+        border-radius: 20px;
+        background: var(--panel);
+        color: var(--ink);
+        overflow: auto;
+      }
+      #mass-reference::backdrop {
+        background: #030b16d9;
+      }
+      #mass-reference h2 {
+        font-size: 28px;
+      }
+      #mass-reference p {
+        font-size: 16px;
+        margin-bottom: 14px;
+      }
+      #mass-reference .eyebrow {
+        font-size: 12px;
+      }
+      #reference-map {
+        display: block;
+        width: 100%;
+        max-height: 280px;
+        background: #0b1a2b;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        margin-bottom: 12px;
+      }
+      .reference-options {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+      .reference-options button {
+        display: grid;
+        gap: 4px;
+        padding: 10px 4px;
+        min-height: 66px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #0b1a2b;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .reference-options b {
+        color: var(--ink);
+        font-size: 20px;
+      }
+      .reference-options button[aria-pressed="true"] {
+        border-color: var(--reference-color);
+        color: var(--reference-color);
+      }
+      #reference-explanation {
+        min-height: 48px;
+        margin: 14px 0 0;
+      }
+      #mass-reference .reference-note {
+        font-size: 14px;
+      }
+      #reference-close {
+        margin-top: 4px;
+      }
+      @media (max-width: 400px) {
+        #mass-reference {
+          padding: 16px;
+        }
+        #mass-reference h2 {
+          font-size: 24px;
+        }
       }
       .mass-options button[aria-pressed="true"] {
         color: var(--orange);
@@ -578,7 +668,7 @@
               stroke="#8cf4cf"
               stroke-width="2"
             /></svg
-          ><span>Gravedad oculta</span>
+          ><span>Sondas y gravedad</span>
         </div>
         <div class="header-actions">
           <a href="juegos.html">Elegir juego</a
@@ -591,9 +681,7 @@
         <section id="welcome" class="welcome" aria-labelledby="welcome-title">
           <div>
             <p class="eyebrow">UN MISTERIO EN TRES SECTORES</p>
-            <h1 id="welcome-title">
-              ¿Dónde está<br /><span>lo invisible?</span>
-            </h1>
+            <h1 id="welcome-title">Sondas<br /><span>y gravedad</span></h1>
             <p>
               Algo tira de tus sondas. Lánzalas, sigue sus curvas y descubre
               dónde está la masa escondida y cuánta hay.
@@ -688,6 +776,13 @@
             </div>
             <aside aria-label="Controles de la misión">
               <div id="controls">
+                <button
+                  id="open-reference"
+                  class="quiet full reference-open"
+                  type="button"
+                >
+                  Ver referencia: masas 1, 2 y 4
+                </button>
                 <div
                   class="mode-switch"
                   role="group"
@@ -774,10 +869,10 @@
                   <details class="mass-help">
                     <summary>¿Cómo estimo cuánta masa hay?</summary>
                     <p>
-                      Con el mismo tiro y la misma distancia, más masa tira más
-                      de la sonda. Pero pasar más cerca o ir más despacio
-                      también cambia la curva. Prueba tu idea: comparamos usando
-                      los mismos tiros que ya lanzaste.
+                      Compara con las masas de referencia: 1, 2 y 4 unidades.
+                      Pasar más cerca o ir más despacio también cambia la curva.
+                      Usa «Probar mi idea» para comparar con tus propios tiros,
+                      manteniendo su punto de salida, dirección y velocidad.
                     </p>
                   </details>
                   <button
@@ -869,7 +964,88 @@
         </details>
       </footer>
     </div>
-    <script src="assets/gravity-core.js?v=mass-2"></script>
-    <script src="assets/gravity-game.js?v=mass-2"></script>
+    <dialog
+      id="mass-reference"
+      aria-labelledby="reference-title"
+      aria-describedby="reference-intro"
+    >
+      <p class="eyebrow">MASAS CONOCIDAS</p>
+      <h2 id="reference-title" tabindex="-1">Compara estas masas</h2>
+      <p id="reference-intro">
+        Tomamos <strong>1 unidad</strong> como referencia. <strong>2</strong> es
+        el doble; <strong>4</strong>, cuatro veces esa masa.
+      </p>
+      <svg
+        id="reference-map"
+        viewBox="0 0 1000 550"
+        role="img"
+        aria-labelledby="reference-map-title reference-map-desc"
+      >
+        <title id="reference-map-title">
+          El mismo tiro junto a tres masas conocidas
+        </title>
+        <desc id="reference-map-desc">
+          La sonda sale desde la izquierda hacia la derecha. La masa está por
+          encima del tiro. Con estas mismas condiciones, las masas de 2 y 4
+          unidades doblan más la trayectoria que la de 1 unidad. La curva
+          elegida se resalta y las otras quedan a trazos.
+        </desc>
+        <path
+          d="M42 450H1000"
+          stroke="#56718a"
+          stroke-width="3"
+          stroke-dasharray="8 10"
+          fill="none"
+        />
+        <g
+          id="reference-paths"
+          fill="none"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        ></g>
+        <circle
+          id="reference-body"
+          cx="500"
+          cy="280"
+          r="42"
+          fill="#173e3c"
+          stroke="#8cf4cf"
+          stroke-width="4"
+        />
+        <text
+          id="reference-number"
+          x="500"
+          y="281"
+          text-anchor="middle"
+          dominant-baseline="middle"
+          font-family="system-ui,sans-serif"
+          font-size="48"
+          fill="#edf5ff"
+        >
+          1
+        </text>
+        <path d="m25 431 38 19-38 19 8-19Z" fill="#edf5ff" />
+      </svg>
+      <p class="reference-note">
+        Toca 1, 2 o 4. El lanzamiento y la posición son los mismos: solo cambia
+        la masa.
+      </p>
+      <div
+        id="reference-options"
+        class="reference-options"
+        role="group"
+        aria-label="Masa conocida del ejemplo"
+      ></div>
+      <p id="reference-explanation" role="status"></p>
+      <p class="reference-note">
+        La distancia y la velocidad también cambian la curva. Usa «Probar mi
+        idea» para comparar con tus propios tiros.
+      </p>
+      <button id="reference-close" class="primary full" type="button">
+        Volver al mapa
+      </button>
+    </dialog>
+    <script src="assets/gravity-core.js?v=mass-reference-3"></script>
+    <script src="assets/gravity-game.js?v=mass-reference-3"></script>
   </body>
 </html>

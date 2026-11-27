@@ -33,6 +33,10 @@
   let sound = false;
   let audio = null;
   let best = 0;
+  let referenceReturn = null;
+  const referenceColors = ["#8cf4cf", "#9ebcff", "#ffbe86"];
+  const massAmount = (type) =>
+    `${type.units} ${type.units === 1 ? "unidad" : "unidades"}`;
   try {
     best = clamp(
       Number(localStorage.getItem("gravity-puzzle-best-mass-v2")) || 0,
@@ -75,6 +79,87 @@
     return traces.filter((trace) => now < trace.start + trace.duration).length;
   }
 
+  function selectReference(id) {
+    const index = C.MASS_TYPES.findIndex((type) => type.id === id);
+    const type = C.MASS_TYPES[index];
+    $("reference-number").textContent = type.units;
+    $("reference-body").setAttribute("stroke", referenceColors[index]);
+    $("reference-map-title").textContent =
+      `Masa conocida: ${massAmount(type)}. El mismo tiro para comparar.`;
+    $("reference-explanation").textContent =
+      `${massAmount(type)} · ${type.units === 1 ? "Esta es nuestra masa de referencia." : type.units === 2 ? "El doble de la masa de referencia." : "Cuatro veces la masa de referencia."}`;
+    document
+      .querySelectorAll("[data-reference]")
+      .forEach((button) =>
+        button.setAttribute(
+          "aria-pressed",
+          String(button.dataset.reference === id),
+        ),
+      );
+    document.querySelectorAll("[data-reference-path]").forEach((path) => {
+      const selected = path.dataset.referencePath === id;
+      path.setAttribute("stroke-width", selected ? "9" : "4");
+      path.setAttribute("opacity", selected ? "1" : "0.55");
+      path.setAttribute("stroke-dasharray", selected ? "none" : "10 12");
+    });
+  }
+
+  function setupReference() {
+    const ns = "http://www.w3.org/2000/svg";
+    C.MASS_TYPES.forEach((type, index) => {
+      // This known, fixed example never reads the hidden round or the player's guesses.
+      const trajectory = C.simulate(C.PORTS[0], 0, 45, [
+        { x: 500, y: 280, mu: type.mu },
+      ]);
+      const path = document.createElementNS(ns, "path");
+      path.dataset.referencePath = type.id;
+      path.setAttribute(
+        "d",
+        trajectory.points
+          .map((p, i) => `${i ? "L" : "M"}${p.x.toFixed(2)},${p.y.toFixed(2)}`)
+          .join(" "),
+      );
+      path.setAttribute("stroke", referenceColors[index]);
+      const label = document.createElementNS(ns, "text");
+      const nearEnd = trajectory.points.find((p) => p.x >= 930);
+      label.setAttribute("x", "940");
+      label.setAttribute("y", String(nearEnd.y - 20));
+      label.setAttribute("font-size", "50");
+      label.setAttribute("font-family", "system-ui, sans-serif");
+      label.setAttribute("fill", referenceColors[index]);
+      label.setAttribute("stroke", "#0b1a2b");
+      label.setAttribute("stroke-width", "5");
+      label.setAttribute("paint-order", "stroke");
+      label.textContent = type.units;
+      $("reference-paths").append(path, label);
+      const button = document.createElement("button");
+      button.type = "button";
+      button.dataset.reference = type.id;
+      button.style.setProperty("--reference-color", referenceColors[index]);
+      const amount = document.createElement("b");
+      amount.textContent = type.units;
+      const name = document.createElement("span");
+      name.textContent = type.label;
+      button.append(amount, name);
+      button.setAttribute(
+        "aria-label",
+        `Probar ${massAmount(type)} de masa: ${type.label.toLowerCase()}`,
+      );
+      button.addEventListener("click", () => selectReference(type.id));
+      $("reference-options").append(button);
+    });
+    selectReference("small");
+  }
+
+  function openReference() {
+    cancelDrag();
+    referenceReturn = document.activeElement;
+    selectReference("small");
+    $("mass-reference").showModal();
+    $("mass-reference").scrollTop = 0;
+    $("reference-title").focus({ preventScroll: true });
+  }
+
   function hypothesisReady() {
     return (
       guesses.length === C.LEVELS[level].count &&
@@ -96,7 +181,7 @@
           const fieldset = document.createElement("fieldset");
           fieldset.className = "mass-choice";
           const legend = document.createElement("legend");
-          legend.textContent = `Marca ${index + 1}: ¿cuánta masa?`;
+          legend.textContent = `Marca ${index + 1}: masa en unidades`;
           const options = document.createElement("div");
           options.className = "mass-options";
           C.MASS_TYPES.forEach((type) => {
@@ -104,10 +189,14 @@
             button.type = "button";
             button.dataset.guess = index;
             button.dataset.mass = type.id;
-            button.textContent = type.label;
+            const amount = document.createElement("b");
+            amount.textContent = type.units;
+            const name = document.createElement("span");
+            name.textContent = type.label;
+            button.append(amount, name);
             button.setAttribute(
               "aria-label",
-              `${type.label} masa en la marca ${index + 1}`,
+              `${massAmount(type)} de masa (${type.label.toLowerCase()}) en la marca ${index + 1}`,
             );
             button.addEventListener("click", () => {
               if (result) return;
@@ -657,6 +746,15 @@
     level = 0;
     scores = [];
     newRound();
+    openReference();
+  });
+  $("open-reference").addEventListener("click", openReference);
+  $("reference-close").addEventListener("click", () =>
+    $("mass-reference").close(),
+  );
+  $("mass-reference").addEventListener("close", () => {
+    if (referenceReturn && referenceReturn.isConnected)
+      referenceReturn.focus({ preventScroll: true });
   });
   $("play-again").addEventListener("click", () => {
     level = 0;
@@ -755,12 +853,14 @@
           const item = document.createElement("li");
           const title = document.createElement("strong");
           title.textContent = `Marca ${pair.guessIndex + 1} · ${pair.distance <= 65 ? "posición acertada" : pair.distance <= 130 ? "posición cercana" : "posición por ajustar"}`;
-          const actual = C.MASS_TYPES.find(
+          const actualType = C.MASS_TYPES.find(
             (type) => type.id === pair.mass.massClass,
-          ).label.toLowerCase();
-          const chosen = C.MASS_TYPES.find(
+          );
+          const chosenType = C.MASS_TYPES.find(
             (type) => type.id === pair.guess.massClass,
-          ).label.toLowerCase();
+          );
+          const actual = `${massAmount(actualType)} (${actualType.label.toLowerCase()})`;
+          const chosen = `${massAmount(chosenType)} (${chosenType.label.toLowerCase()})`;
           const detail = document.createElement("span");
           detail.textContent = pair.massCorrect
             ? `Masa: ${actual}. ¡Acertaste!`
@@ -802,6 +902,7 @@
     $("finish-title").focus({ preventScroll: true });
     $("finish").scrollIntoView({ block: "start" });
   });
+  setupReference();
   new ResizeObserver(resize).observe(canvas.parentElement);
   reducedMotion.addEventListener("change", () => {
     if (reducedMotion.matches)
