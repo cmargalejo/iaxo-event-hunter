@@ -18,6 +18,8 @@
       button:disabled { cursor:default; }
       .shell { max-width:1080px; margin:auto; padding:0 36px; }
       header { min-height:80px; display:flex; align-items:center; gap:20px; border-bottom:1px solid var(--line); }
+      .game-nav { margin:8px 0; }
+      .game-nav a { display:inline-flex; align-items:center; min-height:44px; color:var(--green); font-size:16px; text-underline-offset:4px; }
       .brand { display:flex; align-items:center; gap:12px; text-decoration:none; }
       .brandmark { background:var(--ink); color:var(--mint); width:43px; height:43px; border-radius:14px; display:grid; place-items:center; font-size:27px; }
       .brand strong { display:block; font-size:18px; letter-spacing:-.5px; }
@@ -133,6 +135,7 @@
   </head>
   <body>
     <div class="shell">
+      <nav class="game-nav" aria-label="Juegos"><a href="juegos.html">Todos los juegos</a></nav>
       <header>
         <a class="brand" href="./trex-dm-junior.html" aria-label="Detectives de partículas, inicio"><span class="brandmark" aria-hidden="true">✳</span><span><strong>Detectives de partículas</strong><small>TREX-DM · Junior</small></span></a>
       </header>

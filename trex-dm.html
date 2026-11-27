@@ -42,6 +42,17 @@
         align-items: center;
         gap: 16px;
       }
+      .game-nav {
+        margin-bottom: 12px;
+      }
+      .game-nav a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        color: var(--accent);
+        font-size: 16px;
+        text-underline-offset: 4px;
+      }
       .brand {
         display: flex;
         flex-direction: column;
@@ -323,6 +334,9 @@
   </head>
   <body>
     <main class="wrap">
+      <nav class="game-nav" aria-label="Juegos">
+        <a href="juegos.html">Todos los juegos</a>
+      </nav>
       <header>
         <div class="brand">
           <img

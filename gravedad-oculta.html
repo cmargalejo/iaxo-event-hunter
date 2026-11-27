@@ -90,6 +90,16 @@
         gap: 18px;
         font-size: 14px;
       }
+      .game-nav {
+        margin: 8px 0;
+      }
+      .game-nav a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        color: var(--mint);
+        font-size: 16px;
+      }
       .quiet {
         background: transparent;
         color: var(--muted);
@@ -641,9 +651,6 @@
           max-width: 86px;
           line-height: 1.15;
         }
-        .header-actions a {
-          max-width: 50px;
-        }
       }
       @media (prefers-reduced-motion: reduce) {
         * {
@@ -654,6 +661,9 @@
   </head>
   <body>
     <div class="shell">
+      <nav class="game-nav" aria-label="Juegos">
+        <a href="juegos.html">Todos los juegos</a>
+      </nav>
       <header>
         <div class="brand">
           <svg viewBox="0 0 40 40" aria-hidden="true">
@@ -671,8 +681,7 @@
           ><span>Sondas y gravedad</span>
         </div>
         <div class="header-actions">
-          <a href="juegos.html">Elegir juego</a
-          ><button id="sound" class="quiet" type="button" aria-pressed="false">
+          <button id="sound" class="quiet" type="button" aria-pressed="false">
             Sonido: no
           </button>
         </div>
